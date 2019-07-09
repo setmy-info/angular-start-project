@@ -19,7 +19,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
     RouterModule.forRoot([
       { path: '', component: ProductListComponent },
       { path: 'product/:productId', component: ProductDetailsComponent },
-    ])
+    ], { useHash: true })
   ],
   providers: [],
   bootstrap: [AppComponent]
