@@ -13,7 +13,11 @@ export class ProductListComponent implements OnInit {
 
   products = null
 
-  constructor(private productService: ProductService) { }
+  loggerService = (window as any).jsdi.services.$log
+
+  constructor(private productService: ProductService) {
+    this.loggerService.debug("Constructing ProductListComponent");
+  }
 
   ngOnInit() {
     this.products = this.productService.getProducts();

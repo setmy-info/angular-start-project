@@ -1,12 +1,8 @@
 
-function getWindow(): any {
-    return window;
-}
-
 export class BaseService {
 
     constructor(name: string) {
-        var win = getWindow();
+        var win = (window as any);
         if (!win.services) {
             win.services = {
             };
