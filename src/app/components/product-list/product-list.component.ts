@@ -1,26 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 
-import { ProductService } from '../../services/product.service'
-
+import { ProductService } from 'services/product.service'
+import { nativeServices } from 'modules/native-services.module'
 
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.less'],
-  providers: [ProductService]
+  providers: [ProductService, nativeServices]
 })
 export class ProductListComponent implements OnInit {
 
   products = null
 
-  loggerService = (window as any).jsdi.services.$log
-
-  constructor(private productService: ProductService) {
-    this.loggerService.debug("Constructing ProductListComponent");
+  constructor(private productService: ProductService, @Inject('$log') private $log: any) {
+    this.$log.debug("Constructing ProductListComponent", "Blaah");
   }
 
   ngOnInit() {
     this.products = this.productService.getProducts();
   }
-
 }
