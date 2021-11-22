@@ -1,0 +1,26 @@
+User-agent: *
+Disallow: /
+
+User-agent: ia_archiver
+Allow: /
+
+User-agent: ia_archiver
+Allow: /index.html
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /index.html
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot
+Allow: /index.html
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Bingbot
+Allow: /index.html
