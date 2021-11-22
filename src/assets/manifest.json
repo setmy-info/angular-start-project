@@ -1,37 +1,37 @@
 {
     "manifest_version": 2,
-    "name": "Info System",
-    "short_name": "IS",
-    "description": "Hear And See Systems Web Application System from Imre Tabur",
+    "name": "...",
+    "short_name": "..",
+    "description": "...",
     "url": "/",
     "mode": "standalone",
     "icons": [
         {
-            "src": "icons/16x16/placeholder.png",
+            "src": "icons/16x16/Information.png",
             "sizes": "16x16",
             "type": "image/png",
             "density": "0.75"
         },
         {
-            "src": "icons/22x22/placeholder.png",
+            "src": "icons/22x22/Information.png",
             "sizes": "22x22",
             "type": "image/png",
             "density": "1.0"
         },
         {
-            "src": "icons/32x32/placeholder.png",
+            "src": "icons/32x32/Information.png",
             "sizes": "32x32",
             "type": "image/png",
             "density": "1.5"
         },
         {
-            "src": "icons/48x48/placeholder.png",
+            "src": "icons/48x48/Information.png",
             "sizes": "48x48",
             "type": "image/png",
             "density": "2.0"
         },
         {
-            "src": "icons/64x64/placeholder.png",
+            "src": "icons/64x64/Information.png",
             "sizes": "64x64",
             "type": "image/png",
             "density": "3.0"
