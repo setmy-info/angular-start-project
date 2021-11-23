@@ -1,16 +1,22 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {AppRoutingModule} from './app-routing.module';
-import {AppComponent} from './app.component';
+import {AppRoutingModule} from './router/app-routing.module';
+import {AppComponent} from './components/app.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
+import {ViewNotFoundComponent} from './views/view-not-found/view-not-found.component';
+import {ExampleComponent} from './views/example/example.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        ViewNotFoundComponent,
+        ExampleComponent
     ],
     imports: [
+        FormsModule,
         BrowserModule,
         AppRoutingModule,
         ServiceWorkerModule.register('ngsw-worker.js', {

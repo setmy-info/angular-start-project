@@ -1,0 +1,10 @@
+<p>example view!</p>
+<div *ngIf="example$ | async as example">
+    <h3>{{ example.name }}</h3>
+    <p>Id: {{ example.id }}</p>
+    <p>Name: {{ example.name }}</p>
+    <label for="example-name">Example name: </label>
+    <input type="text" id="example-name" [(ngModel)]="example.name" placeholder="name"/>
+    <button (click)="goToExample(example)">Back</button>
+</div>
+
