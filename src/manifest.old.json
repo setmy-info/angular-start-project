@@ -5,49 +5,55 @@
     "description": "Manifest description",
     "url": "/",
     "mode": "standalone",
-    "icons": [
-        {
-            "src": "assets/icons/16x16/Information.png",
-            "sizes": "16x16",
-            "type": "image/png",
-            "density": "0.75"
-        },
-        {
-            "src": "assets/icons/22x22/Information.png",
-            "sizes": "22x22",
-            "type": "image/png",
-            "density": "1.0"
-        },
-        {
-            "src": "assets/icons/32x32/Information.png",
-            "sizes": "32x32",
-            "type": "image/png",
-            "density": "1.5"
-        },
-        {
-            "src": "assets/icons/48x48/Information.png",
-            "sizes": "48x48",
-            "type": "image/png",
-            "density": "2.0"
-        },
-        {
-            "src": "assets/icons/64x64/Information.png",
-            "sizes": "64x64",
-            "type": "image/png",
-            "density": "3.0"
-        },
-        {
-            "src": "assets/icons/128x128/Information.png",
-            "sizes": "128x128",
-            "type": "image/png",
-            "density": "4.0"
-        }
-    ],
     "author": "Imre Tabur",
     "background": {
         "persistent": false
     },
     "start_url": "index.html",
     "display": "standalone",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "assets/icons/16x16/Information.png",
+            "sizes": "16x16",
+            "type": "image/png",
+            "purpose": "maskable any",
+            "density": "0.75"
+        },
+        {
+            "src": "assets/icons/22x22/Information.png",
+            "sizes": "22x22",
+            "type": "image/png",
+            "purpose": "maskable any",
+            "density": "1.0"
+        },
+        {
+            "src": "assets/icons/32x32/Information.png",
+            "sizes": "32x32",
+            "type": "image/png",
+            "purpose": "maskable any",
+            "density": "1.5"
+        },
+        {
+            "src": "assets/icons/48x48/Information.png",
+            "sizes": "48x48",
+            "type": "image/png",
+            "purpose": "maskable any",
+            "density": "2.0"
+        },
+        {
+            "src": "assets/icons/64x64/Information.png",
+            "sizes": "64x64",
+            "type": "image/png",
+            "purpose": "maskable any",
+            "density": "3.0"
+        },
+        {
+            "src": "assets/icons/128x128/Information.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "maskable any",
+            "density": "4.0"
+        }
+    ]
 }
