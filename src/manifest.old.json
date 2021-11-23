@@ -1,17 +1,16 @@
 {
-    "manifest_version": 2,
-    "name": "Manifest name",
-    "short_name": "Manifest short_name",
-    "description": "Manifest description",
-    "url": "/",
-    "mode": "standalone",
-    "author": "Imre Tabur",
-    "background": {
-        "persistent": false
-    },
-    "start_url": "index.html",
+    "id": "angular-start-project-id",
+    "name": "angular-start-project name",
+    "short_name": "angular-start-project short_name",
+    "description": "angular-start-project description",
+    "theme_color": "#1976d2",
+    "background_color": "#fafafa",
     "display": "standalone",
+    "scope": "./",
+    "start_url": "./",
     "orientation": "portrait",
+    "dir": "ltr",
+
     "icons": [
         {
             "src": "assets/icons/16x16/Information.png",
