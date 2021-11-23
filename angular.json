@@ -31,13 +31,16 @@
                             "src/robots.txt",
                             "src/sitemap.xml",
                             "src/manifest.json",
-                            "src/assets"
+                            "src/assets",
+                            "src/manifest.webmanifest"
                         ],
                         "styles": [
                             "src/styles.less"
                         ],
                         "scripts": [],
-                        "baseHref": "/angular-start-project/"
+                        "baseHref": "/angular-start-project/",
+                        "serviceWorker": true,
+                        "ngswConfigPath": "ngsw-config.json"
                     },
                     "configurations": {
                         "production": {
@@ -76,7 +79,8 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "disableHostCheck": true,
-                        "host": "0.0.0.0"
+                        "host": "0.0.0.0",
+                        "ssl": true
                     },
                     "configurations": {
                         "production": {
@@ -104,7 +108,8 @@
                         "inlineStyleLanguage": "less",
                         "assets": [
                             "src/favicon.ico",
-                            "src/assets"
+                            "src/assets",
+                            "src/manifest.webmanifest"
                         ],
                         "styles": [
                             "src/styles.less"
