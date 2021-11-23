@@ -7,37 +7,37 @@
     "mode": "standalone",
     "icons": [
         {
-            "src": "icons/16x16/Information.png",
+            "src": "assets/icons/16x16/Information.png",
             "sizes": "16x16",
             "type": "image/png",
             "density": "0.75"
         },
         {
-            "src": "icons/22x22/Information.png",
+            "src": "assets/icons/22x22/Information.png",
             "sizes": "22x22",
             "type": "image/png",
             "density": "1.0"
         },
         {
-            "src": "icons/32x32/Information.png",
+            "src": "assets/icons/32x32/Information.png",
             "sizes": "32x32",
             "type": "image/png",
             "density": "1.5"
         },
         {
-            "src": "icons/48x48/Information.png",
+            "src": "assets/icons/48x48/Information.png",
             "sizes": "48x48",
             "type": "image/png",
             "density": "2.0"
         },
         {
-            "src": "icons/64x64/Information.png",
+            "src": "assets/icons/64x64/Information.png",
             "sizes": "64x64",
             "type": "image/png",
             "density": "3.0"
         },
         {
-            "src": "icons/128x128/placeholder.png",
+            "src": "assets/icons/128x128/Information.png",
             "sizes": "128x128",
             "type": "image/png",
             "density": "4.0"
@@ -50,5 +50,5 @@
 
     "start_url": "index.html",
     "display": "standalone",
-    "orientation": "landscape"
+    "orientation": "portrait"
 }
