@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "...",
-    "short_name": "..",
-    "description": "...",
+    "name": "Manifest name",
+    "short_name": "Manifest short_name",
+    "description": "Manifest description",
     "url": "/",
     "mode": "standalone",
     "icons": [
@@ -47,7 +47,6 @@
     "background": {
         "persistent": false
     },
-
     "start_url": "index.html",
     "display": "standalone",
     "orientation": "portrait"

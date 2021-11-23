@@ -36,7 +36,8 @@
                         "styles": [
                             "src/styles.less"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "baseHref": "/angular-start-project/"
                     },
                     "configurations": {
                         "production": {
@@ -109,6 +110,17 @@
                             "src/styles.less"
                         ],
                         "scripts": []
+                    }
+                },
+                "wdio-run": {
+                    "builder": "@wdio/schematics:wdio",
+                    "options": {
+                        "devServerTarget": "angular-start-project:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "angular-start-project:serve:production"
+                        }
                     }
                 }
             }
