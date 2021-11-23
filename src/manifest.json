@@ -1,46 +1,95 @@
 {
-    "id": "angular-start-project-id",
-    "name": "angular-start-project name",
-    "short_name": "angular-start-project short_name",
-    "description": "angular-start-project description",
+    "name": "angular-start-project",
+    "short_name": "angular-start-project",
     "theme_color": "#1976d2",
     "background_color": "#fafafa",
     "display": "standalone",
     "scope": "./",
     "start_url": "./",
-    "orientation": "portrait",
-    "dir": "ltr",
-
     "icons": [
         {
             "src": "assets/icons/16x16/Information.png",
             "sizes": "16x16",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
         },
         {
             "src": "assets/icons/22x22/Information.png",
             "sizes": "22x22",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
         },
         {
             "src": "assets/icons/32x32/Information.png",
             "sizes": "32x32",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
         },
         {
             "src": "assets/icons/48x48/Information.png",
             "sizes": "48x48",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
         },
         {
             "src": "assets/icons/64x64/Information.png",
             "sizes": "64x64",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/72x72/Information.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/96x96/Information.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "maskable any"
         },
         {
             "src": "assets/icons/128x128/Information.png",
             "sizes": "128x128",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/144x144/Information.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/152x152/Information.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/192x192/Information.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/256x256/Information.png",
+            "sizes": "256x256",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/384x384/Information.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "assets/icons/512x512/Information.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
         }
     ]
 }
