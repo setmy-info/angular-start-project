@@ -29,3 +29,10 @@ package that implements end-to-end testing capabilities.
 
 To get more help on the Angular CLI use `ng help` or go check out
 the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+# Working with Lerna
+
+```shell
+lerna bootstrap
+lerna run start
+```
