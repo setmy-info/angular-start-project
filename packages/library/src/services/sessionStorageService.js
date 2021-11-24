@@ -3,4 +3,4 @@ const sessionStorageService = {
 }
 
 window.sessionStorageService = sessionStorageService;
-export default sessionStorageService;
+export default sessionStorageService;   //module.exports = sessionStorageService;

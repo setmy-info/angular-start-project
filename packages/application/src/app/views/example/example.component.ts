@@ -4,7 +4,9 @@ import {Example} from "../../models/Example";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {ExampleService} from "../../services/example.service";
 
-import localStorageService from "../../services/localStorageService";
+import localStorageService from '../../../../../library/src/services/localStorageService';
+// TODO : why that is not working? How can be fixed?
+//import localStorageService from '../../../../node_modules/library/src/services/localStorageService';
 
 @Component({
     selector: 'app-example',

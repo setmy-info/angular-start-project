@@ -3,4 +3,4 @@ const localStorageService = {
 }
 
 window.localStorageService = localStorageService;
-export default localStorageService;
+export default localStorageService; //module.exports = localStorageService;
