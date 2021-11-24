@@ -35,7 +35,8 @@
                             "src/manifest.webmanifest"
                         ],
                         "styles": [
-                            "src/styles.less"
+                            "src/styles.less",
+                            "angular-start-project-style/index.less"
                         ],
                         "scripts": [],
                         "baseHref": "/angular-start-project/",
