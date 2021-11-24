@@ -4,6 +4,8 @@ import {Example} from "../../models/Example";
 import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {ExampleService} from "../../services/example.service";
 
+import localStorageService from "../../services/localStorageService";
+
 @Component({
     selector: 'app-example',
     templateUrl: './example.component.html',
@@ -11,13 +13,14 @@ import {ExampleService} from "../../services/example.service";
 })
 export class ExampleComponent implements OnInit {
 
-    /*@Input() @Output() */
     example$!: Observable<Example>;
+    value!: string | null;
 
     constructor(private route: ActivatedRoute, private router: Router, private exampleService: ExampleService) {
     }
 
     ngOnInit(): void {
+        this.value = localStorageService.storage.getItem("key");
         this.example$ = this.route.paramMap.pipe(
             switchMap((params: ParamMap) =>
                 this.exampleService.getExample(params.get('id')!))
