@@ -32,7 +32,21 @@ the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
 # Working with Lerna
 
+## Building
+
+```shell
+lerna run build
+```
+
+## Executing app
+
 ```shell
 lerna bootstrap
 lerna run start
+```
+
+## Upgrading version 
+
+```shell
+lerna version
 ```
