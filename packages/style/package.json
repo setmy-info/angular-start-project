@@ -1,0 +1,14 @@
+{
+    "name": "angular-start-project-style",
+    "version": "1.0.0",
+    "description": "Styles",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "less": "^4.1.2"
+    }
+}
