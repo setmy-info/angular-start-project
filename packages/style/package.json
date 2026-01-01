@@ -1,6 +1,6 @@
 {
-    "name": "style",
-    "version": "0.0.0",
+    "name": "angular-start-project-style",
+    "version": "1.0.0-SNAPSHOT",
     "description": "Styles",
     "license": "MIT",
     "author": "Imre Tabur",
@@ -12,7 +12,6 @@
         "less": "^4.5.1"
     },
     "dependencies": {
-        "setmy-info-less": "^2.0.0",
-        "style": "^0.0.0"
+        "setmy-info-less": "^2.0.0"
     }
 }
