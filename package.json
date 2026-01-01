@@ -2,8 +2,8 @@
     "name": "angular-start-project-root",
     "private": true,
     "workspaces": [
-	    "packages/style",
-        "packages/library",
-        "packages/application"
+	    "packages/angular-start-project-style",
+        "packages/angular-start-project-library",
+        "packages/angular-start-project"
     ]
 }
