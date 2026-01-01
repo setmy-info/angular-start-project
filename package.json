@@ -1,5 +1,5 @@
 {
-    "name": "root",
+    "name": "angular-start-project-root",
     "private": true,
     "workspaces": [
 	    "packages/style",

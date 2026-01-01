@@ -1,14 +1,18 @@
 {
-    "name": "angular-start-project-style",
-    "version": "1.0.0",
+    "name": "style",
+    "version": "0.0.0",
     "description": "Styles",
-    "main": "index.js",
+    "license": "MIT",
+    "author": "Imre Tabur",
+    "main": "index.less",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author": "",
-    "license": "MIT",
+    "devDependencies": {
+        "less": "^4.5.1"
+    },
     "dependencies": {
-        "less": "^4.1.2"
+        "setmy-info-less": "^2.0.0",
+        "style": "^0.0.0"
     }
 }
