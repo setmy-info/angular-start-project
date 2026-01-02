@@ -1,4 +1,6 @@
-# Multi mudule (monorepo) angular application
+# Multi module (monorepo) angular application
 
-    npm install
-    npm start -w angular-start-project
+```shell
+npm install
+npm start -w angular-start-project
+```

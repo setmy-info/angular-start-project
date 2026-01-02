@@ -1,7 +1,7 @@
-var localStorageService = require('./src/services/localStorageService');
-var sessionStorageService = require('./src/services/sessionStorageService');
+const localStorageService = require('./src/services/localStorageService');
+const sessionStorageService = require('./src/services/sessionStorageService');
 
 module.exports = {
     localStorageService: localStorageService,
-    sessionStorageService: sessionStorageService,
+    sessionStorageService: sessionStorageService
 };
