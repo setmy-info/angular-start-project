@@ -1,19 +1,25 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable, switchMap} from "rxjs";
 import {Example} from "../../../../models/Example";
-import {ActivatedRoute, ParamMap, Router} from "@angular/router";
-import {ExampleService} from "../../../../services/example.service";
+import { ActivatedRoute, Router } from '@angular/router';
+import { ExampleService } from '../../../../services/example.service';
+
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 //var lib: any;
 //import localStorageService from '../../../../../../angular-start-project-library/src/services/localStorageService';
 //import * as lib from 'angular-start-project-library';
+import localStorageService from 'angular-start-project-library';
+//import * as lib from '../../../../../../angular-start-project-library/src/services/localStorageService';
 // TODO : why that is not working? How can be fixed?
 //import localStorageService from '../../../../../node_modules/angular-start-project-library/src/services/localStorageService';
 
 @Component({
     selector: 'app-example',
     templateUrl: './example.component.html',
-    styleUrls: ['./example.component.less']
+    styleUrls: ['./example.component.less'],
+    imports: [CommonModule, FormsModule]
 })
 export class ExampleComponent implements OnInit {
 
@@ -24,10 +30,15 @@ export class ExampleComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.value = "Example";//lib.localStorageService.storage.getItem("key");
+        this.value = "zsdfgasdg";//lib.localStorageService.storage.getItem("key");
+        /*
         this.example$ = this.route.paramMap.pipe(
             switchMap((params: ParamMap) =>
                 this.exampleService.getExample(params.get('id')!))
+        );
+        */
+        this.example$ = this.route.paramMap.pipe(
+            switchMap(params => this.exampleService.getExample(params.get('id')!))
         );
     }
 
