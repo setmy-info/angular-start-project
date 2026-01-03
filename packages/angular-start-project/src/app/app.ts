@@ -1,11 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ExampleComponent } from "./components/views/example/example.component";
-import { ViewNotFoundComponent } from "./components/views/view-not-found/view-not-found.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ExampleComponent, ViewNotFoundComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.less'
 })
