@@ -7,13 +7,7 @@ import { ExampleService } from '../../../../services/example.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-//var lib: any;
-//import localStorageService from '../../../../../../angular-start-project-library/src/services/localStorageService';
-//import * as lib from 'angular-start-project-library';
-import localStorageService from 'angular-start-project-library';
-//import * as lib from '../../../../../../angular-start-project-library/src/services/localStorageService';
-// TODO : why that is not working? How can be fixed?
-//import localStorageService from '../../../../../node_modules/angular-start-project-library/src/services/localStorageService';
+import angularStartProjectLibrary from 'angular-start-project-library';
 
 @Component({
     selector: 'app-example',
@@ -25,18 +19,13 @@ export class ExampleComponent implements OnInit {
 
     example$!: Observable<Example>;
     value!: string | null;
+    localStorageService = angularStartProjectLibrary.localStorageService.default;
 
     constructor(private route: ActivatedRoute, private router: Router, private exampleService: ExampleService) {
     }
 
     ngOnInit(): void {
-        this.value = "zsdfgasdg";//lib.localStorageService.storage.getItem("key");
-        /*
-        this.example$ = this.route.paramMap.pipe(
-            switchMap((params: ParamMap) =>
-                this.exampleService.getExample(params.get('id')!))
-        );
-        */
+        this.value = this.localStorageService.storage.getItem("key");
         this.example$ = this.route.paramMap.pipe(
             switchMap(params => this.exampleService.getExample(params.get('id')!))
         );
