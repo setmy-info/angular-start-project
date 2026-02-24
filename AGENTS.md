@@ -8,4 +8,5 @@
 - grep and tail over node_modules is forbidden
 - git commit, merge, push, pull is forbidden
 - git any command with force is forbidden
+- git branch changes are not allowed
 - angular-start-project-library should not depend on an Angular framework. It should be pure JS. It can contain singleton services, those can hold also prepared models, signals etc., initialized and set by angular.
