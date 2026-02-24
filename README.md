@@ -2,6 +2,8 @@
 
 ```shell
 npm install
+npm install --workspace angular-start-project-style
+npm install --workspace angular-start-project-library
 npm start -w angular-start-project
 ```
 

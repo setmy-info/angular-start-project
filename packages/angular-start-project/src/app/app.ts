@@ -9,7 +9,7 @@ import {BackgroundComponent} from './components/background/background.component'
 import {MainPanelComponent} from './components/layout/main-panel/main-panel.component';
 
 @Component({
-    selector: 'app-root',
+    selector: 'app',
     imports: [
         HeaderPanelComponent,
         MainPanelComponent,

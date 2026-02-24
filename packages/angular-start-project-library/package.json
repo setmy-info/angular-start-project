@@ -8,5 +8,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "devDependencies": {}
+    "dependencies": {
+        "setmy-info-less": "^3.0.0"
+    }
 }
