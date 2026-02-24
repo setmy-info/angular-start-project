@@ -46,6 +46,7 @@ application/chrome-profiler-events*.json
 Thumbs.db
 
 # AI agents
+.output.txt
 **/TASKLIST.lisp
 **/TASKLIST.sexp
 **/TASKLIST.md

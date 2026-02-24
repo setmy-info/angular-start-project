@@ -1,0 +1,81 @@
+TASKLIST.sexp Execution Report
+==============================
+Date: 2026-02-24
+
+TASK 1: Knowledge assessment — COMPLETED (after investigation allowed)
+========================================================================
+Initial assessment found insufficient knowledge of setmy-info-less, setmy-info-scripts, and
+Angular 21. User granted permission to investigate local clones. After investigation:
+
+  setmy-info-less:  SUFFICIENT — full LESS framework understood (flex, panels, devices, variables)
+  setmy-info-scripts: SUFFICIENT — build toolchain understood (CMake, shell scripts, packages)
+  Angular 21: SUFFICIENT — AGENTS.md provides explicit Angular 21 guidelines; patterns known
+
+TASK 2: Old Angular project investigation — COMPLETED
+======================================================
+Old project at: /home/has/sources/solutions/has-web-app-new/frontend/packages/has-web-app-new-ng
+Angular version: 13.0.0
+
+Component hierarchy discovered:
+  AppComponent (#application)
+  ├── HeaderPanelComponent (#headerPanel: header + nav + consent)
+  ├── MainPanelComponent (main > router-outlet + footer)
+  ├── ModalBodyPanelComponent (#modalBody, backdrop overlay)
+  ├── SideNavigationPanelComponent (#sidenav.sideNavigationPanel)
+  └── canvas#background (particles.js)
+
+Key patterns:
+  - Modal state: modelService.modalPanelVisible (boolean)
+  - Language: translations.current.lang ('et'/'en'), *ngIf for conditional content
+  - Navigation: navigation.current hash matched against menu item hashes
+  - Responsive: phone-hidden CSS class hides desktop nav on mobile
+  - Menu items: from menuService, contain icon (Material Icons), translationKey, hash, ngHref
+  - Particles.js: canvas#background with 250 particles, color #3E6AA2
+
+TASK 3: New Angular 21 project structure — COMPLETED
+=====================================================
+Project at: /home/has/sources/components/setmy.info/submodules/angular-start-project
+Angular version: 21.0.0 (standalone components default, no `standalone: true` needed)
+Monorepo packages:
+  - angular-start-project (main Angular app)
+  - angular-start-project-library (pure JS, no Angular dependency)
+  - angular-start-project-style (LESS styles, extends setmy-info-less)
+
+Pre-existing state: minimal — only App root, ExampleComponent, ViewNotFoundComponent, 2 services
+
+TASK 4: New component structure & HTML alignment — COMPLETED
+==========================================================
+Files created/modified to match old project's HTML structure, IDs, and CSS classes (Task 14):
+
+Layout components (selectors updated to match old-style):
+  * header-panel            — ID #headerPanel, uses <i> for Material Icons.
+  * side-navigation-panel   — ID #sidenav, class .sideNavigationPanel, includes language selector.
+  * modal-body-panel        — ID #modalBody, click to close.
+  * main-panel              — contains <main>, <router-outlet>, and <footer>.
+  * background-component    — renders <canvas id="background"> with tsParticles.
+
+Styles:
+  * angular-start-project-style/src/less/index.less — Updated to use old project's IDs (#headerPanel, #sidenav, #modalBody, etc.) to ensure compatibility with setmy-info-less.
+
+Library:
+  * angular-start-project-library/src/models/menuModel.js — Added translation keys for all items.
+  * angular-start-project-library/src/services/translationService.js — Added missing 'view.menu' and 'view.language' keys.
+
+TASK 5: E2E Tests with Visual Comparison — COMPLETED
+=====================================================
+Implemented visual comparison E2E tests in:
+  + packages/angular-start-project/test/specs/components.e2e.ts
+
+Key Features:
+  - Compares localhost:4200 with https://setmy.info.
+  - Verifies element positions, sizes, and colors.
+  - NEW: Added 'afterEach' hook to automatically check for SEVERE browser console errors, preventing regressions like 'translationService is undefined'.
+
+TASK 6: Multitenancy & Language Migration — COMPLETED
+=====================================================
+  * LanguageService: Fixed import error and added defensive checks for library access.
+  * TenantService: Added window.location check for SSR/test safety.
+  * UI: Updated templates to use translated labels for Menu and Language.
+
+ALL TASKS COMPLETED SUCCESSFULLY.
+The new solution's HTML DOM tree and CSS selectors now mirror the old project, allowing setmy-info-less to function as intended.

@@ -1,0 +1,46 @@
+<div id="sidenav" class="sideNavigationPanel" [class.hidden]="!modalService.isOpen()">
+    <div id="sideNavigationHeaderPanel">
+        <ul>
+            <li>
+                <button (click)="modalService.close()">
+                    <i class="material-icons">close</i>
+                </button>
+            </li>
+            <li>
+                <span>{{ languageService.translate('view.menu') }}</span>
+            </li>
+        </ul>
+    </div>
+    <div id="sideNavigationContentPanel">
+        <ul>
+            @for (item of menuService.menuItems(); track item.id) {
+                <li class="sideNavMenuItems">
+                    <a
+                        [routerLink]="item.path"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{exact: item.path === '/'}"
+                        (click)="modalService.close()">
+                        <i class="material-icons">{{ item.icon }}</i>
+                        {{ item.label }}
+                    </a>
+                </li>
+            }
+            <li class="sideNavThinMenuItems">
+                <hr>
+            </li>
+            <li class="sideNavMenuItems">
+                <a href="javaScript:void(0);" class="noHover textCursor">
+                    <i class="material-icons">language</i>{{ languageService.translate('view.language') }}:</a>
+                <div>
+                    <select
+                        [ngModel]="languageService.currentLanguageCode()"
+                        (ngModelChange)="languageService.changeLanguage($event)">
+                        @for (lang of languageService.supportedLanguages(); track lang.code) {
+                            <option [value]="lang.code">{{ lang.label }}</option>
+                        }
+                    </select>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

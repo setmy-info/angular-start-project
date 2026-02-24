@@ -7,7 +7,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "e2e": "wdio run wdio.conf.ts"
   },
   "prettier": {
     "printWidth": 100,
@@ -30,6 +31,8 @@
     "@angular/forms": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
     "@angular/router": "^21.0.0",
+    "@tsparticles/engine": "^3.0.0",
+    "@tsparticles/slim": "^3.0.0",
     "rxjs": "~7.8.0",
     "angular-start-project-style": "^1.0.0-SNAPSHOT",
     "angular-start-project-library": "^1.0.0-SNAPSHOT",

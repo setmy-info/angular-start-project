@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {LanguageService} from '../../../services/language.service';
 
 @Component({
-    selector: 'app-view-not-found',
-    templateUrl: './view-not-found.component.html',
-    styleUrl: './view-not-found.component.less',
+    selector: 'app-about',
+    templateUrl: './about.component.html',
+    styleUrl: './about.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ViewNotFoundComponent {
+export class AboutComponent {
     protected readonly languageService = inject(LanguageService);
 }

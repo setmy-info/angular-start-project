@@ -1,0 +1,42 @@
+<div id="headerPanel">
+    <header>
+        <ul>
+            <li>
+                <button
+                    type="button"
+                    (click)="modalService.open()">
+                    <i class="material-icons">menu</i>
+                </button>
+            </li>
+            <li>
+                <span>{{ appTitle() }}</span>
+            </li>
+        </ul>
+        <ul>
+            @for (lang of languageService.supportedLanguages(); track lang.code) {
+                <li>
+                    <button
+                        type="button"
+                        [disabled]="lang.code === languageService.currentLanguageCode()"
+                        (click)="languageService.changeLanguage(lang.code)">
+                        {{ lang.code | uppercase }}
+                    </button>
+                </li>
+            }
+        </ul>
+    </header>
+    <nav class="phone-hidden">
+        <ul>
+            @for (item of menuService.menuItems(); track item.id) {
+                <li>
+                    <a
+                        [routerLink]="item.path"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{exact: item.path === '/'}">
+                        {{ item.label }}
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
