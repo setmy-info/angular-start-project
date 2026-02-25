@@ -14,8 +14,8 @@ import {MainPanelComponent} from './components/layout/main-panel/main-panel.comp
         HeaderPanelComponent,
         MainPanelComponent,
         SideNavPanelComponent,
-        ModalBodyPanelComponent,
-        BackgroundComponent
+        ModalBodyPanelComponent/*,
+        BackgroundComponent*/
     ],
     templateUrl: './app.html',
     styleUrl: './app.less',
