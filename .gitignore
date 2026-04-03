@@ -50,3 +50,5 @@ Thumbs.db
 **/TASKLIST.lisp
 **/TASKLIST.sexp
 **/TASKLIST.md
+
+.claude/
