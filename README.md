@@ -7,7 +7,7 @@ npm install --workspace angular-start-project-library
 npm start -w angular-start-project
 ```
 
-http://localhost:4200/example/11
+tab http://localhost:4200/example/11
 
 Set as:
 
