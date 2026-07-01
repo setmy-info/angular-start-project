@@ -6,7 +6,12 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build:dev": "ng build --configuration dev",
+    "build:ci": "ng build --configuration ci",
+    "build:test": "ng build --configuration test",
+    "build:prelive": "ng build --configuration prelive",
+    "build:live": "ng build --configuration live",
+    "watch": "ng build --watch --configuration local",
     "test": "ng test",
     "e2e": "wdio run wdio.conf.ts"
   },
@@ -36,7 +41,6 @@
     "angular-start-project-library": "^1.0.0-SNAPSHOT",
     "angular-start-project-style": "^1.0.0-SNAPSHOT",
     "rxjs": "~7.8.0",
-    "setmy-info-less": "^3.0.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-//import {LanguageService} from '../../../services/language.service';
+import {LanguageService} from '../../../services/language.service';
 
 @Component({
     selector: 'app-home',
@@ -8,5 +8,5 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-    //protected readonly languageService = inject(LanguageService);
+    protected readonly languageService = inject(LanguageService);
 }

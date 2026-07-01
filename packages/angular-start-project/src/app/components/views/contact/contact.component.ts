@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {LanguageService} from '../../../services/language.service';
 
 @Component({
     selector: 'app-contact',
@@ -7,4 +8,5 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContactComponent {
+    protected readonly languageService = inject(LanguageService);
 }

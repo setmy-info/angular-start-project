@@ -1,2 +1,11 @@
 <footer>
+    <ul>
+        <li>
+            <i class="material-symbols-outlined">copyright</i>
+            <span>{{ currentYear }} {{ languageService.translate('app.title') }}</span>
+        </li>
+        @if (!environment.production) {
+            <li class="envBadge">{{ environment.envName }}</li>
+        }
+    </ul>
 </footer>

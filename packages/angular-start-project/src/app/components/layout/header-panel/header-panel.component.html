@@ -4,40 +4,38 @@
             <li>
                 <button
                     type="button"
-                    (click)="modalService.open()">
-                    <i class="material-icons">menu</i>
+                    (click)="modalService.toggle()">
+                    <i class="material-symbols-outlined">menu</i>
                 </button>
             </li>
             <li>
-                <span>Title</span>
+                <span>{{ languageService.translate('app.title') }}</span>
             </li>
         </ul>
         <ul>
-            <li>
-                <button
-                    type="button"
-                    [disabled]="false"
-                    (click)="nothing()">
-                    ET
-                </button>
-            </li>
-            <li>
-                <button
-                    type="button"
-                    [disabled]="false"
-                    (click)="nothing()">
-                    EN
-                </button>
-            </li>
+            @for (language of languageService.supportedLanguages; track language.code) {
+                <li>
+                    <button
+                        type="button"
+                        [disabled]="language.code === languageService.currentLanguageCode()"
+                        [class.active]="language.code === languageService.currentLanguageCode()"
+                        (click)="languageService.changeLanguage(language.code)">
+                        {{ language.label }}
+                    </button>
+                </li>
+            }
         </ul>
     </header>
     <nav class="phone-hidden">
         <ul>
-            <li>
-                <a>
-                    Item 1
-                </a>
-            </li>
+            @for (item of menuService.rawMenuItems(); track item.id) {
+                <li>
+                    <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: item.path === '/'}">
+                        <i class="material-symbols-outlined">{{ item.icon }}</i>
+                        {{ languageService.translate(item.translationKey || item.label) }}
+                    </a>
+                </li>
+            }
         </ul>
     </nav>
 </div>

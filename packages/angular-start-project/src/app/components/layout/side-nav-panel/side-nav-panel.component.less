@@ -1,0 +1,71 @@
+@import url("setmy-info-less/src/main/less/values/index.less");
+
+:host {
+    display: block;
+}
+
+#sidenav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: @sideNavWidth;
+    flex-direction: column;
+    background: @secondaryBackgroundColor;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.25);
+    z-index: @z-index-9;
+    overflow-y: auto;
+}
+
+#side-nav-header-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    height: @sideNavHeaderHeight;
+    padding: 0 @defaultPadding;
+    background: @sideNavHeaderBackgroundColor;
+    color: @sideNavHeaderTextColor;
+    box-sizing: border-box;
+}
+
+#side-nav-header-panel > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: @defaultHeight;
+    width: @defaultHeight;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+#side-nav-content-panel {
+    flex: 1 1 auto;
+}
+
+.sideNavMenuItems {
+    list-style: none;
+}
+
+.sideNavMenuItems > li > a {
+    display: flex;
+    align-items: center;
+    gap: @sideNavSpaceAfterIcon;
+    height: @sideNavMenuItemHeight;
+    padding: 0 @defaultPadding;
+    color: @textColor;
+    text-decoration: none;
+    border-left: @menuItemSelectionVerticalBorderWidth solid transparent;
+    box-sizing: border-box;
+}
+
+.sideNavMenuItems > li > a.active {
+    border-left-color: @activeSelectedMenuItemColor;
+    font-weight: bold;
+}
+
+.sideNavMenuItems > li > a:hover {
+    background: @gray-100;
+}
