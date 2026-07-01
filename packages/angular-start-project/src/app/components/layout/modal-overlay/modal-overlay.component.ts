@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ModalService} from '../../../services/modal.service';
 
 @Component({
-    selector: 'modal-body-panel',
+    selector: 'app-modal-overlay',
     templateUrl: './modal-overlay.component.html',
     styleUrl: './modal-overlay.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ModalBodyPanelComponent {
+export class ModalOverlayComponent {
     protected readonly modalService = inject(ModalService);
 }

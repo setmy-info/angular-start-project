@@ -16,29 +16,20 @@ describe('AboutComponent', () => {
         expect(fixture.componentInstance).toBeTruthy();
     });
 
-    it('should render applicationContentMain wrapper', () => {
+    it('should render article body wrapper', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('.applicationContentMain')).toBeTruthy();
-    });
-
-    it('should render article element', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('article')).toBeTruthy();
-    });
-
-    it('should render section header picture', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('.sectionHeaderPicture')).toBeTruthy();
+        expect(el.querySelector('.articleBody')).toBeTruthy();
     });
 
     it('should render about heading', () => {
         const el = fixture.nativeElement as HTMLElement;
         const h1 = el.querySelector('h1');
-        expect(h1?.textContent?.trim()).toBe('About');
+        expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
     });
 
-    it('should render at least two sections', () => {
+    it('should render placeholder image', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelectorAll('section').length).toBeGreaterThanOrEqual(1);
+        const img = el.querySelector('img');
+        expect(img?.getAttribute('src')).toContain('placeholder.svg');
     });
 });

@@ -1,4 +1,6 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {LanguageService} from '../../../services/language.service';
+import {environment} from '../../../../environments/environment';
 
 @Component({
     selector: 'app-footer-panel',
@@ -6,4 +8,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
     styleUrl: './footer-panel.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FooterPanelComponent {}
+export class FooterPanelComponent {
+    protected readonly languageService = inject(LanguageService);
+    protected readonly currentYear = new Date().getFullYear();
+    protected readonly environment = environment;
+}

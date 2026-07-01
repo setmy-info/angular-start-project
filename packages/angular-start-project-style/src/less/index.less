@@ -1,8 +1,25 @@
-//@import 'setmy-info-less';
+// Source imports (not the package "main", which points at pre-built dist CSS) so LESS
+// variables/tokens from setmy-info-less are in scope here. Load order matters: base first
+// (values + HTML resets + utilities + devices + flex + components), then extended (its own
+// utility classes only — extended's main.less imports base's values for tokens but not its CSS,
+// see setmy-info-less-extended/src/main/less/main.less "STANDALONE / DELTA" note).
+@import 'setmy-info-less/src/main/less/main.less';
+@import 'setmy-info-less-extended/src/main/less/main.less';
 
 // ============================================================
 // MATERIAL SYMBOLS OUTLINED
+// Self-hosted from the "material-symbols" npm package (fetched at dev time, the .woff2 is
+// committed as a static asset in packages/angular-start-project/public/fonts/) — no Google
+// Fonts/Icons CDN request. See review.md section 4.
 // ============================================================
+
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 100 700;
+    font-display: block;
+    src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
+}
 
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined', sans-serif;
@@ -17,4 +34,17 @@
     word-wrap: normal;
     direction: ltr;
     vertical-align: middle;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+// ============================================================
+// PLACEHOLDER IMAGERY (template content — see review.md)
+// ============================================================
+
+.articleBody img {
+    display: block;
+    border: 1px solid @tertiaryColor;
+    border-radius: @defaultBorderRadius;
+    margin: @doubleDefaultPadding 0;
 }

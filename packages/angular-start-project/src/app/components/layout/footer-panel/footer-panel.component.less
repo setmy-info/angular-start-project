@@ -1,3 +1,37 @@
+@import url("setmy-info-less/src/main/less/values/index.less");
+
 :host {
     display: block;
+}
+
+footer {
+    height: @footerHeight;
+    background: @footerBackgroundColor;
+    color: @footerTextColor;
+}
+
+footer > ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: @halfDefaultPadding;
+    height: @footerHeight;
+    max-width: 1024px;
+    margin: 0 auto;
+    list-style: none;
+    font-size: @smallFontSize;
+}
+
+footer > ul > li {
+    display: flex;
+    align-items: center;
+    gap: @halfDefaultPadding;
+}
+
+.envBadge {
+    text-transform: uppercase;
+    padding: 2px @halfDefaultPadding;
+    border: 1px solid @tertiaryColor;
+    border-radius: @defaultBorderRadius;
+    color: @quinaryColor;
 }

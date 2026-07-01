@@ -1,2 +1,24 @@
-<div id="sidenav" class="sideNavigationPanel" [class.hidden]="!modalService.isOpen()">
+<div id="sidenav" class="sideNavigationPanel" [style.display]="modalService.isOpen() ? 'flex' : 'none'">
+    <div id="side-nav-header-panel">
+        <span>{{ languageService.translate('view.menu') }}</span>
+        <button type="button" aria-label="Close navigation menu" (click)="modalService.close()">
+            <i class="material-symbols-outlined">close</i>
+        </button>
+    </div>
+    <div id="side-nav-content-panel">
+        <ul class="sideNavMenuItems">
+            @for (item of menuService.rawMenuItems(); track item.id) {
+                <li>
+                    <a
+                        [routerLink]="item.path"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{exact: item.path === '/'}"
+                        (click)="modalService.close()">
+                        <i class="material-symbols-outlined">{{ item.icon }}</i>
+                        {{ languageService.translate(item.translationKey || item.label) }}
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
 </div>

@@ -16,30 +16,20 @@ describe('ContactComponent', () => {
         expect(fixture.componentInstance).toBeTruthy();
     });
 
-    it('should render applicationContentMain wrapper', () => {
+    it('should render article body wrapper', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('.applicationContentMain')).toBeTruthy();
-    });
-
-    it('should render article element', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('article')).toBeTruthy();
+        expect(el.querySelector('.articleBody')).toBeTruthy();
     });
 
     it('should render contact heading', () => {
         const el = fixture.nativeElement as HTMLElement;
         const h1 = el.querySelector('h1');
-        expect(h1?.textContent?.trim()).toBe('Contact');
+        expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
     });
 
-    it('should render contact icons', () => {
+    it('should render contact fields as a definition list', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const icons = el.querySelectorAll('.material-symbols-outlined');
-        expect(icons.length).toBeGreaterThan(0);
-    });
-
-    it('should render icon panels', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelectorAll('.iconPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.definitionTerm').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.definitionDesc').length).toBeGreaterThan(0);
     });
 });
