@@ -16,42 +16,25 @@ describe('HomeComponent', () => {
         expect(fixture.componentInstance).toBeTruthy();
     });
 
-    it('should render applicationContentMain wrapper', () => {
+    it('should render article body wrapper', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('.applicationContentMain')).toBeTruthy();
-    });
-
-    it('should render article element', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('article')).toBeTruthy();
-    });
-
-    it('should render section header picture', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('.sectionHeaderPicture')).toBeTruthy();
-    });
-
-    it('should render article section panel', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('.articleSectionPanel')).toBeTruthy();
-    });
-
-    it('should render at least one section', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        const sections = el.querySelectorAll('section');
-        expect(sections.length).toBeGreaterThan(0);
+        expect(el.querySelector('.articleBody')).toBeTruthy();
     });
 
     it('should render main heading', () => {
         const el = fixture.nativeElement as HTMLElement;
         const h1 = el.querySelector('h1');
-        expect(h1).toBeTruthy();
-        expect(h1?.textContent).toContain('Lorem Ipsum');
+        expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
     });
 
-    it('should render introductory paragraph', () => {
+    it('should render placeholder image', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const paragraphs = el.querySelectorAll('p');
-        expect(paragraphs.length).toBeGreaterThan(0);
+        const img = el.querySelector('img');
+        expect(img?.getAttribute('src')).toContain('placeholder.svg');
+    });
+
+    it('should render at least one paragraph', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        expect(el.querySelectorAll('p').length).toBeGreaterThan(0);
     });
 });

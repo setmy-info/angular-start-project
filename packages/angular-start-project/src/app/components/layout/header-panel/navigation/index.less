@@ -1,0 +1,77 @@
+nav {
+    /*
+    height: @navigationHeight;
+    max-width: 1024px;
+    margin: 0 auto;
+    background: @navigationBackgroundColor;
+    */
+    margin: auto;
+    max-width: 1024px;
+    width: auto;
+    height: 50px;
+    background: white;
+    color: #4b4b4bde;
+    //font-family: DejaVu Serif,Roboto,Arial,Noto Sans,Noto,sans-serif;
+    font-weight: 900;
+}
+
+nav > ul {
+    /*
+    display: flex;
+    align-items: center;
+    height: @navigationHeight;
+    list-style: none;
+    padding: 0 @defaultPadding;
+    */
+    height: 50px;
+    background: white;
+}
+
+nav > ul > li {
+    height: 50px;
+    float: left;
+    list-style-type: none;
+    display: table;
+}
+
+nav > ul > li > a {
+    /*
+    display: flex;
+    align-items: center;
+    gap: @halfDefaultPadding;
+    height: @navigationHeight;
+    padding: 0 @defaultPadding;
+    color: @navigationInactiveTextColor;
+    text-decoration: none;
+    cursor: pointer;
+    */
+
+    height: 46px;
+    padding-left: 10px;
+    padding-right: 10px;
+    outline: none;
+    color: #191970;
+    border-bottom: solid 4px white;
+    display: table-cell;
+    vertical-align: middle;
+    font-family: DejaVu Serif,Roboto,Arial,Noto Sans,Noto,sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+nav > ul > li > a.active {
+    /*
+    color: @activeSelectedMenuItemColor;
+    font-weight: bold;
+    */
+    height: 46px;
+    border-bottom: solid 4px rgba(237,38,61,.87);
+    color: #2f4f4f;
+}
+
+nav > ul > li > a:hover {
+    //color: @cursorSelectableMenuItemColor;
+    border-bottom:solid 4px rgba(255,157,0,.87)
+}

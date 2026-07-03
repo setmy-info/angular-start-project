@@ -35,13 +35,13 @@ describe('HeaderPanelComponent', () => {
 
     it('should render menu toggle button', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const btn = el.querySelector('button i.material-icons');
+        const btn = el.querySelector('button i.material-symbols-outlined');
         expect(btn).toBeTruthy();
     });
 
     it('should render menu icon in toggle button', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const icon = el.querySelector('i.material-icons');
+        const icon = el.querySelector('i.material-symbols-outlined');
         expect(icon).toBeTruthy();
         expect(icon?.textContent?.trim()).toBe('menu');
     });

@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 import {ViewNotFoundComponent} from './view-not-found.component';
 
 describe('ViewNotFoundComponent', () => {
@@ -6,7 +7,8 @@ describe('ViewNotFoundComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [ViewNotFoundComponent]
+            imports: [ViewNotFoundComponent],
+            providers: [provideRouter([])]
         }).compileComponents();
         fixture = TestBed.createComponent(ViewNotFoundComponent);
         fixture.detectChanges();
@@ -19,7 +21,11 @@ describe('ViewNotFoundComponent', () => {
     it('should render not-found heading', () => {
         const el = fixture.nativeElement as HTMLElement;
         const h2 = el.querySelector('h2');
-        expect(h2).toBeTruthy();
-        expect(h2?.textContent).toContain('view-not-found');
+        expect(h2?.textContent?.trim().length).toBeGreaterThan(0);
+    });
+
+    it('should render a link back home', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        expect(el.querySelector('a[href="/"]')).toBeTruthy();
     });
 });

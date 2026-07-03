@@ -1,23 +1,4 @@
 const translations = {
-    en: {
-        'app.title': 'Lorem Ipsum Application',
-        'app.brandTitle': 'Setmy.info Brand Page',
-        'menu.home': 'Home',
-        'menu.about': 'About',
-        'menu.contact': 'Contact',
-        'view.notfound': 'Page Not Found',
-        'view.home.welcome': 'Welcome to Angular Start Project',
-        'view.home.description': 'This is a generic starter project template. It uses Angular 21 with signals and standalone components.',
-        'view.home.lorem': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        'view.about.title': 'About Us',
-        'view.contact.title': 'Contact Us',
-        'view.contact.organisation': 'Organisation:',
-        'view.contact.address': 'Address:',
-        'view.contact.phone': 'Phone:',
-        'view.contact.email': 'Email:',
-        'view.menu': 'Menu',
-        'view.language': 'Language'
-    },
     et: {
         'app.title': 'Lorem Ipsum Rakendus',
         'app.brandTitle': 'Setmy.info Brändileht',
@@ -36,6 +17,25 @@ const translations = {
         'view.contact.email': 'E-post:',
         'view.menu': 'Menüü',
         'view.language': 'Keel'
+    },
+    en: {
+        'app.title': 'Lorem Ipsum Application',
+        'app.brandTitle': 'Setmy.info Brand Page',
+        'menu.home': 'Home',
+        'menu.about': 'About',
+        'menu.contact': 'Contact',
+        'view.notfound': 'Page Not Found',
+        'view.home.welcome': 'Welcome to Angular Start Project',
+        'view.home.description': 'This is a generic starter project template. It uses Angular 21 with signals and standalone components.',
+        'view.home.lorem': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'view.about.title': 'About Us',
+        'view.contact.title': 'Contact Us',
+        'view.contact.organisation': 'Organisation:',
+        'view.contact.address': 'Address:',
+        'view.contact.phone': 'Phone:',
+        'view.contact.email': 'Email:',
+        'view.menu': 'Menu',
+        'view.language': 'Language'
     }
 };
 

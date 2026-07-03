@@ -2,7 +2,7 @@ import {afterNextRender, ChangeDetectionStrategy, Component, inject, PLATFORM_ID
 import {isPlatformBrowser} from '@angular/common';
 
 @Component({
-    selector: 'background-component',
+    selector: 'app-background',
     templateUrl: './background.component.html',
     styleUrl: './background.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

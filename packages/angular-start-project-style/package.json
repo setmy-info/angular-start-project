@@ -6,12 +6,13 @@
     "author": "Imre Tabur",
     "main": "index.less",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build:brand-example": "lessc brand-example/brand.less brand-example/dist/brand.css"
     },
     "devDependencies": {
         "less": "^4.5.1"
     },
     "dependencies": {
-        "setmy-info-less": "^3.0.0"
+        "setmy-info-less-extended": "^4.0.0"
     }
 }

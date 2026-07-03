@@ -7,6 +7,6 @@ import {ModalService} from '../../../services/modal.service';
     styleUrl: './modal-overlay.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ModalBodyPanelComponent {
+export class ModalOverlayComponent {
     protected readonly modalService = inject(ModalService);
 }
