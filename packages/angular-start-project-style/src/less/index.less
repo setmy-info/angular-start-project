@@ -48,3 +48,41 @@
     border-radius: @defaultBorderRadius;
     margin: @doubleDefaultPadding 0;
 }
+
+.applicationContentMain {
+    min-height: calc(100% - 70px);
+    padding: 10px;
+    margin: 0;
+    overflow-x: auto
+}
+
+.applicationContentMain article {
+    max-width: 100%;
+    margin: auto;
+    max-width: 1024px;
+    width: auto;
+    box-shadow: 0 0 2px #333;
+    background: white;
+    color: #141412;
+    font-size: 105%;
+    line-height: 1.7;
+}
+
+.applicationContentMain article > div.articleSectionPanel {
+    padding: 10px;
+}
+
+.sectionHeaderPicture {
+    height: 450px;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: calc(100% - 20px);
+    /*
+    border-top: solid 10px white;
+    border-left: solid 10px white;
+    border-right: solid 10px white;
+    */
+
+    padding: 0;
+    margin: 0;
+}

@@ -26,7 +26,7 @@ describe('App', () => {
         const fixture = TestBed.createComponent(App);
         await fixture.whenStable();
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('app-header-panel')).toBeTruthy();
+        expect(el.querySelector('header-panel')).toBeTruthy();
     });
 
     it('should render footer panel element', async () => {
@@ -40,14 +40,14 @@ describe('App', () => {
         const fixture = TestBed.createComponent(App);
         await fixture.whenStable();
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('app-side-nav-panel')).toBeTruthy();
+        expect(el.querySelector('side-navigation-panel')).toBeTruthy();
     });
 
     it('should render modal overlay element', async () => {
         const fixture = TestBed.createComponent(App);
         await fixture.whenStable();
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('app-modal-overlay')).toBeTruthy();
+        expect(el.querySelector('modal-body-panel')).toBeTruthy();
     });
 
     it('should render background element', async () => {

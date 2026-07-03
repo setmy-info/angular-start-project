@@ -5,10 +5,10 @@ import {MenuService} from '../../../services/menu.service';
 import {LanguageService} from '../../../services/language.service';
 
 @Component({
-    selector: 'app-side-nav-panel',
+    selector: 'side-navigation-panel',
     imports: [RouterLink, RouterLinkActive],
-    templateUrl: './side-nav-panel.component.html',
-    styleUrl: './side-nav-panel.component.less',
+    templateUrl: './side-navigation-panel.component.html',
+    styleUrl: './side-navigation-panel.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SideNavPanelComponent {
