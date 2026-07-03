@@ -1,10 +1,14 @@
 @import url("setmy-info-less/src/main/less/values/index.less");
 
+/*
 :host {
     display: block;
 }
+*/
 
 #headerPanel {
+    height: auto;
+    /*
     position: fixed;
     top: 0;
     left: 0;
@@ -13,9 +17,11 @@
     background: @headerBackgroundColor;
     z-index: @z-index-2;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    */
 }
 
 header {
+    /*
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,80 +31,17 @@ header {
     padding: 0 @defaultPadding;
     box-sizing: border-box;
     color: @headerTextColor;
-}
-
-header > ul {
-    display: flex;
-    align-items: center;
-    list-style: none;
-}
-
-header > ul > li > button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: @defaultHeight;
-    width: @defaultHeight;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: @iconColor;
-}
-
-header > ul > li > span {
-    font-weight: 900;
-    padding: 0 @defaultPadding;
-}
-
-header > ul:last-child > li > button {
-    width: auto;
-    padding: 0 @defaultPadding;
-    border: 1px solid @tertiaryColor;
-    border-radius: @defaultBorderRadius;
-    margin-left: @halfDefaultPadding;
-    font-weight: 900;
-    color: @navigationInactiveTextColor;
-}
-
-header > ul:last-child > li > button.active,
-header > ul:last-child > li > button:disabled {
-    color: @secondaryColor;
-    background: @navigationHighLightTextColor;
-    border-color: @navigationHighLightTextColor;
-    cursor: default;
-}
-
-nav {
-    height: @navigationHeight;
+    */
+    margin: auto;
     max-width: 1024px;
-    margin: 0 auto;
-    background: @navigationBackgroundColor;
+    width: auto;
+    height: 50px;
+    background: white;
+    color: #4b4b4bde;
+    //font-family: DejaVu Serif,Roboto,Arial,Noto Sans,Noto,sans-serif;
+    font-size: 14px;
+    font-weight: 800;
 }
 
-nav > ul {
-    display: flex;
-    align-items: center;
-    height: @navigationHeight;
-    list-style: none;
-    padding: 0 @defaultPadding;
-}
-
-nav > ul > li > a {
-    display: flex;
-    align-items: center;
-    gap: @halfDefaultPadding;
-    height: @navigationHeight;
-    padding: 0 @defaultPadding;
-    color: @navigationInactiveTextColor;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-nav > ul > li > a.active {
-    color: @activeSelectedMenuItemColor;
-    font-weight: bold;
-}
-
-nav > ul > li > a:hover {
-    color: @cursorSelectableMenuItemColor;
-}
+@import url("./header/index.less");
+@import url("./navigation/index.less");

@@ -5,9 +5,10 @@
                 <button
                     type="button"
                     (click)="modalService.toggle()">
-                    <i class="material-symbols-outlined">menu</i>
+                    <i>menu</i>
                 </button>
             </li>
+            <li class="hidden"></li>
             <li>
                 <span>{{ languageService.translate('app.title') }}</span>
             </li>
@@ -31,7 +32,8 @@
             @for (item of menuService.rawMenuItems(); track item.id) {
                 <li>
                     <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: item.path === '/'}">
-                        <i class="material-symbols-outlined">{{ item.icon }}</i>
+                        <!-- i>{{ item.icon }}</i -->
+                        <i></i>
                         {{ languageService.translate(item.translationKey || item.label) }}
                     </a>
                 </li>

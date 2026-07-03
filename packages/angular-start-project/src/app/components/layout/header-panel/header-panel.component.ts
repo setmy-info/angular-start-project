@@ -5,7 +5,7 @@ import {MenuService} from '../../../services/menu.service';
 import {LanguageService} from '../../../services/language.service';
 
 @Component({
-    selector: 'app-header-panel',
+    selector: 'header-panel',
     imports: [RouterLink, RouterLinkActive],
     templateUrl: './header-panel.component.html',
     styleUrl: './header-panel.component.less',

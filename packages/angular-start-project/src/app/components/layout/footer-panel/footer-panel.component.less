@@ -1,15 +1,121 @@
 @import url("setmy-info-less/src/main/less/values/index.less");
 
+/*
 :host {
     display: block;
 }
+*/
 
 footer {
+    /*
     height: @footerHeight;
     background: @footerBackgroundColor;
     color: @footerTextColor;
+    */
+
+    margin: auto;
+    max-width: 1024px;
+    width: auto;
+    height: 50px;
+    background: white;
+    color: #4b4b4bde;
+    font-family: DejaVu Serif, Roboto, Arial, Noto Sans, Noto, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
 }
 
+footer > div {
+    width: 100%;
+    max-width: 100%;
+    float: left;
+}
+
+footer > div > ul {
+    width: 100%;
+}
+
+footer > div > ul > li {
+    float: left;
+    list-style-type: none;
+    display: table;
+
+    height: 50px;
+}
+
+footer > div > ul > li > i {
+    font-family: "Material Symbols Outlined", sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    //display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    vertical-align: middle;
+    font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+
+    //Imre
+    height: 50px;
+    display: table-cell;
+    padding-left: 10px;
+    padding-right: 5px;
+    text-rendering: optimizeLegibility;
+    //font-weight: 900;
+}
+
+footer > div > ul > li > a {
+    height: 50px;
+    display: table-cell;
+    vertical-align: middle;
+
+    outline: none;
+
+    color: #4b4b4bde;
+    font-family: DejaVu Serif, Roboto, Arial, Noto Sans, Noto, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+
+}
+/*
+footer > div > ul > li.envBadge {
+    height: 50px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+footer > div > ul > li > div.envBadge {
+    text-transform: uppercase;
+    padding: 2px @halfDefaultPadding;
+    border: 1px solid @tertiaryColor;
+    border-radius: @defaultBorderRadius;
+    //color: @quinaryColor;
+
+    //margin: auto;
+    vertical-align: middle;
+}
+*/
+footer > div > ul > li.envBadge {
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+}
+
+footer > div > ul > li > div.envBadge {
+    display: inline-block;
+    line-height: normal;
+    vertical-align: middle;
+
+    text-transform: uppercase;
+    padding: 2px @halfDefaultPadding;
+    border: 1px solid @tertiaryColor;
+    border-radius: @defaultBorderRadius;
+}
+/*
 footer > ul {
     display: flex;
     align-items: center;
@@ -35,3 +141,4 @@ footer > ul > li {
     border-radius: @defaultBorderRadius;
     color: @quinaryColor;
 }
+*/

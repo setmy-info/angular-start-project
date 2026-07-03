@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
-import {SideNavPanelComponent} from './side-nav-panel.component';
+import {SideNavPanelComponent} from './side-navigation-panel.component';
 import {ModalService} from '../../../services/modal.service';
 
 describe('SideNavPanelComponent', () => {

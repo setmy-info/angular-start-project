@@ -6,6 +6,7 @@ import {environment} from '../../../../environments/environment';
     selector: 'app-footer-panel',
     templateUrl: './footer-panel.component.html',
     styleUrl: './footer-panel.component.less',
+    imports: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterPanelComponent {

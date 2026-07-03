@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {HeaderPanelComponent} from './components/layout/header-panel/header-panel.component';
-import {FooterPanelComponent} from './components/layout/footer-panel/footer-panel.component';
-import {SideNavPanelComponent} from './components/layout/side-nav-panel/side-nav-panel.component';
-import {ModalOverlayComponent} from './components/layout/modal-overlay/modal-overlay.component';
+import {SideNavPanelComponent} from './components/layout/side-navigation-panel/side-navigation-panel.component';
+import {ModalOverlayComponent} from './components/layout/modal-body-panel/modal-overlay.component';
 import {BackgroundComponent} from './components/background/background.component';
 import {MainPanelComponent} from './components/layout/main-panel/main-panel.component';
 
@@ -11,7 +10,6 @@ import {MainPanelComponent} from './components/layout/main-panel/main-panel.comp
     imports: [
         HeaderPanelComponent,
         MainPanelComponent,
-        FooterPanelComponent,
         SideNavPanelComponent,
         ModalOverlayComponent,
         BackgroundComponent
