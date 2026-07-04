@@ -1,0 +1,114 @@
+
+#sideNavigationContentPanel {
+    width: 100%;
+    height: calc(100% - 50px);
+    min-height: calc(100% - 50px);
+    overflow-y: auto;
+}
+
+#sideNavigationContentPanel > ul {
+    width: 100%;
+    font-family: DejaVu Serif, Roboto, Arial, Noto Sans, Noto, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 0;
+    margin: 0;
+}
+
+#sideNavigationContentPanel > ul li.sideNavMenuItems {
+    height: 50px;
+    width: 100%;
+    list-style-type: none;
+    display: table;
+    padding: 0;
+    margin: 0;
+}
+
+#sideNavigationContentPanel > ul li.sideNavMenuItems > a {
+    height: 50px;
+    border-left: solid 4px white;
+    width: calc(100% - 14px);
+    color: #696969;
+    vertical-align: middle;
+    text-transform: uppercase;
+    font-family: DejaVu Serif, Roboto, Arial, Noto Sans, Noto, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    list-style-type: none;
+    outline: none;
+    text-decoration: none;
+    display: table-cell;
+    padding: 0 0 0 10px;
+    margin: 0;
+}
+
+#sideNavigationContentPanel > ul li.sideNavMenuItems > a.active {
+    border-left: solid 4px rgba(237, 38, 61, .87);
+    width: calc(100% - 4px);
+}
+
+#sideNavigationContentPanel > ul li.sideNavMenuItems > a > i {
+    font-family: "Material Symbols Outlined", sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    vertical-align: middle;
+    font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    text-rendering: optimizeLegibility;
+    margin-right: 20px;
+}
+
+.sideNavMenuItems > li > a {
+    display: flex;
+    align-items: center;
+    gap: @sideNavSpaceAfterIcon;
+    height: @sideNavMenuItemHeight;
+    padding: 0 @defaultPadding;
+    color: @textColor;
+    text-decoration: none;
+    border-left: @menuItemSelectionVerticalBorderWidth solid transparent;
+    box-sizing: border-box;
+}
+
+.sideNavMenuItems > li > a.active {
+    border-left-color: @activeSelectedMenuItemColor;
+    font-weight: bold;
+}
+
+.sideNavMenuItems > li > a:hover {
+    background: green; //@gray-100;
+}
+
+#sideNavigationContentPanel > ul li.sideNavMenuItems > a.noHover:hover {
+    border-left: solid 4px white !important;
+    background: white
+}
+
+#sideNavigationContentPanel > ul li.sideNavMenuItems > a:hover {
+    border-left: solid 4px rgba(255, 157, 0, .87) !important;
+    background: lightyellow
+}
+
+#sideNavigationContentPanel > ul li.sideNavThinMenuItems {
+    height: 4px;
+    display: table;
+    width: 100%;
+}
+
+#sideNavigationContentPanel > ul li > hr {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right,rgba(76,123,168,0),rgba(76,123,168,.75),rgba(76,123,168,0));
+}
