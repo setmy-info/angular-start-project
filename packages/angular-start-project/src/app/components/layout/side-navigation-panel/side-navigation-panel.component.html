@@ -33,6 +33,21 @@
             <li class="sideNavThinMenuItems">
                 <hr>
             </li>
+            <li class="sideNavMenuItems">
+                <a href="javaScript:void(0);" class="noHover textCursor">
+                    <i>language</i>{{ languageService.translate('view.language') }}:</a>
+                <div>
+                    <select (change)="onLanguageChange($event)">
+                        @for (language of languageService.supportedLanguages; track language.code) {
+                            <option
+                                [value]="language.code"
+                                [selected]="language.code === languageService.currentLanguageCode()">
+                                {{ language.label }}
+                            </option>
+                        }
+                    </select>
+                </div>
+            </li>
         </ul>
     </div>
 </div>

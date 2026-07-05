@@ -8,7 +8,15 @@
                     <i>menu</i>
                 </button>
             </li>
-            <li class="hidden"></li>
+            <li [class.hidden]="networkService.isOnline()">
+                <button
+                    type="button"
+                    disabled
+                    [attr.aria-label]="languageService.translate('app.offline')"
+                    [attr.title]="languageService.translate('app.offline')">
+                    <i class="alertMaterialIcon">signal_wifi_off</i>
+                </button>
+            </li>
             <li>
                 <span>{{ languageService.translate('app.title') }}</span>
             </li>
@@ -33,11 +41,12 @@
                 <li>
                     <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: item.path === '/'}">
                         <!-- i>{{ item.icon }}</i -->
-                        <i></i>
+                        <!--i></i-->
                         {{ languageService.translate(item.translationKey || item.label) }}
                     </a>
                 </li>
             }
         </ul>
     </nav>
+    <consent-body-panel/>
 </div>

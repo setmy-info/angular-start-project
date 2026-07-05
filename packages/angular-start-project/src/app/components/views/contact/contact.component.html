@@ -1,20 +1,34 @@
-<section class="applicationContentMain">
+<div class="applicationContentMain">
     <article class="articleBody">
         <div class="articleSectionPanel">
-            <h1>{{ languageService.translate('view.contact.title') }}</h1>
-            <dl>
-                <dt class="definitionTerm">{{ languageService.translate('view.contact.organisation') }}</dt>
-                <dd class="definitionDesc">Angular Start Project OÜ</dd>
-
-                <dt class="definitionTerm">{{ languageService.translate('view.contact.address') }}</dt>
-                <dd class="definitionDesc">Lorem ipsum tn 1, 10111 Tallinn</dd>
-
-                <dt class="definitionTerm">{{ languageService.translate('view.contact.phone') }}</dt>
-                <dd class="definitionDesc">+372 000 0000</dd>
-
-                <dt class="definitionTerm">{{ languageService.translate('view.contact.email') }}</dt>
-                <dd class="definitionDesc">info&#64;example.invalid</dd>
-            </dl>
+            <section>
+                <h1>{{ languageService.translate('view.contact.title') }}</h1>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">work</i></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.organisation') }}</span></small>
+                    </div>
+                    <div class="textPanel">Angular Start Project OÜ</div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">place</i></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.address') }}</span></small></div>
+                    <div class="textPanel">Lorem ipsum tn 1, 10111 Tallinn</div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">phone</i></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.phone') }}</span></small></div>
+                    <div class="textPanel">+372 000 0000</div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">email</i></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.email') }}</span></small></div>
+                    <div class="textPanel">info&#64;example.invalid</div>
+                </div>
+            </section>
         </div>
     </article>
-</section>
+</div>

@@ -1,0 +1,9 @@
+<div id="consentBody" class="consentBody" [style.display]="consentService.hasConsented() ? 'none' : ''">
+    <p>{{ languageService.translate('consent.text') }}</p>
+    <p>{{ languageService.translate('consent.termsLinkPrefix') }}
+        <a routerLink="/terms">{{ languageService.translate('consent.termsLinkText') }}</a>.
+    </p>
+    <p>
+        <button type="button" (click)="consentService.accept()">{{ languageService.translate('consent.acceptButton') }}</button>
+    </p>
+</div>

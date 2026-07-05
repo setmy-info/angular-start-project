@@ -1,17 +1,16 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
+import {ConsentService} from '../../../services/consent.service';
 import {LanguageService} from '../../../services/language.service';
-import {environment} from '../../../../environments/environment';
 
 @Component({
-    selector: 'app-footer-panel',
-    templateUrl: './footer-panel.component.html',
-    styleUrl: './footer-panel.component.less',
+    selector: 'consent-body-panel',
     imports: [RouterLink],
+    templateUrl: './consent-body-panel.component.html',
+    styleUrl: './consent-body-panel.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FooterPanelComponent {
+export class ConsentBodyPanelComponent {
+    protected readonly consentService = inject(ConsentService);
     protected readonly languageService = inject(LanguageService);
-    protected readonly currentYear = new Date().getFullYear();
-    protected readonly environment = environment;
 }

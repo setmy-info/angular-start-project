@@ -2,6 +2,7 @@ const localStorageService = require('./src/services/localStorageService');
 const sessionStorageService = require('./src/services/sessionStorageService');
 const tenantService = require('./src/services/tenantService');
 const translationService = require('./src/services/translationService');
+const consentService = require('./src/services/consentService');
 const menuModel = require('./src/models/menuModel');
 
 module.exports = {
@@ -9,5 +10,6 @@ module.exports = {
     sessionStorageService: sessionStorageService,
     tenantService: tenantService,
     translationService: translationService,
+    consentService: consentService,
     menuModel: menuModel
 };

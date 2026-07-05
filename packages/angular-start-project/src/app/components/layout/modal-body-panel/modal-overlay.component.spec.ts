@@ -21,30 +21,30 @@ describe('ModalOverlayComponent', () => {
 
     it('should render modal-overlay element', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('#modal-overlay')).toBeTruthy();
+        expect(el.querySelector('#modalBody')).toBeTruthy();
     });
 
-    it('should be hidden (display:none) when modal is closed', () => {
+    it('should be hidden (class="hidden") when modal is closed', () => {
         modalService.close();
         fixture.detectChanges();
         const el = fixture.nativeElement as HTMLElement;
-        const overlay = el.querySelector('#modal-overlay') as HTMLElement;
-        expect(overlay.style.display).toBe('none');
+        const overlay = el.querySelector('#modalBody') as HTMLElement;
+        expect(overlay.classList.contains('hidden')).toBe(true);
     });
 
-    it('should be visible (display:block) when modal is open', () => {
+    it('should be visible (no "hidden" class) when modal is open', () => {
         modalService.open();
         fixture.detectChanges();
         const el = fixture.nativeElement as HTMLElement;
-        const overlay = el.querySelector('#modal-overlay') as HTMLElement;
-        expect(overlay.style.display).toBe('block');
+        const overlay = el.querySelector('#modalBody') as HTMLElement;
+        expect(overlay.classList.contains('hidden')).toBe(false);
     });
 
     it('should close modal when overlay is clicked', () => {
         modalService.open();
         fixture.detectChanges();
         const el = fixture.nativeElement as HTMLElement;
-        const overlay = el.querySelector('#modal-overlay') as HTMLElement;
+        const overlay = el.querySelector('#modalBody') as HTMLElement;
         overlay.click();
         expect(modalService.isOpen()).toBe(false);
     });

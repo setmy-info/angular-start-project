@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
 import {HeaderPanelComponent} from './header-panel.component';
+import {NetworkService} from '../../../services/network.service';
 
 describe('HeaderPanelComponent', () => {
     let fixture: ComponentFixture<HeaderPanelComponent>;
@@ -56,5 +57,24 @@ describe('HeaderPanelComponent', () => {
         const el = fixture.nativeElement as HTMLElement;
         const langButtons = el.querySelectorAll('header ul:last-child button');
         expect(langButtons.length).toBeGreaterThan(0);
+    });
+
+    it('hides the offline indicator while online', () => {
+        const networkService = TestBed.inject(NetworkService);
+        networkService.isOnline.set(true);
+        fixture.detectChanges();
+        const el = fixture.nativeElement as HTMLElement;
+        const offlineItem = el.querySelector('i.alertMaterialIcon')?.closest('li');
+        expect(offlineItem?.classList.contains('hidden')).toBe(true);
+    });
+
+    it('shows the offline indicator while offline', () => {
+        const networkService = TestBed.inject(NetworkService);
+        networkService.isOnline.set(false);
+        fixture.detectChanges();
+        const el = fixture.nativeElement as HTMLElement;
+        const offlineItem = el.querySelector('i.alertMaterialIcon')?.closest('li');
+        expect(offlineItem?.classList.contains('hidden')).toBe(false);
+        expect(offlineItem?.querySelector('button')?.hasAttribute('disabled')).toBe(true);
     });
 });

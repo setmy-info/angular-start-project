@@ -27,9 +27,16 @@ describe('ContactComponent', () => {
         expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
     });
 
-    it('should render contact fields as a definition list', () => {
+    it('should render contact fields as icon/label/text rows', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelectorAll('.definitionTerm').length).toBeGreaterThan(0);
-        expect(el.querySelectorAll('.definitionDesc').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.iconPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.labelPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.textPanel').length).toBeGreaterThan(0);
+    });
+
+    it('should render a material icon in every icon panel', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        const icons = el.querySelectorAll('.iconPanel .material-symbols-outlined');
+        expect(icons.length).toBe(el.querySelectorAll('.iconPanel').length);
     });
 });

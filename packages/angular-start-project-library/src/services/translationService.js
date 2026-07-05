@@ -1,57 +1,94 @@
-const translations = {
-    et: {
-        'app.title': 'Lorem Ipsum Rakendus',
-        'app.brandTitle': 'Setmy.info Brändileht',
-        'menu.home': 'Avaleht',
-        'menu.about': 'Meist',
-        'menu.contact': 'Kontakt',
-        'view.notfound': 'Lehte ei leitud',
-        'view.home.welcome': 'Tere tulemast Angular Start Projekti',
-        'view.home.description': 'See on üldine alustusprojekti mall. See kasutab Angular 21 signaalide ja standalone komponentidega.',
-        'view.home.lorem': 'Lõuna-Aafrika Vabariik on riik Aafrika lõunatipus. See piirneb põhjas Namiibia, Botswana ja Zimbabwe ning kirdes Mosambiigi ja Svaasimaaga.',
-        'view.about.title': 'Meist',
-        'view.contact.title': 'Võta meiega ühendust',
-        'view.contact.organisation': 'Asutus:',
-        'view.contact.address': 'Aadress:',
-        'view.contact.phone': 'Telefon:',
-        'view.contact.email': 'E-post:',
-        'view.menu': 'Menüü',
-        'view.language': 'Keel'
-    },
-    en: {
-        'app.title': 'Lorem Ipsum Application',
-        'app.brandTitle': 'Setmy.info Brand Page',
-        'menu.home': 'Home',
-        'menu.about': 'About',
-        'menu.contact': 'Contact',
-        'view.notfound': 'Page Not Found',
-        'view.home.welcome': 'Welcome to Angular Start Project',
-        'view.home.description': 'This is a generic starter project template. It uses Angular 21 with signals and standalone components.',
-        'view.home.lorem': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        'view.about.title': 'About Us',
-        'view.contact.title': 'Contact Us',
-        'view.contact.organisation': 'Organisation:',
-        'view.contact.address': 'Address:',
-        'view.contact.phone': 'Phone:',
-        'view.contact.email': 'Email:',
-        'view.menu': 'Menu',
-        'view.language': 'Language'
+// Translation strings live in static JSON under public/json/<lang>.json (same URL shape the old
+// has-web-app-new-ng app used: `json/<lang>.json`), not in this file. This service only knows how
+// to load them: check public/json/translations-version.json, compare against the version cached
+// alongside the translations in localStorage, and only re-fetch the (larger) translations file
+// when the version actually changed — otherwise the cached copy is reused as-is. Swapping the two
+// `fetch()` calls below for REST endpoints later (e.g. GET /api/translations/<lang>/version and
+// GET /api/translations/<lang>) is a drop-in change; every caller only sees getSupportedLanguages,
+// getCachedTranslations, and loadTranslations.
+
+const SUPPORTED_LANGUAGES = [
+    {code: 'et', label: 'ET'},
+    {code: 'en', label: 'EN'}
+];
+
+const TRANSLATIONS_CACHE_KEY_PREFIX = 'translations.';
+const TRANSLATIONS_VERSION_CACHE_KEY = 'translations.version';
+
+function readCachedVersions() {
+    try {
+        return JSON.parse(localStorage.getItem(TRANSLATIONS_VERSION_CACHE_KEY)) || {};
+    } catch (e) {
+        return {};
     }
-};
+}
+
+function writeCachedVersions(versions) {
+    try {
+        localStorage.setItem(TRANSLATIONS_VERSION_CACHE_KEY, JSON.stringify(versions));
+    } catch (e) {
+        // storage unavailable (private browsing, disabled storage) — falls back to re-fetching every time
+    }
+}
+
+function readCachedTranslations(lang) {
+    try {
+        const raw = localStorage.getItem(TRANSLATIONS_CACHE_KEY_PREFIX + lang);
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function writeCachedTranslations(lang, translations) {
+    try {
+        localStorage.setItem(TRANSLATIONS_CACHE_KEY_PREFIX + lang, JSON.stringify(translations));
+    } catch (e) {
+        // storage unavailable — translations still work for this page load, just not cached for next time
+    }
+}
 
 const translationService = {
-    getTranslations: function (lang) {
-        return translations[lang] || translations['en'];
-    },
-    getTranslation: function (lang, key) {
-        const langTranslations = this.getTranslations(lang);
-        return langTranslations[key] || key;
-    },
     getSupportedLanguages: function () {
-        return Object.keys(translations).map(code => ({
-            code: code,
-            label: code.toUpperCase()
-        }));
+        return SUPPORTED_LANGUAGES.slice();
+    },
+
+    // Synchronous read of whatever is already cached, for first paint before loadTranslations()
+    // resolves. Falls back to an empty object — same "missing key renders as the key itself"
+    // behaviour the app already has for any unknown translation key.
+    getCachedTranslations: function (lang) {
+        return readCachedTranslations(lang) || {};
+    },
+
+    // Resolves with the translations to use for `lang`: reuses the cached copy when the version
+    // marker hasn't changed, otherwise fetches the fresh JSON and updates the cache + version.
+    loadTranslations: function (lang) {
+        return fetch('json/translations-version.json')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (remoteVersions) {
+                const remoteVersion = remoteVersions[lang];
+                const cachedTranslations = readCachedTranslations(lang);
+                const cachedVersions = readCachedVersions();
+                if (cachedTranslations && cachedVersions[lang] === remoteVersion) {
+                    return cachedTranslations;
+                }
+                return fetch('json/' + lang + '.json')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (translations) {
+                        writeCachedTranslations(lang, translations);
+                        cachedVersions[lang] = remoteVersion;
+                        writeCachedVersions(cachedVersions);
+                        return translations;
+                    });
+            })
+            .catch(function () {
+                // offline, or the version/translations request failed — reuse whatever is cached
+                return readCachedTranslations(lang) || {};
+            });
     }
 };
 
