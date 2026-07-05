@@ -18,7 +18,7 @@
                 </button>
             </li>
             <li>
-                <span>{{ languageService.translate('app.title') }}</span>
+                <span>{{ languageService.translate(pageTitleKey()) }}</span>
             </li>
         </ul>
         <ul>
@@ -37,7 +37,7 @@
     </header>
     <nav class="phone-hidden">
         <ul>
-            @for (item of menuService.rawMenuItems(); track item.id) {
+            @for (item of menuService.headerMenuItems(); track item.id) {
                 <li>
                     <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: item.path === '/'}">
                         <!-- i>{{ item.icon }}</i -->
