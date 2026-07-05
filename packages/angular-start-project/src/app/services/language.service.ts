@@ -1,4 +1,4 @@
-import {Injectable, computed, signal} from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import angularStartProjectLibrary from 'angular-start-project-library';
 
 export interface SupportedLanguage {
@@ -13,15 +13,31 @@ export class LanguageService {
 
     readonly currentLanguageCode = signal<string>(this.supportedLanguages[0]?.code ?? 'en');
 
-    readonly translations = computed(() =>
-        angularStartProjectLibrary.translationService.getTranslations(this.currentLanguageCode())
+    // Starts from whatever is already cached (instant, synchronous) and is replaced once
+    // loadTranslations() resolves — see translationService.js for the version-check/cache design.
+    readonly translations = signal<Record<string, string>>(
+        angularStartProjectLibrary.translationService.getCachedTranslations(this.currentLanguageCode())
     );
+
+    constructor() {
+        this.loadTranslations(this.currentLanguageCode());
+    }
 
     changeLanguage(code: string): void {
         this.currentLanguageCode.set(code);
+        this.loadTranslations(code);
     }
 
     translate(key: string): string {
-        return angularStartProjectLibrary.translationService.getTranslation(this.currentLanguageCode(), key);
+        return this.translations()[key] || key;
+    }
+
+    private loadTranslations(code: string): void {
+        angularStartProjectLibrary.translationService.loadTranslations(code).then((translations: Record<string, string>) => {
+            // guard against a slow, now-stale response overwriting a newer language selection
+            if (this.currentLanguageCode() === code) {
+                this.translations.set(translations);
+            }
+        });
     }
 }

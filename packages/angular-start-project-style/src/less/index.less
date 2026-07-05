@@ -22,7 +22,7 @@
 }
 
 .material-symbols-outlined {
-    font-family: 'Material Symbols Outlined', sans-serif;
+    font-family: "Material Symbols Outlined", sans-serif;
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -34,8 +34,14 @@
     word-wrap: normal;
     direction: ltr;
     vertical-align: middle;
-    font-feature-settings: 'liga';
+    font-feature-settings: "liga";
     -webkit-font-smoothing: antialiased;
+    // The self-hosted woff2 is the real variable font (see @font-face "font-weight: 100 700"
+    // range above), so it carries the FILL axis (0 = outlined, 1 = filled) even though the
+    // family/class is named "Outlined" — that name only refers to the glyph shape family
+    // (Outlined vs Rounded vs Sharp), not the fill state. The old app's Material Icons font was
+    // filled-only by design (no axis); this is the equivalent look on Material Symbols.
+    font-variation-settings: 'FILL' 1;
 }
 
 // ============================================================
@@ -72,17 +78,21 @@
     padding: 10px;
 }
 
+.applicationContentMain article > div.articleSectionPanel > section :last-child {
+    margin-bottom: 0;
+}
+
+.applicationContentMain article > div.sectionHeaderPicture {
+    padding: 0;
+    margin: 0;
+}
+
 .sectionHeaderPicture {
     height: 450px;
     background-position: center;
     background-repeat: no-repeat;
     width: calc(100% - 20px);
-    /*
     border-top: solid 10px white;
     border-left: solid 10px white;
     border-right: solid 10px white;
-    */
-
-    padding: 0;
-    margin: 0;
 }

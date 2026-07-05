@@ -3,7 +3,7 @@
         <ul>
             <li>
                 <i class="material-symbols-outlined">copyright</i>
-                <a href="#terms">{{ currentYear }} {{ languageService.translate('app.title') }} </a>
+                <a routerLink="/terms">{{ currentYear }} {{ languageService.translate('app.title') }} </a>
             </li>
             @if (!environment.production) {
                 <li class="envBadge"><div class="envBadge">{{ environment.envName }}</div></li>

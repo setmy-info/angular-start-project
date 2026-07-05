@@ -15,4 +15,8 @@ export class SideNavPanelComponent {
     protected readonly modalService = inject(ModalService);
     protected readonly menuService = inject(MenuService);
     protected readonly languageService = inject(LanguageService);
+
+    protected onLanguageChange(event: Event): void {
+        this.languageService.changeLanguage((event.target as HTMLSelectElement).value);
+    }
 }

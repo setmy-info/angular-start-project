@@ -1,0 +1,20 @@
+<section class="settingsPage applicationContentMain">
+    <article class="articleBody">
+        <div class="articleSectionPanel">
+            <h1>{{ languageService.translate('view.settings.title') }}</h1>
+            <dl>
+                <dt class="definitionTerm">{{ languageService.translate('view.settings.language') }}</dt>
+                <dd class="definitionDesc">{{ languageService.currentLanguageCode() }}</dd>
+
+                <dt class="definitionTerm">{{ languageService.translate('view.settings.environment') }}</dt>
+                <dd class="definitionDesc">{{ environment.envName }} ({{ environment.apiBaseUrl }})</dd>
+
+                <dt class="definitionTerm">{{ languageService.translate('view.settings.serviceWorker') }}</dt>
+                <dd class="definitionDesc">{{ hasServiceWorkerSupport }}</dd>
+
+                <dt class="definitionTerm">{{ languageService.translate('view.settings.referrer') }}</dt>
+                <dd class="definitionDesc">{{ referrer || '-' }}</dd>
+            </dl>
+        </div>
+    </article>
+</section>
