@@ -15,7 +15,11 @@ export interface MenuItem {
 @Injectable({providedIn: 'root'})
 export class MenuService {
 
-    readonly rawMenuItems = signal<MenuItem[]>(angularStartProjectLibrary.menuModel.default || []);
+    // Per-tenant menu set (the old app's menuService ngo*/llc* selection, keyed by
+    // tenantService.getTenant() here) — see menuModel.js in the library.
+    readonly rawMenuItems = signal<MenuItem[]>(
+        angularStartProjectLibrary.menuModel.getMenuItems(angularStartProjectLibrary.tenantService.getTenant()) || []
+    );
 
     readonly headerMenuItems = computed(() => this.rawMenuItems().filter(item => item.header !== false));
 }

@@ -7,32 +7,52 @@
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.organisation') }}</span></small>
                     </div>
-                    <div class="textPanel">Angular Start Project OÜ</div>
+                    <div class="textPanel">{{ contacts().organisation }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">place</i></div>
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.address') }}</span></small></div>
-                    <div class="textPanel">Lorem ipsum tn 1, 10111 Tallinn</div>
+                    <div class="textPanel">{{ contacts().address }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">phone</i></div>
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.phone') }}</span></small></div>
-                    <div class="textPanel">+372 000 0000</div>
+                    <div class="textPanel">{{ contacts().phone }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">email</i></div>
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.email') }}</span></small></div>
-                    <div class="textPanel">info&#64;example.invalid</div>
+                    <div class="textPanel">{{ contacts().email }}</div>
+                </div>
+                <!-- Feature-gated rows (old app's <div feature="bankAccounts"> pattern) — hidden
+                     until config.features.bankAccounts is turned on in the library config. -->
+                <div feature="bankAccounts">
+                    <div class="iconPanel"><i class="material-symbols-outlined">account_balance</i></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.bank') }}</span></small></div>
+                    <div class="textPanel">{{ contacts().bank }}</div>
+                </div>
+                <div feature="bankAccounts">
+                    <div class="iconPanel"></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.swift') }}</span></small></div>
+                    <div class="textPanel">{{ contacts().swift }}</div>
+                </div>
+                <div feature="bankAccounts">
+                    <div class="iconPanel"></div>
+                    <div class="labelPanel">
+                        <small><span>{{ languageService.translate('view.contact.bankAccount') }}</span></small></div>
+                    <div class="textPanel">{{ contacts().bankAccount }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">link</i></div>
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.facebook') }}</span></small></div>
                     <div class="textPanel">
-                        <a href="https://www.facebook.com/example" target="_blank" rel="noopener noreferrer">Facebook</a>
+                        <a [href]="contacts().facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
                     </div>
                 </div>
                 <div>
@@ -40,7 +60,7 @@
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.github') }}</span></small></div>
                     <div class="textPanel">
-                        <a href="https://github.com/example" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        <a [href]="contacts().github" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </div>
                 </div>
                 <div>
@@ -48,7 +68,7 @@
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.x') }}</span></small></div>
                     <div class="textPanel">
-                        <a href="https://x.com/example" target="_blank" rel="noopener noreferrer">X</a>
+                        <a [href]="contacts().x" target="_blank" rel="noopener noreferrer">X</a>
                     </div>
                 </div>
                 <div>
@@ -56,7 +76,7 @@
                     <div class="labelPanel">
                         <small><span>{{ languageService.translate('view.contact.slack') }}</span></small></div>
                     <div class="textPanel">
-                        <a href="https://example.slack.com" target="_blank" rel="noopener noreferrer">Slack</a>
+                        <a [href]="contacts().slack" target="_blank" rel="noopener noreferrer">Slack</a>
                     </div>
                 </div>
             </section>
