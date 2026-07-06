@@ -15,6 +15,13 @@ const consentService = {
         } catch (e) {
             // storage unavailable (private browsing, disabled storage) — consent won't persist across reloads
         }
+    },
+    revokeConsent: function () {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({forCookieUsage: false}));
+        } catch (e) {
+            // storage unavailable (private browsing, disabled storage) — revocation won't persist across reloads
+        }
     }
 };
 

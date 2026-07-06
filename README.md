@@ -20,34 +20,101 @@ three npm workspaces.
 - **[`angular-start-project-library`](packages/angular-start-project-library)** — pure JavaScript,
   framework-agnostic. Signals-friendly singleton services (`localStorageService`,
   `sessionStorageService`, `tenantService`, `translationService`, `consentService`) and shared
-  models (`menuModel`). Must **not** import Angular — see `AGENTS.md`.
-- **[`angular-start-project-style`](packages/angular-start-project-style)** — LESS. Composes
-  `setmy-info-less` (base) and `setmy-info-less-extended` into this project's global stylesheet
-  (`src/less/index.less`), plus anything genuinely new that doesn't belong upstream yet.
+  models (`menuModel`). Must **not** import Angular — see `AGENTS.md`. Also pulls in the old
+  setmy.info site's legacy `jsdi` service layer as real npm dependencies — see "Legacy `jsdi`
+  service layer" below.
+- **[`angular-start-project-style`](packages/angular-start-project-style)** — LESS for the
+  **webapp**. Composes `setmy-info-less` (base) and `setmy-info-less-extended` into this
+  project's global stylesheet (`src/less/index.less`), plus anything genuinely new that doesn't
+  belong upstream yet.
+- **[`angular-start-project-brand-style`](packages/angular-start-project-brand-style)** — LESS
+  for **brand pages**. A brand page usually looks nothing like the webapp, so its design system
+  is a separate module: composes `setmy-info-less` base only (no `extended`, no app-shell
+  chrome), holds the brand classes (`.brandHero`, `.brandSection`, …), and hosts the buildable
+  `brand-example/` page. Apps depend on `angular-start-project-style`; brand pages depend on
+  this — neither imports the other. See "Brand example" below.
 
-Two non-workspace directories also live under `packages/`, kept for reference/history, not part of
-the npm workspace and not depended on by anything above:
+Three non-workspace directories also live under `packages/`, kept for reference/history, not part
+of the npm workspace and not depended on by anything above:
 
 - `packages/application.old` — a superseded Angular 13 scaffold (the project's pre-migration
   starting point, commit `c00c3ff` "Old components copied to new"). Historical reference only — do
   not build on it (see `review.md` section 6).
 - `packages/application` — a bare, non-git-tracked build-artifact directory (`.angular/`, `dist/`
   cache only, no source). Safe to ignore or clean; not a real package.
+- `packages/angular-original` — a disposable, un-customized `ng new` baseline, its own nested git
+  repository (own history, not a registered git submodule of this repo yet). Regenerated from
+  scratch on every Angular CLI upgrade — wipe its content and re-run
+  `ng new angular-original --style=less --test-runner=vitest --defaults` with the current global
+  `ng`, then commit the result as-is — so the diff between two generations shows exactly what the
+  CLI's own generator changed between versions, isolated from anything this project customized.
+  Never edited by hand and never depended on by anything above.
 
 ### Dependency graph
 
 ```
-angular-start-project-library   (pure JS, no dependencies of its own)
-angular-start-project-style     (LESS; depends on setmy-info-less + setmy-info-less-extended,
-                                  from the sibling setmy-info-less submodule)
+angular-start-project-library      (pure JS, no dependencies of its own)
+angular-start-project-style        (LESS, webapp; depends on setmy-info-less + setmy-info-less-extended,
+                                     from the sibling setmy-info-less submodule)
         │
-        └── angular-start-project   (the Angular app; depends on both packages above)
+        └── angular-start-project  (the Angular app; depends on both packages above)
+
+angular-start-project-brand-style  (LESS, brand pages; depends on setmy-info-less base ONLY —
+                                     a separate tree on purpose, no edge to/from the webapp packages)
+        │
+        └── brand-example/         (static brand page inside the same package)
 ```
 
 Every package's `package.json` declares its dependency, but there is no cumulative bundling model
 here the way `setmy-info-less` has one for its own tree — `angular-start-project` simply imports
 both sibling workspace packages directly (`angularStartProjectLibrary` for JS, the LESS source
 tree for styles).
+
+## Legacy `jsdi` service layer
+
+The old setmy.info site (`has-web-app-new-ng`) had its own hand-rolled dependency-injection
+service layer, internally called `jsdi` — a global registry (`window.jsdi`) with
+`jsdi.service(name, factory)`/`jsdi.get(name)`, plus prototype extensions on `String`/`Array`/
+`Storage`. That code has since been split out of the old app into standalone, independently
+published npm packages, each a sibling git submodule during development:
+
+| Package (npm + submodule) | Depends on | Adds to `jsdi.services` |
+|---|---|---|
+| `js-api-extend` | — | (none — `String`/`Array`/`Storage` prototype extensions only) |
+| `servicejs` | `js-api-extend` | the `jsdi` container itself (`service()`/`get()`/`initServices()`) |
+| `servedjs` | `servicejs` | `$log`, `$browser`, `$localStorage`, `$sessionStorage`, `$placeholders`, `$timer`, `$router` |
+| `servedjs-geo` | `servedjs` | `$geo` |
+
+`angular-start-project-library` depends on all four as ordinary npm dependencies (published on
+the public registry — **not** consumed as local/workspace packages, unlike this repo's own
+three/four internal workspaces). `packages/angular-start-project/angular.json` lists all four in
+`allowedCommonJsDependencies` (same reason as `angular-start-project-library` itself — they're
+CommonJS, not ESM).
+
+**Bootstrapping happens from `main.ts`, not from inside the library**, as plain side-effect
+imports (`import 'js-api-extend'; import 'servicejs'; import 'servedjs'; import 'servedjs-geo';`),
+each attaching its services to the global `jsdi` registry. This is a deliberate, non-obvious
+choice: `angular-start-project-library` is excluded from the dev-server's dependency pre-bundling
+(`angular.json` `serve.options.prebundle.exclude`, for hot-reload on that workspace package — see
+the "Firewall"/dev-server notes above); a file *inside* an excluded package doing
+`require('servedjs-geo')` breaks esbuild's bundling of that real npm dependency and surfaces in
+the browser as `Uncaught Error: Dynamic require of "servedjs-geo" is not supported`. Loading the
+chain from Angular app source instead sidesteps that entirely.
+`angular-start-project-library/src/legacyServiceLayer.js` is therefore only a **live accessor** —
+a `get jsdi()` getter that reads `window.jsdi` at call time — never a `require()` of the vendor
+chain itself, so it works regardless of when those side-effect imports actually ran.
+
+**A small working example exists** in `src/app/app.config.ts` (`logAppOpenedTimeAndTimezone` /
+`logAppOpenedLocationOnce`, wired via `provideAppInitializer`): `angularStartProjectLibrary.jsdi.get('$log')`
+is the shortest way to reach any legacy service (`$log` defaults to `OFF`, so raise its level
+before it prints anything), and `jsdi.get('$geo').newWatcher(success, error)` is the (only, since
+this legacy API has no plain "get current position once" call) way to read a device location —
+`.start()`/`.stop()` inside the success callback turns its continuous `watchPosition` into a
+single one-shot read. Both are self-contained, clearly commented try-it-out examples — delete the
+function and its one `provideAppInitializer(...)` line to remove either. The location example also
+populates `LocationService` (`src/app/services/location.service.ts`, a normal Angular signal
+service — not part of `jsdi`) so the Settings page can show Google Maps / OpenStreetMap links for
+the last known position.
 
 ## Application architecture
 
@@ -57,8 +124,8 @@ tree for styles).
 |-------------------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------|
 | `ModalService`    | `isOpen` signal                               | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                |
 | `LanguageService` | `currentLanguageCode`, `translations` signals | Current language + translation lookup; loads translations asynchronously (see "Translations" below) |
-| `MenuService`     | `rawMenuItems` signal from `menuModel.js`     | Menu item list shared by the header nav and the side navigation panel                               |
-| `ConsentService`  | `hasConsented` signal                         | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage)          |
+| `MenuService`     | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Side navigation shows every item in `menuModel.js`; the top header nav shows only items whose `header` flag isn't `false` |
+| `ConsentService`  | `hasConsented` signal                         | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it |
 
 ### Layout components (`src/app/components/layout`)
 
@@ -76,14 +143,20 @@ app (app.html)
 
 ### Views / routes (`src/app/components/views`, `app.routes.ts`)
 
-| Path        | Component               | In main menu? | Notes                                                                                              |
-|-------------|-------------------------|---------------|----------------------------------------------------------------------------------------------------|
-| `/`         | `HomeComponent`         | yes           | Lorem Ipsum home page                                                                              |
-| `/about`    | `AboutComponent`        | yes           | Lorem Ipsum about page                                                                             |
-| `/contact`  | `ContactComponent`      | yes           | contact details as a definition list                                                               |
-| `/settings` | `SettingsComponent`     | no            | diagnostic info (language, environment, service worker, referrer) — URL-only, matching the old app |
-| `/terms`    | `TermsComponent`        | no            | legal text (et/en) — linked only from the footer copyright and the consent banner                  |
-| `**`        | `ViewNotFoundComponent` | —             | 404 fallback                                                                                       |
+| Path        | Component               | Header nav | Side nav | Notes                                                                                              |
+|-------------|-------------------------|------------|----------|------------------------------------------------------------------------------------------------------|
+| `/`         | `HomeComponent`         | yes        | yes      | Lorem Ipsum home page                                                                              |
+| `/about`    | `AboutComponent`        | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                       |
+| `/articles` | `ArticlesComponent`     | yes        | yes      | simple static listing of 3 example articles (title + excerpt)                                      |
+| `/contact`  | `ContactComponent`      | yes        | yes      | contact details as a definition list                                                               |
+| `/settings` | `SettingsComponent`     | no         | yes      | diagnostic info (language, environment, service worker, referrer)                                  |
+| `/terms`    | `TermsComponent`        | no         | no       | legal text (et/en) — linked only from the footer copyright and the consent banner                  |
+| `/privacy`  | `PrivacyComponent`      | no         | no       | privacy policy (et/en), ported from the old site — includes a cookie-consent withdrawal checkbox   |
+| `**`        | `ViewNotFoundComponent` | —          | —        | 404 fallback                                                                                        |
+
+`menuModel.js` (in `angular-start-project-library`) is the single source of the menu item list;
+`MenuService.rawMenuItems` feeds the side navigation panel as-is, while `MenuService.headerMenuItems`
+filters out any item with `header: false` (currently just Settings) for the top header nav.
 
 ## Consuming `setmy-info-less`
 
@@ -176,7 +249,8 @@ only ever sees `getSupportedLanguages()`, `getCachedTranslations()`, and `loadTr
 - **Brand vs. web-page/app styling are two separate artifacts.** This project is a **webapp**, not
   a brand/marketing site — see `review.md` section 2 for why those are two separate deployable
   artifacts in the SMI/HASS ecosystem, not one themeable app. Don't add a runtime theme-switcher
-  here; a brand deliverable is a separate build (see `angular-start-project-style/brand-example/`).
+  here; a brand deliverable is a separate build with its own LESS module (see
+  `angular-start-project-brand-style` and "Brand example" below for how to build/view it).
 
 - **Angular 21 conventions are enforced, not optional** — see `AGENTS.md`: no `standalone: true`
   (default since v20), signals/`input()`/`output()`/`computed()`/`inject()`,
@@ -210,12 +284,101 @@ npx ng serve --configuration dev      # any configuration also works with serve
 npm run build:dev -w angular-start-project   # or build:ci / build:test / build:prelive / build:live
 ```
 
+## Progressive Web App / offline support
+
+`public/manifest.webmanifest` alone only makes the app **installable** (Android/Chrome's "Add to
+Home Screen", `display: standalone`) — it does nothing for offline use. Installing from the
+manifest without an actual service worker gives a shortcut icon that opens what is still just a
+regular web page: turn the network off and reopen it, and the browser shows its native
+"can't reach this page" error instead of the app shell, because there is no cache to serve
+`index.html`/JS/CSS from. That was a real, confirmed bug in this template — `@angular/service-worker`
+was entirely missing.
+
+Fixed with the standard Angular PWA pieces:
+
+- `@angular/service-worker` dependency + `ngsw-config.json` (asset groups: `app` — prefetched,
+  covers `index.html`/JS/CSS/manifest; `assets` — lazy, covers icons/fonts/images; a `translations`
+  data group with a `freshness` strategy for `public/json/*.json`, so translations still prefer a
+  live version-check when online but fall back to a cached copy offline).
+- `packages/angular-start-project/angular.json` build options: `"serviceWorker": "ngsw-config.json"`
+  — this makes every build configuration emit `ngsw-worker.js`/`ngsw.json`, unconditionally.
+- `src/app/app.config.ts`: `provideServiceWorker('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:30000' })`
+  — **registration** (not generation) is gated on the existing `environment.production` flag from
+  the table above, so it's active for `ci`/`test`/`prelive`/`live` and inactive for `local`/`dev`
+  (avoids a stale cached bundle fighting `ng serve` hot-reload during development).
+
+To actually see offline support working, a plain `ng serve` (`local`, SW disabled by the flag
+above) is not enough — build and serve one of the SW-enabled configurations instead, e.g.:
+
+```shell
+npm run build:live -w angular-start-project
+npx http-server packages/angular-start-project/dist/application/browser -p 8080
+# open http://localhost:8080/, wait for the SW to finish installing (~30s, registerWhenStable),
+# then use DevTools > Application > Service Workers > "Offline" (or actually disconnect) and reload
+```
+
+## Brand example
+
+`packages/angular-start-project-brand-style/brand-example/` is a **standalone demonstration**, not
+part of the Angular app, its router, or its build — see `review.md` section 2 ("Brand vs.
+web-page/app — the split already exists in production") and `design.md` §1. In this ecosystem,
+brand/marketing pages and the webapp/SPA are two separate deployable artifacts on purpose: there is
+no CSS-custom-property brand-override API and no runtime theme switcher inside the Angular app, and
+there shouldn't be one — a different brand identity is shipped as a different static artifact, not
+a parameterized mode of this app.
+
+The split is mirrored in the LESS modules: the webapp styles live in `angular-start-project-style`,
+brand styles live in their own module **`angular-start-project-brand-style`** (composes
+`setmy-info-less` **base only** — no `setmy-info-less-extended`, none of the app's shell chrome —
+and holds the brand classes like `.brandHero`/`.brandSection`). A brand page is a zero-Angular
+static HTML page whose entry LESS (`brand-example/brand.less`) just imports the brand-style module
+and adds its own by-case rules; `brand-example/` is the template's one concrete, buildable example
+of that pattern.
+
+**Current state is deliberately MVP/manual**: the brand artifact is built by hand with the step
+below, separately from the app builds — no templating, no generation, no Nginx/Spring Boot setup
+yet. `design.md` describes where automation goes later if needed; until then the guides here are
+the build system.
+
+```shell
+npm run build:brand-example -w angular-start-project-brand-style
+# compiles brand-example/brand.less -> brand-example/dist/brand.css (plain lessc, no Angular involved)
+```
+
+`brand-example/dist/` is untracked (matched by the root `.gitignore`'s `**/dist`), so this needs to
+be (re-)run after a fresh checkout, and again any time the brand LESS changes — nothing watches or
+rebuilds it automatically. To view the result, just open the HTML file directly in a browser (it's
+a plain static page, no dev server needed):
+
+```shell
+open packages/angular-start-project-brand-style/brand-example/index.html   # macOS
+xdg-open packages/angular-start-project-brand-style/brand-example/index.html  # Linux
+```
+
+If `dist/brand.css` hasn't been built yet, the page still loads but renders unstyled (plain black
+text on white) since the stylesheet link 404s — that's the most common "something looks wrong here"
+symptom for this page, and the fix is just to run the build command above.
+
+**Adding a real brand page** (manual, MVP): copy `brand-example/` to a new directory (or package)
+per brand, keep the entry-LESS pattern (`@import` the brand-style module, add page rules below),
+add a matching `build:<brand-name>` lessc script, and run it as one more step in the build list
+below. The deployable artifact is simply that directory's `index.html` + `dist/` + assets.
+
 ## Development
 
 ### Setup
 
 ```shell
-npm install     # installs all three workspaces at once (run from the repository root)
+npm install     # installs all four workspaces at once (run from the repository root)
+```
+
+### Firewall (remote access to the dev server)
+
+`ng serve`/`npm start` binds to `localhost:4200` by default and is unreachable from other machines
+until the port is opened on the host firewall (`firewalld`):
+
+```shell
+sudo firewall-cmd --permanent --add-port=4200/tcp && sudo firewall-cmd --reload && sudo firewall-cmd --list-ports
 ```
 
 ### Day-to-day commands (run from the repo root)
@@ -225,6 +388,7 @@ npm start -w angular-start-project             # dev server, "local" environment
 npm test -w angular-start-project              # Vitest unit tests
 npm run build -w angular-start-project         # production-shaped build, "local" environment
 npm run watch -w angular-start-project         # incremental rebuild on change, "local" environment
+npm run build:brand-example -w angular-start-project-brand-style   # brand page artifact (see "Brand example")
 ```
 
 ### Updating/upgrading a shared package
@@ -243,16 +407,17 @@ a version conflict and will silently break LESS variable resolution.
 
 ### Quick full rebuild
 
-One block to install everything, build every module that has something to build, run the unit
-tests, and start the dev server. Copy-paste from a clean checkout:
+One block to install everything, build every module that has something to build (the app **and**
+the brand page — after it you have both deployable artifact kinds), run the unit tests, and start
+the dev server. Copy-paste from a clean checkout:
 
 ```shell
-# 1. Install all three workspaces (from the repository root)
+# 1. Install all four workspaces (from the repository root)
 rm -rf node_modules packages/*/node_modules
 npm install
 
-# 2. Build — angular-start-project-library and angular-start-project-style are pure
-#    source (plain JS / LESS); Angular's own build step below compiles and bundles
+# 2. Build the app — angular-start-project-library and angular-start-project-style are
+#    pure source (plain JS / LESS); Angular's own build step below compiles and bundles
 #    them together, they have no separate build script of their own.
 npm run build -w angular-start-project              # "local" environment
 # or explicitly, per environment:
@@ -261,15 +426,22 @@ npm run build:ci -w angular-start-project
 npm run build:test -w angular-start-project
 npm run build:prelive -w angular-start-project
 npm run build:live -w angular-start-project
+#    → app artifact: packages/angular-start-project/dist/application/
 
-# 3. Unit tests (Vitest, via the Angular builder)
+# 3. Build the brand page(s) — separate artifact, separate LESS module, manual/MVP
+#    (see "Brand example"; one lessc step per brand page, add more as brands are added)
+npm run build:brand-example -w angular-start-project-brand-style
+#    → brand artifact: packages/angular-start-project-brand-style/brand-example/
+#      (index.html + dist/brand.css + assets)
+
+# 4. Unit tests (Vitest, via the Angular builder)
 npm test -w angular-start-project
-#    angular-start-project-library and angular-start-project-style have no real
-#    test runner wired up yet — their own "test" script is a placeholder that
-#    exits 1 ("Error: no test specified"); don't run `npm test --workspaces`
-#    at the root, it will fail on those two for that reason.
+#    angular-start-project-library and the two style packages have no real test
+#    runner wired up yet — their own "test" script is a placeholder that exits 1
+#    ("Error: no test specified"); don't run `npm test --workspaces` at the root,
+#    it will fail on those for that reason.
 
-# 4. Start the dev server
+# 5. Start the dev server
 npm start -w angular-start-project
 #    → http://localhost:4200/
 ```

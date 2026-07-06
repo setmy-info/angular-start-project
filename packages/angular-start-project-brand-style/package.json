@@ -1,0 +1,18 @@
+{
+    "name": "angular-start-project-brand-style",
+    "version": "1.0.0-SNAPSHOT",
+    "description": "Brand-page styles (separate design system from the webapp styles)",
+    "license": "MIT",
+    "author": "Imre Tabur",
+    "main": "index.less",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build:brand-example": "lessc brand-example/brand.less brand-example/dist/brand.css"
+    },
+    "devDependencies": {
+        "less": "^4.5.1"
+    },
+    "dependencies": {
+        "setmy-info-less": "^4.1.0"
+    }
+}

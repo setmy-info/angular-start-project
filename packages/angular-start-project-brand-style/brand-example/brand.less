@@ -1,0 +1,15 @@
+/*
+Brand-page demonstration — NOT part of the Angular webapp build or router.
+
+This is a standalone, zero-Angular static page showing how a "brand" page (any custom style,
+its own deploy artifact) composes from the angular-start-project-brand-style module (which in
+turn composes setmy-info-less BASE only — no setmy-info-less-extended, no app-shell chrome).
+That separation is deliberate: see review.md section 2 and design.md §1. A real brand
+deliverable would be its own repo/build (as HASS's brand/build-brand.sh site is), not a route
+inside this Angular app; this file exists so the template has one concrete, buildable example
+of the "brand" category to point to.
+
+A real brand page entry file looks exactly like this: import the brand design system, then add
+the page's own by-case rules below it.
+*/
+@import url("../src/less/index.less");

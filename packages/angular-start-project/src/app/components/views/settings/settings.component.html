@@ -14,6 +14,17 @@
 
                 <dt class="definitionTerm">{{ languageService.translate('view.settings.referrer') }}</dt>
                 <dd class="definitionDesc">{{ referrer || '-' }}</dd>
+
+                @if (googleMapsUrl(); as googleUrl) {
+                    <dt class="definitionTerm">{{ languageService.translate('view.settings.location') }}</dt>
+                    <dd class="definitionDesc">
+                        <a [href]="googleUrl" target="_blank" rel="noopener noreferrer">Google Maps</a>
+                        <a [href]="openStreetMapUrl()" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                    </dd>
+                } @else if (locationService.lastError(); as error) {
+                    <dt class="definitionTerm">{{ languageService.translate('view.settings.location') }}</dt>
+                    <dd class="definitionDesc">{{ error }}</dd>
+                }
             </dl>
         </div>
     </article>
