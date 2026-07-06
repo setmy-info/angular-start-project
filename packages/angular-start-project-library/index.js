@@ -4,6 +4,7 @@ const tenantService = require('./src/services/tenantService');
 const translationService = require('./src/services/translationService');
 const consentService = require('./src/services/consentService');
 const menuModel = require('./src/models/menuModel');
+const getJsdi = require('./src/legacyServiceLayer');
 
 module.exports = {
     localStorageService: localStorageService,
@@ -11,5 +12,9 @@ module.exports = {
     tenantService: tenantService,
     translationService: translationService,
     consentService: consentService,
-    menuModel: menuModel
+    menuModel: menuModel,
+    // Live accessor, not a captured value — see legacyServiceLayer.js for why.
+    get jsdi() {
+        return getJsdi();
+    }
 };

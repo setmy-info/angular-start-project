@@ -9,4 +9,9 @@ export class ConsentService {
         angularStartProjectLibrary.consentService.grantConsent();
         this.hasConsented.set(true);
     }
+
+    revoke(): void {
+        angularStartProjectLibrary.consentService.revokeConsent();
+        this.hasConsented.set(false);
+    }
 }

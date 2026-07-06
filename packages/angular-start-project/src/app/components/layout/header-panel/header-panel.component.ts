@@ -40,6 +40,12 @@ export class HeaderPanelComponent {
         if (url === '/settings') {
             return 'view.settings.title';
         }
+        if (url === '/terms') {
+            return 'view.terms.title';
+        }
+        if (url === '/privacy') {
+            return 'view.privacy.title';
+        }
         return 'app.title';
     });
 }
