@@ -14,6 +14,8 @@ const SUPPORTED_LANGUAGES = [
 
 const TRANSLATIONS_CACHE_KEY_PREFIX = 'translations.';
 const TRANSLATIONS_VERSION_CACHE_KEY = 'translations.version';
+// Selected-language persistence — same localStorage key the old app's languageService.js used.
+const LANG_STORAGE_KEY = 'LANG';
 
 function readCachedVersions() {
     try {
@@ -51,6 +53,29 @@ function writeCachedTranslations(lang, translations) {
 const translationService = {
     getSupportedLanguages: function () {
         return SUPPORTED_LANGUAGES.slice();
+    },
+
+    // Persisted language choice (localStorage LANG, like the old app): returns the stored code
+    // when it is still a supported language, otherwise the first supported one.
+    getStoredLanguage: function () {
+        let stored = null;
+        try {
+            stored = localStorage.getItem(LANG_STORAGE_KEY);
+        } catch (e) {
+            // storage unavailable — fall through to the default
+        }
+        const supported = SUPPORTED_LANGUAGES.some(function (lang) {
+            return lang.code === stored;
+        });
+        return supported ? stored : (SUPPORTED_LANGUAGES[0] && SUPPORTED_LANGUAGES[0].code);
+    },
+
+    storeLanguage: function (code) {
+        try {
+            localStorage.setItem(LANG_STORAGE_KEY, code);
+        } catch (e) {
+            // storage unavailable — choice won't survive a reload
+        }
     },
 
     // Synchronous read of whatever is already cached, for first paint before loadTranslations()

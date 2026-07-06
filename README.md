@@ -19,10 +19,13 @@ three npm workspaces.
   Routing, components, services, build config. Depends on the other two.
 - **[`angular-start-project-library`](packages/angular-start-project-library)** — pure JavaScript,
   framework-agnostic. Signals-friendly singleton services (`localStorageService`,
-  `sessionStorageService`, `tenantService`, `translationService`, `consentService`) and shared
-  models (`menuModel`). Must **not** import Angular — see `AGENTS.md`. Also pulls in the old
-  setmy.info site's legacy `jsdi` service layer as real npm dependencies — see "Legacy `jsdi`
-  service layer" below.
+  `sessionStorageService`, `tenantService`, `translationService`, `consentService`,
+  `contentService`, `sessionService`, `uuidService`, `statisticsService`, `versionService`,
+  `jsonDocumentService` with `objToDomService`/`domToJsonService`, plus `dbService` and
+  `loadingService` provided for later usage), the fetch-based `resourceFactory`, shared `config`
+  (feature flags + resource URLs), `constants`, and shared models (`menuModel`). Must **not**
+  import Angular — see `AGENTS.md`. Also pulls in the old setmy.info site's legacy `jsdi` service
+  layer as real npm dependencies — see "Legacy `jsdi` service layer" below.
 - **[`angular-start-project-style`](packages/angular-start-project-style)** — LESS for the
   **webapp**. Composes `setmy-info-less` (base) and `setmy-info-less-extended` into this
   project's global stylesheet (`src/less/index.less`), plus anything genuinely new that doesn't
@@ -120,12 +123,16 @@ the last known position.
 
 ### Services (`src/app/services`, all signals-based, `providedIn: 'root'`)
 
-| Service           | State                                         | Purpose                                                                                             |
-|-------------------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `ModalService`    | `isOpen` signal                               | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                |
-| `LanguageService` | `currentLanguageCode`, `translations` signals | Current language + translation lookup; loads translations asynchronously (see "Translations" below) |
-| `MenuService`     | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Side navigation shows every item in `menuModel.js`; the top header nav shows only items whose `header` flag isn't `false` |
-| `ConsentService`  | `hasConsented` signal                         | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it |
+| Service            | State                                         | Purpose                                                                                             |
+|--------------------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `ModalService`     | `isOpen` signal                               | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                |
+| `LanguageService`  | `currentLanguageCode`, `translations` signals | Current language + translation lookup; loads translations asynchronously (see "Translations" below); the choice persists across reloads (localStorage `LANG`, like the old app); records a `change` statistics event on language switch |
+| `MenuService`      | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Per-tenant menu set (`menuModel.getMenuItems(tenant)`); side navigation shows every item, the top header nav only items whose `header` flag isn't `false` |
+| `ConsentService`   | `hasConsented` signal                         | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it |
+| `NetworkService`   | `isOnline` signal                             | window `online`/`offline` listeners; drives the header's offline (`signal_wifi_off`) indicator      |
+| `LocationService`  | `lastKnownPosition`, `lastError` signals      | Last device position from the `$geo` startup example + Google Maps / OpenStreetMap URL builders (Settings page) |
+| `ContentService`   | `content` signal                              | Per-tenant content JSON (`json/content/<tenant>/<lang>.json`), reloaded on language change — contact data, page title, sub-system (see "Per-tenant content" below) |
+| `PageTitleService` | `pageTitleKey` computed                       | Single owner of the URL→title-key mapping (header title + translated `document.title`), and records a page-visit statistics event per navigation |
 
 ### Layout components (`src/app/components/layout`)
 
@@ -143,20 +150,25 @@ app (app.html)
 
 ### Views / routes (`src/app/components/views`, `app.routes.ts`)
 
-| Path        | Component               | Header nav | Side nav | Notes                                                                                              |
-|-------------|-------------------------|------------|----------|------------------------------------------------------------------------------------------------------|
-| `/`         | `HomeComponent`         | yes        | yes      | Lorem Ipsum home page                                                                              |
-| `/about`    | `AboutComponent`        | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                       |
-| `/articles` | `ArticlesComponent`     | yes        | yes      | simple static listing of 3 example articles (title + excerpt)                                      |
-| `/contact`  | `ContactComponent`      | yes        | yes      | contact details as a definition list                                                               |
-| `/settings` | `SettingsComponent`     | no         | yes      | diagnostic info (language, environment, service worker, referrer)                                  |
-| `/terms`    | `TermsComponent`        | no         | no       | legal text (et/en) — linked only from the footer copyright and the consent banner                  |
-| `/privacy`  | `PrivacyComponent`      | no         | no       | privacy policy (et/en), ported from the old site — includes a cookie-consent withdrawal checkbox   |
-| `**`        | `ViewNotFoundComponent` | —          | —        | 404 fallback                                                                                        |
+| Path            | Component                | Header nav | Side nav | Notes                                                                                              |
+|-----------------|--------------------------|------------|----------|------------------------------------------------------------------------------------------------------|
+| `/`             | `HomeComponent`          | yes        | yes      | Lorem Ipsum home page                                                                              |
+| `/about`        | `AboutComponent`         | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                       |
+| `/articles`     | `ArticlesComponent`      | yes        | yes      | listing of 3 example articles; items 1/2 link to real JSON documents (777/7777), item 3 to a missing id (888) to demo the fallback |
+| `/articles/:id` | `ArticleDetailComponent` | no         | no       | JSON-document article rendering + Parse round-trip — see "Migrated functionality" below            |
+| `/contact`      | `ContactComponent`       | yes        | yes      | icon/label/text rows fed from the per-tenant content JSON; three bank rows behind the `bankAccounts` feature flag |
+| `/settings`     | `SettingsComponent`      | no         | yes      | diagnostic info (version, language, environment, sub-system, browser, service worker, referrer, location) |
+| `/terms`        | `TermsComponent`         | no         | no       | legal text (et/en) — linked only from the footer copyright and the consent banner                  |
+| `/privacy`      | `PrivacyComponent`       | no         | no       | privacy policy (et/en), ported from the old site — includes a cookie-consent withdrawal checkbox   |
+| `/productsServices`, `/news`, `/help`, `/tools`, `/commercials`, `/ads`, `/sponsors`, `/template` | one Lorem-Ipsum view component each (`views/<name>/`) | no | no | the old app's full page set, routed 1:1 with the old paths; URL-only, not in any menu (same as the old app, where these were commented out of the menu sets) |
+| `**`            | `ViewNotFoundComponent`  | —          | —        | 404 fallback                                                                                        |
 
-`menuModel.js` (in `angular-start-project-library`) is the single source of the menu item list;
-`MenuService.rawMenuItems` feeds the side navigation panel as-is, while `MenuService.headerMenuItems`
-filters out any item with `header: false` (currently just Settings) for the top header nav.
+`menuModel.js` (in `angular-start-project-library`) is the single source of the menu items: an
+`ALL_MENUS` catalog plus per-tenant menu sets, selected via `menuModel.getMenuItems(tenant)` with
+the tenant coming from `tenantService.getTenant()` (the new-solution equivalent of the old app's
+per-system `ngo*`/`llc*` menu sets). `MenuService.rawMenuItems` feeds the side navigation panel
+as-is, while `MenuService.headerMenuItems` filters out any item with `header: false` (currently
+just Settings) for the top header nav.
 
 ## Consuming `setmy-info-less`
 
@@ -221,6 +233,117 @@ calls here (`fetch('json/translations-version.json')`, `fetch('json/<lang>.json'
 places that would need to change to swap the static JSON files for a real REST backend later
 (e.g. `GET /api/translations/<lang>/version` and `GET /api/translations/<lang>`) — every caller
 only ever sees `getSupportedLanguages()`, `getCachedTranslations()`, and `loadTranslations()`.
+
+## Migrated functionality (old solutions → this template)
+
+Functionality carried over from the old setmy.info solutions — the Angular 13 app
+(`has-web-app-new-ng`, still live at `https://setmy.info/old/`), its shared JS `library`
+package, and the even older Vue.js app. The gap analysis and per-item work orders live in
+`missing-functionality.md` (tracked with IMPLEMENTED / PARTIALLY IMPLEMENTED / NOT IMPLEMENTED
+tags); this section documents how the migrated pieces work **now**, in this codebase.
+
+### Startup log: build version + session id
+
+At bootstrap the app logs the same line both old apps did:
+`App started: {version: 1.0.0-SNAPSHOT} , for: <uuid>` (`logAppStarted` in `app.config.ts`, via
+the legacy `$log`). The version is **not** a git hash — it is a build stamp:
+`bin/versionModule.js` writes the `package.json` version into `src/app/config/version.ts`
+(npm script `ver`; also runs automatically as `prebuild`, and the generated file is committed so
+plain `ng build` works too). The UUID is a per-browser-session id: `uuidService.js`
+(`crypto.randomUUID`) + `sessionService.js` in the library, persisted in sessionStorage under
+`sessionId`; creating it also records the session-`create` and external-`referrer` statistics
+events. The version is also shown on the Settings page.
+
+### Statistics / telemetry (batched, feature-gated)
+
+Library `statisticsService.js`: an in-memory event batch (capped at 500, `constants.js
+STATISTICS_LIMIT`) with `add`/`write`/`send`, flushed through `statisticsResource.js` — which
+POSTs to `rest/statistics` **only when `config.features.statistics` is on** (it is off by
+default, so nothing is sent anywhere; turn the flag on once a backend exists). Events recorded:
+session create + external referrer (sessionService), language change
+(`LanguageService.changeLanguage`), and one page-visit event per router navigation
+(`PageTitleService` — the Angular equivalent of the old Vue app's global page mixin).
+
+### Feature toggles
+
+`config.features` flags in the library (`src/config/index.js`: `bankAccounts`, `statistics`,
+`somethingElse`) + the `FeatureDirective` (`src/app/directives/feature.directive.ts`):
+`<div feature="bankAccounts">…</div>` renders hidden (`display: none`) while the flag is false —
+same behavior as the old app's attribute directive and the Vue `v-feature`. Live demo: the three
+bank rows on the contact page.
+
+### Per-tenant content
+
+The old app loaded per-system content JSON (`pagesService`); here it is
+`json/content/<tenant>/<lang>.json` (tenant from `tenantService.getTenant()`, `default` on
+localhost), loaded by the library's `contentService.js` with the **same version-checked
+localStorage cache pattern as translations** (`json/content/versions.json` is always fetched;
+the content file only when its version changed; offline falls back to the cache). The Angular
+`ContentService` re-loads it on every language change. Current content shape: `pageTitle`,
+`subSystem`, and the full `contacts` block (organisation/address/phone/email, social links,
+bank/SWIFT/account) that the contact page renders — contact data is **not** hardcoded in the
+template anymore.
+
+### Browser tab title per page
+
+`PageTitleService` maps the current URL to a translation key (single source — the header panel
+shows the same key) and keeps `document.title` set to the translated title
+(`<Page> — <App title>`), re-translated when the language changes.
+
+### JSON-document articles (`/articles/:id`)
+
+The old site's custom document format — a JSON structure of text fragments + per-fragment
+formatting metadata + paragraph parts — is fully ported to the library:
+
+- `objToDomService.js` renders a document JSON to an HTML string (headings, bold/italic/
+  underline/strike/mark, colors, fonts, alignment, links, citations),
+- `domToJsonService.js` is the reverse parser (rendered DOM → document JSON),
+- `jsonDocumentService.js` ties them together: `load(id)` fetches
+  `json/documents/<id>.json` and resolves with the HTML; `parse(element)` round-trips.
+
+`ArticleDetailComponent` shows the rendered document via `[innerHTML]` + the
+`skipSanitizingHtml` pipe (ported; safe here because the HTML is produced by our own renderer),
+keeps it `contenteditable`, and its Parse button converts the (possibly edited) DOM back to
+document JSON into a textarea — the old json-articles editor demo. Sample documents
+`public/json/documents/777.json` and `7777.json` come from the old app; an unknown id shows the
+fallback message (old unknown-article component).
+
+### REST resource layer
+
+Library `resources/resourceFactory.js` — the fetch-based port of the old axios factory: base URL
+and timeout from `src/config/index.js` (`resources.jsonUrl`/`restUrl`/`timeout`),
+`AbortSignal.timeout` for the timeout, `requestHook`/`responseHook` as the interceptor
+equivalents. Statistics, per-tenant content, and JSON documents all go through it, so swapping
+static JSON for a real REST backend is a change in one file per resource.
+
+### Version newness detection + language persistence
+
+`versionService.js` (library) compares the running build stamp against the version stored in
+localStorage (`appVersion`) from the previous visit: the startup log prints
+`New app version: <v> (previous: <old>)` when it changed, and the Settings page appends
+"(new version)" to the version row for that first visit on a new build. The selected language
+persists the old app's way too — localStorage key `LANG`, read at startup, written on every
+language switch — so a reload keeps the user's language instead of resetting to Estonian.
+
+### Provided for later usage (nothing calls them yet, by design)
+
+- `dbService.js` — promise-based IndexedDB layer (`open`/`put`/`get`/`getAllKeys`/`delete`/
+  `clear`/`close` around database `HASDB` with a generic `keyValue` store); the modern rework of
+  the old app's callback-style skeleton.
+- `loadingService.js` — promise-based `loadJS(url)`/`loadCSS(url)` runtime loaders appending to
+  `document.head`, deduplicated per URL.
+
+### Smaller migrated pieces (documented in their own sections above)
+
+- Consent/cookie banner (`consent-panel`, localStorage-backed, accept/revoke)
+- Offline indicator in the header (`NetworkService`, `signal_wifi_off` icon)
+- Per-page title in the header panel
+- Contact page icon/label/text row layout (old `contacts-page` structure, filled Material icons)
+- Side-nav language `<select>` below the menu items
+- Versioned-JSON translations (see "Translations" — new design, the old app had no version gate)
+- Settings diagnostics: version, sub-system (content JSON), browser summary
+  (`navigator.userAgent`, replacing the old `Is IE`), service-worker support, referrer, location
+- PWA/service worker (see "Progressive Web App / offline support")
 
 ## Design principles
 
@@ -452,7 +575,7 @@ Then, in two more terminals, for E2E (see "E2E / Integration tests" below for de
 # Terminal 2
 geckodriver --port 4444
 
-# Terminal 3 (app from step 4 must still be running)
+# Terminal 3 (app from step 5 must still be running)
 npm run e2e -w angular-start-project
 ```
 
@@ -521,6 +644,10 @@ only as historical reference (see "Workspace modules" above) — do not build on
   have already resolved items it lists as open.
 - Read `unused.md` for the LESS/CSS dead-code inventory and the ordered cleanup plan — it is kept
   in sync with the current codebase (updated 2026-07-05).
+- Read `missing-functionality.md` for the old-solution → new-solution functionality gap list —
+  every numbered item is a self-contained work order with a status tag (IMPLEMENTED / PARTIALLY
+  IMPLEMENTED / NOT IMPLEMENTED); the implemented ones are documented in "Migrated functionality"
+  above.
 - Before assuming a `setmy-info-less`/`setmy-info-less-extended` class or variable exists, check the
   actual package source (`packages/setmy-info-less*/src/main/less` in the `setmy-info-less`
   submodule) rather than guessing — `fancy`/`enterprise` are still empty skeletons, and much of the
