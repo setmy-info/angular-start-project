@@ -2,6 +2,7 @@
   "name": "angular-start-project",
   "version": "1.0.0-SNAPSHOT",
   "description": "Angular Application",
+  "license": "SEE LICENSE IN ../../LICENSE.md",
   "scripts": {
     "ng": "ng",
     "ver": "node bin/versionModule.js",

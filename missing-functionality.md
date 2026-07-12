@@ -48,6 +48,12 @@ PARTIALLY IMPLEMENTED (3 of 16): 10, 14, 15 — the concrete leftovers are the T
 6. (from item 15) `dodeploy` step — scp the tarball to
    `$USER_NAME@$HOST_NAME:$DESTINATION` over `$HOST_PORT` (or an `smi-*` script wrapper, since the
    `/opt/setmy.info` tooling exists).
+7. (LICENSING) Write and publish the SMI/HASS proprietary license text. The migrated
+   JSON-document translator (objToDomService/domToJsonService/jsonDocumentService + the sample
+   documents) is NOT MIT — it is proprietary SMI/HASS code; the files carry LICENSE NOTICE
+   headers and `packages/angular-start-project-library/LICENSE-NOTES.md` is the inventory
+   (including the suggested-additional-candidates table awaiting the authors' per-file
+   decision). Until the text exists, external developers need separate permission.
 
 Notes:
 
@@ -165,7 +171,7 @@ Notes:
 
 9. **Missing routed pages.** — IMPLEMENTED.
    DONE 2026-07-06: all eight pages exist as Lorem-Ipsum views (src/app/components/views/{products-services,news,help,tools,commercials,ads,sponsors,template-page}/), routed 1:1 with the old paths (URL-only, not in any menu — same as the old app), with translated titles (view.<name>.title) wired into PageTitleService/document.title.
-    Old app routes without any equivalent in the new app
+   Old app routes without any equivalent in the new app
    (`app-routing.module.ts`): `productsServices`, `news`, `help`, `tools`, `commercials`, `ads`,
    `sponsors`, `template` (a page-layout template/demo view). Each old view is a small
    `applicationContentMain` shell with translated content and a `page.title` assignment; the menu
@@ -185,8 +191,8 @@ Notes:
     the app (`skipSanitizingHtml` stays Angular-only since it needs `DomSanitizer`).
 
 11. **Browser info on the settings page.** — IMPLEMENTED.
-   DONE 2026-07-06: Settings now shows Version (item 1 stamp), Sub system (content JSON via ContentService), Browser (navigator.userAgent).
-   Old `settings-page.component.html` showed `Sub system:
+    DONE 2026-07-06: Settings now shows Version (item 1 stamp), Sub system (content JSON via ContentService), Browser (navigator.userAgent).
+    Old `settings-page.component.html` showed `Sub system:
     {{modelService.system.subSystem}}` (from per-tenant content JSON, item 5), `Is IE:
     {{modelService.browser.isIE}}` (from `browserService.fillBrowserInfo()`), and `Version:
     {{version.version}}` (item 1). The new settings page already shows language, environment,

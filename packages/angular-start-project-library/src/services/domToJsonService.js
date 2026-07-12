@@ -1,3 +1,10 @@
+// LICENSE NOTICE — NOT MIT. This file (the HTML/DOM → JSON-document parser, together with
+// objToDomService.js and jsonDocumentService.js) is proprietary code of the SMI / Hear And See
+// Systems (HASS) authors, migrated from the old setmy.info solution. It is NOT covered by the
+// MIT license of the surrounding template. The proprietary license text is pending; until it is
+// published, external developers need a separate license/permission from the SMI/HASS authors to
+// use, copy, or modify this file. See LICENSE-NOTES.md in this package and README.md "Licensing".
+
 const objToDomService = require('./objToDomService');
 
 const whiteOnly = function (str) {
