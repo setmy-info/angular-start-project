@@ -2,7 +2,7 @@
     "name": "angular-start-project-library",
     "version": "1.0.0-SNAPSHOT",
     "description": "",
-    "license": "MIT",
+    "license": "SEE LICENSE IN LICENSE-NOTES.md",
     "author": "Imre Tabur",
     "main": "index.js",
     "scripts": {

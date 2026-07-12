@@ -1,5 +1,12 @@
 # angular-start-project
 
+> **⚠ LICENSING — not uniformly MIT.** This repository mixes the MIT-licensed template with
+> **proprietary SMI / Hear And See Systems (HASS) code and content** migrated from the old
+> setmy.info product (JSON-document translator services, sample documents, branding, legal
+> texts). The proprietary license text is pending; external developers need separate permission
+> for those parts. Read [LICENSE.md](LICENSE.md) and the "Licensing" section below before using
+> anything from this repository.
+
 An Angular 21 **template monorepo**: a starting point future setmy.info applications and websites
 are cloned/scaffolded from. It is written for both human developers and AI agents that need to
 build, test, and upgrade this project day to day, and to understand how it consumes the shared
@@ -81,12 +88,12 @@ service layer, internally called `jsdi` — a global registry (`window.jsdi`) wi
 `Storage`. That code has since been split out of the old app into standalone, independently
 published npm packages, each a sibling git submodule during development:
 
-| Package (npm + submodule) | Depends on | Adds to `jsdi.services` |
-|---|---|---|
-| `js-api-extend` | — | (none — `String`/`Array`/`Storage` prototype extensions only) |
-| `servicejs` | `js-api-extend` | the `jsdi` container itself (`service()`/`get()`/`initServices()`) |
-| `servedjs` | `servicejs` | `$log`, `$browser`, `$localStorage`, `$sessionStorage`, `$placeholders`, `$timer`, `$router` |
-| `servedjs-geo` | `servedjs` | `$geo` |
+| Package (npm + submodule) | Depends on      | Adds to `jsdi.services`                                                                      |
+|---------------------------|-----------------|----------------------------------------------------------------------------------------------|
+| `js-api-extend`           | —               | (none — `String`/`Array`/`Storage` prototype extensions only)                                |
+| `servicejs`               | `js-api-extend` | the `jsdi` container itself (`service()`/`get()`/`initServices()`)                           |
+| `servedjs`                | `servicejs`     | `$log`, `$browser`, `$localStorage`, `$sessionStorage`, `$placeholders`, `$timer`, `$router` |
+| `servedjs-geo`            | `servedjs`      | `$geo`                                                                                       |
 
 `angular-start-project-library` depends on all four as ordinary npm dependencies (published on
 the public registry — **not** consumed as local/workspace packages, unlike this repo's own
@@ -123,16 +130,16 @@ the last known position.
 
 ### Services (`src/app/services`, all signals-based, `providedIn: 'root'`)
 
-| Service            | State                                         | Purpose                                                                                             |
-|--------------------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `ModalService`     | `isOpen` signal                               | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                |
-| `LanguageService`  | `currentLanguageCode`, `translations` signals | Current language + translation lookup; loads translations asynchronously (see "Translations" below); the choice persists across reloads (localStorage `LANG`, like the old app); records a `change` statistics event on language switch |
-| `MenuService`      | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Per-tenant menu set (`menuModel.getMenuItems(tenant)`); side navigation shows every item, the top header nav only items whose `header` flag isn't `false` |
-| `ConsentService`   | `hasConsented` signal                         | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it |
-| `NetworkService`   | `isOnline` signal                             | window `online`/`offline` listeners; drives the header's offline (`signal_wifi_off`) indicator      |
-| `LocationService`  | `lastKnownPosition`, `lastError` signals      | Last device position from the `$geo` startup example + Google Maps / OpenStreetMap URL builders (Settings page) |
-| `ContentService`   | `content` signal                              | Per-tenant content JSON (`json/content/<tenant>/<lang>.json`), reloaded on language change — contact data, page title, sub-system (see "Per-tenant content" below) |
-| `PageTitleService` | `pageTitleKey` computed                       | Single owner of the URL→title-key mapping (header title + translated `document.title`), and records a page-visit statistics event per navigation |
+| Service            | State                                                                        | Purpose                                                                                                                                                                                                                                 |
+|--------------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ModalService`     | `isOpen` signal                                                              | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                                                                                                                                                    |
+| `LanguageService`  | `currentLanguageCode`, `translations` signals                                | Current language + translation lookup; loads translations asynchronously (see "Translations" below); the choice persists across reloads (localStorage `LANG`, like the old app); records a `change` statistics event on language switch |
+| `MenuService`      | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Per-tenant menu set (`menuModel.getMenuItems(tenant)`); side navigation shows every item, the top header nav only items whose `header` flag isn't `false`                                                                               |
+| `ConsentService`   | `hasConsented` signal                                                        | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it                                                                                                  |
+| `NetworkService`   | `isOnline` signal                                                            | window `online`/`offline` listeners; drives the header's offline (`signal_wifi_off`) indicator                                                                                                                                          |
+| `LocationService`  | `lastKnownPosition`, `lastError` signals                                     | Last device position from the `$geo` startup example + Google Maps / OpenStreetMap URL builders (Settings page)                                                                                                                         |
+| `ContentService`   | `content` signal                                                             | Per-tenant content JSON (`json/content/<tenant>/<lang>.json`), reloaded on language change — contact data, page title, sub-system (see "Per-tenant content" below)                                                                      |
+| `PageTitleService` | `pageTitleKey` computed                                                      | Single owner of the URL→title-key mapping (header title + translated `document.title`), and records a page-visit statistics event per navigation                                                                                        |
 
 ### Layout components (`src/app/components/layout`)
 
@@ -150,18 +157,18 @@ app (app.html)
 
 ### Views / routes (`src/app/components/views`, `app.routes.ts`)
 
-| Path            | Component                | Header nav | Side nav | Notes                                                                                              |
-|-----------------|--------------------------|------------|----------|------------------------------------------------------------------------------------------------------|
-| `/`             | `HomeComponent`          | yes        | yes      | Lorem Ipsum home page                                                                              |
-| `/about`        | `AboutComponent`         | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                       |
-| `/articles`     | `ArticlesComponent`      | yes        | yes      | listing of 3 example articles; items 1/2 link to real JSON documents (777/7777), item 3 to a missing id (888) to demo the fallback |
-| `/articles/:id` | `ArticleDetailComponent` | no         | no       | JSON-document article rendering + Parse round-trip — see "Migrated functionality" below            |
-| `/contact`      | `ContactComponent`       | yes        | yes      | icon/label/text rows fed from the per-tenant content JSON; three bank rows behind the `bankAccounts` feature flag |
-| `/settings`     | `SettingsComponent`      | no         | yes      | diagnostic info (version, language, environment, sub-system, browser, service worker, referrer, location) |
-| `/terms`        | `TermsComponent`         | no         | no       | legal text (et/en) — linked only from the footer copyright and the consent banner                  |
-| `/privacy`      | `PrivacyComponent`       | no         | no       | privacy policy (et/en), ported from the old site — includes a cookie-consent withdrawal checkbox   |
-| `/productsServices`, `/news`, `/help`, `/tools`, `/commercials`, `/ads`, `/sponsors`, `/template` | one Lorem-Ipsum view component each (`views/<name>/`) | no | no | the old app's full page set, routed 1:1 with the old paths; URL-only, not in any menu (same as the old app, where these were commented out of the menu sets) |
-| `**`            | `ViewNotFoundComponent`  | —          | —        | 404 fallback                                                                                        |
+| Path                                                                                              | Component                                             | Header nav | Side nav | Notes                                                                                                                                                        |
+|---------------------------------------------------------------------------------------------------|-------------------------------------------------------|------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/`                                                                                               | `HomeComponent`                                       | yes        | yes      | Lorem Ipsum home page                                                                                                                                        |
+| `/about`                                                                                          | `AboutComponent`                                      | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                                                                                 |
+| `/articles`                                                                                       | `ArticlesComponent`                                   | yes        | yes      | listing of 3 example articles; items 1/2 link to real JSON documents (777/7777), item 3 to a missing id (888) to demo the fallback                           |
+| `/articles/:id`                                                                                   | `ArticleDetailComponent`                              | no         | no       | JSON-document article rendering + Parse round-trip — see "Migrated functionality" below                                                                      |
+| `/contact`                                                                                        | `ContactComponent`                                    | yes        | yes      | icon/label/text rows fed from the per-tenant content JSON; three bank rows behind the `bankAccounts` feature flag                                            |
+| `/settings`                                                                                       | `SettingsComponent`                                   | no         | yes      | diagnostic info (version, language, environment, sub-system, browser, service worker, referrer, location)                                                    |
+| `/terms`                                                                                          | `TermsComponent`                                      | no         | no       | legal text (et/en) — linked only from the footer copyright and the consent banner                                                                            |
+| `/privacy`                                                                                        | `PrivacyComponent`                                    | no         | no       | privacy policy (et/en), ported from the old site — includes a cookie-consent withdrawal checkbox                                                             |
+| `/productsServices`, `/news`, `/help`, `/tools`, `/commercials`, `/ads`, `/sponsors`, `/template` | one Lorem-Ipsum view component each (`views/<name>/`) | no         | no       | the old app's full page set, routed 1:1 with the old paths; URL-only, not in any menu (same as the old app, where these were commented out of the menu sets) |
+| `**`                                                                                              | `ViewNotFoundComponent`                               | —          | —        | 404 fallback                                                                                                                                                 |
 
 `menuModel.js` (in `angular-start-project-library`) is the single source of the menu items: an
 `ALL_MENUS` catalog plus per-tenant menu sets, selected via `menuModel.getMenuItems(tenant)` with
@@ -617,6 +624,34 @@ geckodriver --port 4444
 # Terminal 3 – run E2E tests
 npm run e2e -w angular-start-project
 ```
+
+## Licensing — MIT template + proprietary SMI/HASS parts
+
+The repository-level statement anyone entering the project must read is [LICENSE.md](LICENSE.md)
+at the repo root (also flagged in the notice at the very top of this README). Summary:
+
+This repository is **not uniformly MIT**. Since the "Migrated functionality" work it contains two
+kinds of code side by side:
+
+- **MIT** — the generic Angular-start-template parts (scaffolding, layout shell, build setup,
+  placeholder Lorem-Ipsum content).
+- **Proprietary SMI / Hear And See Systems (HASS)** — functionality migrated from the old
+  setmy.info web application, which is a real product. All rights reserved by the SMI/HASS
+  authors. The proprietary license TEXT is pending (not written yet); until it is published,
+  **external developers need a separate license/permission from the SMI/HASS authors** to use,
+  copy, or modify these parts.
+
+Confirmed proprietary (each file carries a LICENSE NOTICE header): the JSON-document format and
+its translators in `angular-start-project-library` — `objToDomService.js` (JSON → HTML),
+`domToJsonService.js` (HTML/DOM → JSON), `jsonDocumentService.js` (loader/facade) — plus the
+sample documents in that format (`public/json/documents/777.json`, `7777.json`).
+
+Suggested additional candidates (migrated from the old solution, pending the authors' per-file
+decision), the SMI branding assets (favicon, icons), and the terms/privacy legal texts are listed
+with origins in `packages/angular-start-project-library/LICENSE-NOTES.md` — that file is the
+authoritative inventory, and the library's `package.json` points at it
+(`"license": "SEE LICENSE IN LICENSE-NOTES.md"`). The legacy `jsdi` npm packages (`js-api-extend`,
+`servicejs`, `servedjs`, `servedjs-geo`) are separate published packages with their own licenses.
 
 ## Project history
 

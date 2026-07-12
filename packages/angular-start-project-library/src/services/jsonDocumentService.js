@@ -1,3 +1,10 @@
+// LICENSE NOTICE — NOT MIT. This file (together with objToDomService.js and domToJsonService.js:
+// the JSON-document format loader/renderer/parser) is proprietary code of the SMI / Hear And See
+// Systems (HASS) authors, migrated from the old setmy.info solution. It is NOT covered by the
+// MIT license of the surrounding template. The proprietary license text is pending; until it is
+// published, external developers need a separate license/permission from the SMI/HASS authors to
+// use, copy, or modify this file. See LICENSE-NOTES.md in this package and README.md "Licensing".
+//
 // Ported from the old library's jsonDocumentService.js: loads a JSON document by id
 // (json/documents/<id>.json — same URL shape the old app used) and renders it to an HTML string
 // via objToDomService; parse() is the reverse direction (rendered DOM back to the JSON document
