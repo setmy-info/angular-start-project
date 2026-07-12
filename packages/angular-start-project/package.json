@@ -16,7 +16,8 @@
     "build:live": "ng build --configuration live",
     "watch": "ng build --watch --configuration local",
     "test": "ng test",
-    "e2e": "wdio run wdio.conf.ts"
+    "e2e": "jest --config=jest.e2e.config.js",
+    "e2e:one": "jest --config=jest.e2e.config.js --testNamePattern"
   },
   "prettier": {
     "printWidth": 100,
@@ -51,8 +52,10 @@
     "@angular/build": "^21.0.4",
     "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.0",
+    "jest": "^30.4.2",
     "jsdom": "^27.1.0",
     "less": "^4.2.0",
+    "selenium-webdriver": "^4.46.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   }

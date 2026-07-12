@@ -12,6 +12,6 @@
         "less": "^4.5.1"
     },
     "dependencies": {
-        "setmy-info-less-extended": "^4.2.0"
+        "setmy-info-less-extended": "^5.0.0"
     }
 }

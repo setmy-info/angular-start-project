@@ -579,8 +579,9 @@ npm start -w angular-start-project
 Then, in two more terminals, for E2E (see "E2E / Integration tests" below for details):
 
 ```shell
-# Terminal 2
-geckodriver --port 4444
+# Terminal 2 — Selenium Grid (setmy-info-scripts tooling)
+smi-selenium-hub
+smi-selenium-node
 
 # Terminal 3 (app from step 5 must still be running)
 npm run e2e -w angular-start-project
@@ -598,31 +599,61 @@ npm test -w angular-start-project              # Angular app: @angular/build:uni
 ```
 
 - `angular-start-project` — `*.spec.ts` next to each component/service, e.g.
-  `src/app/services/language.service.spec.ts` next to `language.service.ts`.
+  `src/app/services/language.service.spec.ts` next to `language.service.ts`. The suite is kept
+  GREEN (85 tests, all passing as of 2026-07-12 — the specs were rewritten to match the current
+  templates after a period of drift). The navigation-critical components are covered
+  content-deep: the header panel asserts one nav link per `menuModel` header item and one
+  language button per supported language (current one disabled), the side navigation panel
+  asserts one item per menu entry plus the language `<select>` below the `hr` separator, and
+  closing behavior on item click / overlay click is unit-tested against `ModalService`.
 - `angular-start-project-library` — plain JS, framework-agnostic; no test runner is wired up yet
   (`"test": "echo \"Error: no test specified\" && exit 1"` in its `package.json`) — coverage for its
   services currently comes from the Angular-side specs that exercise them (e.g.
   `language.service.spec.ts` mocks `fetch`/`localStorage` to cover `translationService.js`'s
-  version-check/cache logic end-to-end).
+  version-check/cache logic end-to-end) and from the e2e suites below (translations, content,
+  consent, JSON-document rendering all run against the real library code in the browser).
 
 ### E2E / Integration tests
 
-E2E tests use [WebdriverIO](https://webdriver.io/) with the Jasmine framework and Firefox. Spec
-files live in `packages/angular-start-project/test/specs/` and follow the `*.e2e.ts` naming
-convention (see `test/specs/components.e2e.ts`).
+E2E tests use [Jest](https://jestjs.io/) + [selenium-webdriver](https://www.selenium.dev/) against
+an external Selenium Grid — the same stack, setup style and **verification principle** as the
+`setmy-info-less` project's e2e suite (the earlier WebdriverIO setup was outdated and was
+replaced). Spec files live in `packages/angular-start-project/test/e2e/*.e2e.js`; the shared
+`test/e2e/pageHelper.js` is adapted from `setmy-info-less/packages/common/test/js/pageHelper.js`:
+fixed 2000x1200 viewport, one browser session per spec file (serial, `maxWorkers: 1`), bounded
+cleanup, and `elementExpectations()` asserting the full set of **concrete computed values**
+(margin, padding, font, size, position, colors from `getComputedStyle` + `getBoundingClientRect`)
+— never mere element existence. SPA additions on top of the LESS original: route navigation with
+translated-content waits, `hover()` (real mouse-move for `:hover` color tests), `cssValueOf()`,
+computed-`display` visibility checks, and Firefox geolocation pre-allowed with a fixed test
+position (`permissions.default.geo=1` + a `data:` `geo.provider.network.url`, overridable via
+`TEST_GEO_LAT`/`TEST_GEO_LNG`) so the `$geo` startup watcher works headlessly instead of hanging
+on a permission prompt.
 
-**Prerequisites:** a running Selenium/GeckoDriver server on `localhost:4444` and the app running on
-`localhost:4200` (see `wdio.conf.ts` for the full capabilities/timeout configuration).
+The seven suites: `application` (shell + strict computed metrics + footer + terms link),
+`mainNavigation` (header menu clicks + per-page content/titles), `sideNavigation` (open/close via
+button, close-by-clicking-anywhere-on-overlay, menu items, settings content + location links),
+`languageChange` (ET/EN through BOTH menus + persistence across reload), `consent` (accept,
+stored, revoke via the privacy view checkbox, persistence), `articleDocument` (every JSON-document
+text formatting attribute rendered + the Parse round-trip + unknown-id fallback),
+`hoverAndSelection` (hover colors by emulated mouse move; active/selected element colors incl.
+the sunken language button).
+
+**Prerequisites:** the app running on `localhost:4200` and a Selenium Grid on
+`localhost:4444/wd/hub` (override via `SELENIUM_HUB_URL`/`APP_BASE_URL`).
 
 ```shell
 # Terminal 1 – start the app
 npm start -w angular-start-project
 
-# Terminal 2 – start GeckoDriver (or Selenium Grid)
-geckodriver --port 4444
+# Terminal 2 – start the Selenium Grid (setmy-info-scripts tooling)
+smi-selenium-hub
+smi-selenium-node
 
 # Terminal 3 – run E2E tests
 npm run e2e -w angular-start-project
+# or a single test by name:
+npm run e2e:one -w angular-start-project -- "side navigation"
 ```
 
 ## Licensing — MIT template + proprietary SMI/HASS parts

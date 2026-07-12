@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
+import angularStartProjectLibrary from 'angular-start-project-library';
 import {SideNavPanelComponent} from './side-navigation-panel.component';
 import {ModalService} from '../../../services/modal.service';
 
@@ -28,12 +29,12 @@ describe('SideNavPanelComponent', () => {
 
     it('should render side nav header panel', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('#side-nav-header-panel')).toBeTruthy();
+        expect(el.querySelector('#sideNavigationHeaderPanel')).toBeTruthy();
     });
 
     it('should render side nav content panel', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelector('#side-nav-content-panel')).toBeTruthy();
+        expect(el.querySelector('#sideNavigationContentPanel')).toBeTruthy();
     });
 
     it('should render close button', () => {
@@ -42,16 +43,27 @@ describe('SideNavPanelComponent', () => {
         expect(btn).toBeTruthy();
     });
 
-    it('should render menu items', () => {
+    it('should render one menu item per menuModel entry plus the language item', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const items = el.querySelectorAll('.sideNavMenuItems');
-        expect(items.length).toBeGreaterThan(0);
+        const items = el.querySelectorAll('li.sideNavMenuItems');
+        const menuCount = angularStartProjectLibrary.menuModel.getMenuItems(
+            angularStartProjectLibrary.tenantService.getTenant()
+        ).length;
+        expect(items.length).toBe(menuCount + 1);
     });
 
     it('should render menu item icons', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const icons = el.querySelectorAll('#side-nav-content-panel .material-symbols-outlined');
+        const icons = el.querySelectorAll('#sideNavigationContentPanel .material-symbols-outlined');
         expect(icons.length).toBeGreaterThan(0);
+    });
+
+    it('should render the language select below the horizontal-rule item', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        expect(el.querySelector('li.sideNavThinMenuItems hr')).toBeTruthy();
+        const select = el.querySelector('#sideNavigationContentPanel select') as HTMLSelectElement;
+        expect(select).toBeTruthy();
+        expect(select.querySelectorAll('option').length).toBeGreaterThan(1);
     });
 
     it('should be hidden (display:none) when modal is closed', () => {
@@ -62,11 +74,19 @@ describe('SideNavPanelComponent', () => {
         expect(nav.style.display).toBe('none');
     });
 
-    it('should be visible (display:flex) when modal is open', () => {
+    it('should be visible (no inline display:none) when modal is open', () => {
         modalService.open();
         fixture.detectChanges();
         const el = fixture.nativeElement as HTMLElement;
         const nav = el.querySelector('#sidenav') as HTMLElement;
-        expect(nav.style.display).toBe('flex');
+        expect(nav.style.display).toBe('');
+    });
+
+    it('should close the modal when a menu item link is clicked', () => {
+        modalService.open();
+        fixture.detectChanges();
+        const el = fixture.nativeElement as HTMLElement;
+        (el.querySelector('li.sideNavMenuItems a') as HTMLAnchorElement).click();
+        expect(modalService.isOpen()).toBe(false);
     });
 });
