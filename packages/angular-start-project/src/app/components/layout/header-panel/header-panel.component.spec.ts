@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
+import angularStartProjectLibrary from 'angular-start-project-library';
 import {HeaderPanelComponent} from './header-panel.component';
 import {NetworkService} from '../../../services/network.service';
 
@@ -34,29 +35,28 @@ describe('HeaderPanelComponent', () => {
         expect(el.querySelector('nav')).toBeTruthy();
     });
 
-    it('should render menu toggle button', () => {
+    it('should render menu toggle button with the menu icon', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const btn = el.querySelector('button i.material-symbols-outlined');
-        expect(btn).toBeTruthy();
-    });
-
-    it('should render menu icon in toggle button', () => {
-        const el = fixture.nativeElement as HTMLElement;
-        const icon = el.querySelector('i.material-symbols-outlined');
+        const icon = el.querySelector('header ul:first-child li:first-child button i');
         expect(icon).toBeTruthy();
         expect(icon?.textContent?.trim()).toBe('menu');
     });
 
-    it('should render at least one navigation link', () => {
+    it('should render one nav link per header menu item (items with header:false excluded)', () => {
         const el = fixture.nativeElement as HTMLElement;
         const links = el.querySelectorAll('nav a');
-        expect(links.length).toBeGreaterThan(0);
+        const headerMenuCount = angularStartProjectLibrary.menuModel.getMenuItems(
+            angularStartProjectLibrary.tenantService.getTenant()
+        ).filter((item: {header?: boolean}) => item.header !== false).length;
+        expect(links.length).toBe(headerMenuCount);
     });
 
-    it('should render language buttons', () => {
+    it('should render one language button per supported language, current one disabled', () => {
         const el = fixture.nativeElement as HTMLElement;
         const langButtons = el.querySelectorAll('header ul:last-child button');
-        expect(langButtons.length).toBeGreaterThan(0);
+        const supported = angularStartProjectLibrary.translationService.getSupportedLanguages();
+        expect(langButtons.length).toBe(supported.length);
+        expect(el.querySelectorAll('header ul:last-child button[disabled]').length).toBe(1);
     });
 
     it('hides the offline indicator while online', () => {
