@@ -1,0 +1,17 @@
+{
+    "pageTitle": "Lorem Ipsum Application",
+    "subSystem": "default",
+    "contacts": {
+        "organisation": "Angular Start Project OÜ",
+        "address": "Lorem ipsum tn 1, 10111 Tallinn",
+        "phone": "+372 000 0000",
+        "email": "info@example.invalid",
+        "facebook": "https://www.facebook.com/example",
+        "github": "https://github.com/example",
+        "x": "https://x.com/example",
+        "slack": "https://example.slack.com",
+        "bank": "Lorem Ipsum Bank Ltd",
+        "swift": "EXAMPLEXX",
+        "bankAccount": "EE00 0000 0000 0000 0000"
+    }
+}

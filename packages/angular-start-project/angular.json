@@ -24,6 +24,7 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "less",
+            "preserveSymlinks": true,
             "assets": [
               {
                 "glob": "**/*",
@@ -34,8 +35,13 @@
               "src/styles.less"
             ],
             "allowedCommonJsDependencies": [
-              "angular-start-project-library"
-            ]
+              "angular-start-project-library",
+              "js-api-extend",
+              "servicejs",
+              "servedjs",
+              "servedjs-geo"
+            ],
+            "serviceWorker": "ngsw-config.json"
           },
           "configurations": {
             "local": {
@@ -149,6 +155,14 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "host": "0.0.0.0",
+            "prebundle": {
+              "exclude": [
+                "angular-start-project-library"
+              ]
+            }
+          },
           "configurations": {
             "local": {
               "buildTarget": "application:build:local"

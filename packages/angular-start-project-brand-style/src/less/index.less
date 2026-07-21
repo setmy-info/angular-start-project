@@ -1,0 +1,39 @@
+/*
+Brand design system — deliberately SEPARATE from the webapp styles.
+
+A brand page can (and usually does) look completely different from the webapp
+(angular-start-project-style): fancy, product/trademark-oriented, by-case visuals. That is why
+brand LESS lives in its own module instead of inside angular-start-project-style — apps depend
+on angular-start-project-style, brand pages depend on this package, and neither imports the
+other. See README.md "Brand vs. web-page/app styling" and design.md §1.
+
+Composes setmy-info-less BASE only — no setmy-info-less-extended (that layer carries webapp
+content patterns), no app-shell chrome. Once the upstream `fancy` layer exists (review.md §2,
+currently an empty skeleton), it gets imported here, not in the webapp styles.
+*/
+@import url("setmy-info-less/src/main/less/main.less");
+
+.brandHero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: @primaryColor;
+    color: @primaryFontColor;
+    padding: @quadrupleDefaultPadding;
+    box-sizing: border-box;
+}
+
+.brandHero h1 {
+    font-size: 3em;
+    letter-spacing: 0.2em;
+    color: @primaryFontColor;
+}
+
+.brandSection {
+    .centerBox();
+    padding: @quadrupleDefaultPadding @defaultPadding;
+    text-align: center;
+}

@@ -21,15 +21,24 @@ describe('ContactComponent', () => {
         expect(el.querySelector('.articleBody')).toBeTruthy();
     });
 
-    it('should render contact heading', () => {
+    it('should render contact fields as icon/label/text rows', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const h1 = el.querySelector('h1');
-        expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.iconPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.labelPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.textPanel').length).toBeGreaterThan(0);
     });
 
-    it('should render contact fields as a definition list', () => {
+    it('should render material icons in icon panels (continuation rows may be empty, like the old app)', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelectorAll('.definitionTerm').length).toBeGreaterThan(0);
-        expect(el.querySelectorAll('.definitionDesc').length).toBeGreaterThan(0);
+        const icons = el.querySelectorAll('.iconPanel .material-symbols-outlined');
+        expect(icons.length).toBeGreaterThan(0);
+        expect(icons.length).toBeLessThanOrEqual(el.querySelectorAll('.iconPanel').length);
+    });
+
+    it('should hide the feature-gated bank rows while the bankAccounts flag is off', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        const bankRows = el.querySelectorAll('[feature="bankAccounts"]');
+        expect(bankRows.length).toBe(3);
+        bankRows.forEach(row => expect((row as HTMLElement).style.display).toBe('none'));
     });
 });

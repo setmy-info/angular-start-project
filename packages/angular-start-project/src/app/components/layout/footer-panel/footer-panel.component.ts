@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {RouterLink} from '@angular/router';
 import {LanguageService} from '../../../services/language.service';
 import {environment} from '../../../../environments/environment';
 
@@ -6,7 +7,7 @@ import {environment} from '../../../../environments/environment';
     selector: 'app-footer-panel',
     templateUrl: './footer-panel.component.html',
     styleUrl: './footer-panel.component.less',
-    imports: [],
+    imports: [RouterLink],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterPanelComponent {
