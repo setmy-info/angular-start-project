@@ -47,9 +47,6 @@ export class PageTitleService {
         if (menuItem) {
             return menuItem.translationKey || menuItem.label;
         }
-        if (url.startsWith('/articles/')) {
-            return 'view.articles.title';
-        }
         return PageTitleService.URL_TITLE_KEYS[url] || 'app.title';
     });
 

@@ -400,7 +400,7 @@ remaining 6 pre-existing failures are unrelated (header-panel ×2, side-navigati
 ## 11. Fresh full comparison (2026-07-12): setmy-info-less selectors unused by the current Angular app — DELETE / MOVE-TO-EXPERIMENTAL action plan
 
 Re-run of the section-1 method against the CURRENT state of both projects (the app has grown a
-lot since section 2: articles + article detail, privacy, settings, terms, consent panel, the
+lot since section 2: privacy, settings, terms, consent panel, the
 eight old-app pages, content-driven contact page; the LESS project had its own "Cleanup and moved
 less" commit). Where this section disagrees with the older tables in section 3, THIS section is
 the current truth — section 3 is kept as history. Result: of 305 class/id selectors defined in

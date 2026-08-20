@@ -125,7 +125,7 @@ vhost, and Angular routes must simply never start with `api` (add a lint/convent
 
 ### 3.2 Angular router paths
 
-- Inside each app, router paths stay exactly as today (`/`, `/articles`, `/contact`,
+- Inside each app, router paths stay exactly as today (`/`, `/about`, `/contact`,
   `/settings`, `/terms`, `/privacy`, `**` fallback). Apps are **base-href agnostic**: the same
   routes work at `/` (host-mounted) and at `/apps/loyalty123/` (path-mounted) because the
   build sets `--base-href` and `--deploy-url`; the router is always relative to base href.

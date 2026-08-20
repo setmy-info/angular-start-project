@@ -35,8 +35,7 @@ describe('language change', () => {
         // that is NOT disabled (the non-current language), robust in either language
         await helper.click('header ul:last-child button:not([disabled])');
         await helper.waitForText('nav li:nth-child(1) a', 'HOME');
-        expect(await helper.getText('nav li:nth-child(2) a')).toBe('ARTICLES');
-        expect(await helper.getText('nav li:nth-child(3) a')).toBe('CONTACT');
+        expect(await helper.getText('nav li:nth-child(2) a')).toBe('CONTACT');
         expect(await helper.getTitle()).toBe('Home — Lorem Ipsum Application');
         expect(await helper.getText('header ul:first-child li:last-child span')).toBe('Home');
         expect(await helper.getText('app-footer-panel footer')).toContain('Lorem Ipsum Application');

@@ -16,24 +16,9 @@ developers need a separate license/permission from the SMI/HASS authors to use, 
 the proprietary files. The package.json `license` field says `SEE LICENSE IN LICENSE-NOTES.md`
 for this reason.
 
-## Proprietary SMI/HASS files (confirmed)
+## Proprietary candidates (migrated from the old solution — pending author confirmation)
 
-The JSON-document format and its translators — the original invention of the SMI/HASS authors,
-each file carries its own LICENSE NOTICE header:
-
-| File                                  | What it is                                          |
-|---------------------------------------|-----------------------------------------------------|
-| `src/services/objToDomService.js`     | JSON-document → HTML renderer                       |
-| `src/services/domToJsonService.js`    | HTML/DOM → JSON-document parser (reverse direction) |
-| `src/services/jsonDocumentService.js` | Loader/facade tying the two together                |
-
-The sample documents in the app package (`packages/angular-start-project/public/json/documents/
-777.json`, `7777.json`) are content in that proprietary format, taken from the old setmy.info
-site — proprietary content as well.
-
-## Suggested additional proprietary candidates (migrated from the old solution — pending author confirmation)
-
-These were also ported from the old setmy.info solution's `library` package rather than written
+These were ported from the old setmy.info solution's `library` package rather than written
 fresh for the template. They are currently NOT marked with license headers; the SMI/HASS authors
 should decide per file whether it stays MIT (generic utility) or gets the proprietary notice
 (product code):
@@ -61,5 +46,5 @@ Related but outside this package:
 ## TODO
 
 - Write and publish the actual SMI/HASS proprietary license text and link it here.
-- Author decision on the "suggested additional" table above; add LICENSE NOTICE headers to the
+- Author decision on the candidates table above; add LICENSE NOTICE headers to the
   files that are confirmed proprietary.

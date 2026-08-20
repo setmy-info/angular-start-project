@@ -1,11 +1,11 @@
 # angular-start-project
 
 > **⚠ LICENSING — not uniformly MIT.** This repository mixes the MIT-licensed template with
-> **proprietary SMI / Hear And See Systems (HASS) code and content** migrated from the old
-> setmy.info product (JSON-document translator services, sample documents, branding, legal
-> texts). The proprietary license text is pending; external developers need separate permission
-> for those parts. Read [LICENSE.md](LICENSE.md) and the "Licensing" section below before using
-> anything from this repository.
+> **proprietary SMI / Hear And See Systems (HASS) content** migrated from the old setmy.info
+> product (branding, legal texts, and library services still awaiting a per-file decision). The
+> proprietary license text is pending; external developers need separate permission for those
+> parts. Read [LICENSE.md](LICENSE.md) and the "Licensing" section below before using anything
+> from this repository.
 
 An Angular 21 **template monorepo**: a starting point future setmy.info applications and websites
 are cloned/scaffolded from. It is written for both human developers and AI agents that need to
@@ -27,8 +27,8 @@ three npm workspaces.
 - **[`angular-start-project-library`](packages/angular-start-project-library)** — pure JavaScript,
   framework-agnostic. Signals-friendly singleton services (`localStorageService`,
   `sessionStorageService`, `tenantService`, `translationService`, `consentService`,
-  `contentService`, `sessionService`, `uuidService`, `statisticsService`, `versionService`,
-  `jsonDocumentService` with `objToDomService`/`domToJsonService`, plus `dbService` and
+  `contentService`, `sessionService`, `uuidService`, `statisticsService`, `versionService`, plus
+  `dbService` and
   `loadingService` provided for later usage), the fetch-based `resourceFactory`, shared `config`
   (feature flags + resource URLs), `constants`, and shared models (`menuModel`). Must **not**
   import Angular — see `AGENTS.md`. Also pulls in the old setmy.info site's legacy `jsdi` service
@@ -161,8 +161,6 @@ app (app.html)
 |---------------------------------------------------------------------------------------------------|-------------------------------------------------------|------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/`                                                                                               | `HomeComponent`                                       | yes        | yes      | Lorem Ipsum home page                                                                                                                                        |
 | `/about`                                                                                          | `AboutComponent`                                      | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                                                                                 |
-| `/articles`                                                                                       | `ArticlesComponent`                                   | yes        | yes      | listing of 3 example articles; items 1/2 link to real JSON documents (777/7777), item 3 to a missing id (888) to demo the fallback                           |
-| `/articles/:id`                                                                                   | `ArticleDetailComponent`                              | no         | no       | JSON-document article rendering + Parse round-trip — see "Migrated functionality" below                                                                      |
 | `/contact`                                                                                        | `ContactComponent`                                    | yes        | yes      | icon/label/text rows fed from the per-tenant content JSON; three bank rows behind the `bankAccounts` feature flag                                            |
 | `/settings`                                                                                       | `SettingsComponent`                                   | no         | yes      | diagnostic info (version, language, environment, sub-system, browser, service worker, referrer, location)                                                    |
 | `/terms`                                                                                          | `TermsComponent`                                      | no         | no       | legal text (et/en) — linked only from the footer copyright and the consent banner                                                                            |
@@ -297,30 +295,12 @@ template anymore.
 shows the same key) and keeps `document.title` set to the translated title
 (`<Page> — <App title>`), re-translated when the language changes.
 
-### JSON-document articles (`/articles/:id`)
-
-The old site's custom document format — a JSON structure of text fragments + per-fragment
-formatting metadata + paragraph parts — is fully ported to the library:
-
-- `objToDomService.js` renders a document JSON to an HTML string (headings, bold/italic/
-  underline/strike/mark, colors, fonts, alignment, links, citations),
-- `domToJsonService.js` is the reverse parser (rendered DOM → document JSON),
-- `jsonDocumentService.js` ties them together: `load(id)` fetches
-  `json/documents/<id>.json` and resolves with the HTML; `parse(element)` round-trips.
-
-`ArticleDetailComponent` shows the rendered document via `[innerHTML]` + the
-`skipSanitizingHtml` pipe (ported; safe here because the HTML is produced by our own renderer),
-keeps it `contenteditable`, and its Parse button converts the (possibly edited) DOM back to
-document JSON into a textarea — the old json-articles editor demo. Sample documents
-`public/json/documents/777.json` and `7777.json` come from the old app; an unknown id shows the
-fallback message (old unknown-article component).
-
 ### REST resource layer
 
 Library `resources/resourceFactory.js` — the fetch-based port of the old axios factory: base URL
 and timeout from `src/config/index.js` (`resources.jsonUrl`/`restUrl`/`timeout`),
 `AbortSignal.timeout` for the timeout, `requestHook`/`responseHook` as the interceptor
-equivalents. Statistics, per-tenant content, and JSON documents all go through it, so swapping
+equivalents. Statistics and per-tenant content both go through it, so swapping
 static JSON for a real REST backend is a change in one file per resource.
 
 ### Version newness detection + language persistence
@@ -610,8 +590,8 @@ npm test -w angular-start-project              # Angular app: @angular/build:uni
   (`"test": "echo \"Error: no test specified\" && exit 1"` in its `package.json`) — coverage for its
   services currently comes from the Angular-side specs that exercise them (e.g.
   `language.service.spec.ts` mocks `fetch`/`localStorage` to cover `translationService.js`'s
-  version-check/cache logic end-to-end) and from the e2e suites below (translations, content,
-  consent, JSON-document rendering all run against the real library code in the browser).
+  version-check/cache logic end-to-end) and from the e2e suites below (translations, content and
+  consent all run against the real library code in the browser).
 
 ### E2E / Integration tests
 
@@ -630,12 +610,11 @@ position (`permissions.default.geo=1` + a `data:` `geo.provider.network.url`, ov
 `TEST_GEO_LAT`/`TEST_GEO_LNG`) so the `$geo` startup watcher works headlessly instead of hanging
 on a permission prompt.
 
-The seven suites: `application` (shell + strict computed metrics + footer + terms link),
+The six suites: `application` (shell + strict computed metrics + footer + terms link),
 `mainNavigation` (header menu clicks + per-page content/titles), `sideNavigation` (open/close via
 button, close-by-clicking-anywhere-on-overlay, menu items, settings content + location links),
 `languageChange` (ET/EN through BOTH menus + persistence across reload), `consent` (accept,
-stored, revoke via the privacy view checkbox, persistence), `articleDocument` (every JSON-document
-text formatting attribute rendered + the Parse round-trip + unknown-id fallback),
+stored, revoke via the privacy view checkbox, persistence),
 `hoverAndSelection` (hover colors by emulated mouse move; active/selected element colors incl.
 the sunken language button).
 
@@ -672,12 +651,7 @@ kinds of code side by side:
   **external developers need a separate license/permission from the SMI/HASS authors** to use,
   copy, or modify these parts.
 
-Confirmed proprietary (each file carries a LICENSE NOTICE header): the JSON-document format and
-its translators in `angular-start-project-library` — `objToDomService.js` (JSON → HTML),
-`domToJsonService.js` (HTML/DOM → JSON), `jsonDocumentService.js` (loader/facade) — plus the
-sample documents in that format (`public/json/documents/777.json`, `7777.json`).
-
-Suggested additional candidates (migrated from the old solution, pending the authors' per-file
+The migrated library candidates (pending the authors' per-file
 decision), the SMI branding assets (favicon, icons), and the terms/privacy legal texts are listed
 with origins in `packages/angular-start-project-library/LICENSE-NOTES.md` — that file is the
 authoritative inventory, and the library's `package.json` points at it

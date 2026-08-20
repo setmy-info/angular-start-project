@@ -1,5 +1,5 @@
 // Fetch-based REST resource layer — ported from the old library's resourceFactory.js (which was
-// axios-based). Every resource (statistics, content, JSON documents) is built through this
+// axios-based). Every resource (statistics, content) is built through this
 // factory so a later switch from static JSON files to a real REST backend is a configuration
 // change here, not a hunt through callers. Timeout uses AbortSignal.timeout (the old axios
 // `timeout` equivalent); requestHook/responseHook are the interceptor equivalents.

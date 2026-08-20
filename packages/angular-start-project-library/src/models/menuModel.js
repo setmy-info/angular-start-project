@@ -5,16 +5,15 @@
 const ALL_MENUS = {
     HOME: {id: 1, path: '/', label: 'Home', icon: 'home', translationKey: 'menu.home'},
     ABOUT: {id: 5, path: '/about', label: 'About', icon: 'info', translationKey: 'menu.about'},
-    ARTICLES: {id: 2, path: '/articles', label: 'Articles', icon: 'library_books', translationKey: 'menu.articles'},
     CONTACT: {id: 3, path: '/contact', label: 'Contact', icon: 'contact_page', translationKey: 'menu.contact'},
     SETTINGS: {id: 4, path: '/settings', label: 'Settings', icon: 'settings', translationKey: 'menu.settings', header: false}
 };
 
 const TENANT_MENUS = {
     // Webapp default (localhost and unknown hosts)
-    default: [ALL_MENUS.HOME, ALL_MENUS.ARTICLES, ALL_MENUS.CONTACT, ALL_MENUS.SETTINGS],
+    default: [ALL_MENUS.HOME, ALL_MENUS.CONTACT, ALL_MENUS.SETTINGS],
     // Brand/root page tenant (apex domain) — same set for now; adjust per deployment
-    root: [ALL_MENUS.HOME, ALL_MENUS.ARTICLES, ALL_MENUS.CONTACT, ALL_MENUS.SETTINGS]
+    root: [ALL_MENUS.HOME, ALL_MENUS.CONTACT, ALL_MENUS.SETTINGS]
 };
 
 const menuItems = TENANT_MENUS.default;

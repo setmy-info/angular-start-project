@@ -13,11 +13,10 @@ describe('main navigation', () => {
         await helper.close();
     });
 
-    test('header nav shows the three menu items in Estonian by default', async () => {
-        expect(await helper.countOf('nav a')).toBe(3);
+    test('header nav shows the two menu items in Estonian by default', async () => {
+        expect(await helper.countOf('nav a')).toBe(2);
         expect(await helper.getText('nav li:nth-child(1) a')).toBe('AVALEHT'); // CSS text-transform: uppercase
-        expect(await helper.getText('nav li:nth-child(2) a')).toBe('ARTIKLID');
-        expect(await helper.getText('nav li:nth-child(3) a')).toBe('KONTAKT');
+        expect(await helper.getText('nav li:nth-child(2) a')).toBe('KONTAKT');
     });
 
     test('home menu item is marked active on the home page', async () => {
@@ -25,18 +24,8 @@ describe('main navigation', () => {
         expect(await helper.getText('nav a.active')).toBe('AVALEHT');
     });
 
-    test('Artiklid navigates to the articles list', async () => {
-        await helper.click('nav li:nth-child(2) a');
-        await helper.waitForText('h1', 'Artiklid');
-        expect(await helper.currentPath()).toBe('/articles');
-        expect(await helper.countOf('.articleListItem')).toBe(3);
-        expect(await helper.getTitle()).toBe('Artiklid — Lorem Ipsum Rakendus');
-        expect(await helper.getText('header ul:first-child li:last-child span')).toBe('Artiklid');
-        expect(await helper.getText('nav a.active')).toBe('ARTIKLID');
-    });
-
     test('Kontakt navigates to the contact rows fed from the content JSON', async () => {
-        await helper.click('nav li:nth-child(3) a');
+        await helper.click('nav li:nth-child(2) a');
         await helper.waitForText('.contactsPage .textPanel', 'Angular Start Project OÜ');
         expect(await helper.currentPath()).toBe('/contact');
         expect(await helper.getTitle()).toBe('Kontakt — Lorem Ipsum Rakendus');

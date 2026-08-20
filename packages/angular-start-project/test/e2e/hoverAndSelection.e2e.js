@@ -34,7 +34,7 @@ describe('hover and selected-state colors', () => {
     });
 
     test('hovering a main-menu item turns its underline hover-orange', async () => {
-        // the non-active Articles link starts with the white placeholder underline
+        // the non-active Kontakt link starts with the white placeholder underline
         expect(await helper.cssValueOf('nav li:nth-child(2) a', 'border-bottom-color')).toBe(WHITE);
         await helper.hover('nav li:nth-child(2) a');
         await helper.waitUntil(

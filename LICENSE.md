@@ -35,18 +35,7 @@ the MIT license above.
 developers need a separate license/permission from the SMI/HASS authors to use, copy, or modify
 these parts.**
 
-Confirmed proprietary (each source file carries a `LICENSE NOTICE — NOT MIT` header):
-
-- `packages/angular-start-project-library/src/services/objToDomService.js`
-  (JSON-document → HTML renderer)
-- `packages/angular-start-project-library/src/services/domToJsonService.js`
-  (HTML/DOM → JSON-document parser)
-- `packages/angular-start-project-library/src/services/jsonDocumentService.js`
-  (JSON-document loader/facade)
-- `packages/angular-start-project/public/json/documents/*.json`
-  (sample content in that proprietary document format)
-
-Also not MIT-licensed template content: the SMI branding assets
+Not MIT-licensed template content: the SMI branding assets
 (`packages/angular-start-project/public/favicon.ico`, `public/icons/`) and the terms-of-use /
 privacy-policy texts (`views/terms`, `views/privacy`).
 

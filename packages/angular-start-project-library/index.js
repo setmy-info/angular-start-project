@@ -7,12 +7,9 @@ const contentService = require('./src/services/contentService');
 const sessionService = require('./src/services/sessionService');
 const uuidService = require('./src/services/uuidService');
 const statisticsService = require('./src/services/statisticsService');
-const jsonDocumentService = require('./src/services/jsonDocumentService');
 const dbService = require('./src/services/dbService');
 const loadingService = require('./src/services/loadingService');
 const versionService = require('./src/services/versionService');
-const objToDomService = require('./src/services/objToDomService');
-const domToJsonService = require('./src/services/domToJsonService');
 const resourceFactory = require('./src/resources/resourceFactory');
 const menuModel = require('./src/models/menuModel');
 const config = require('./src/config');
@@ -29,12 +26,9 @@ module.exports = {
     sessionService: sessionService,
     uuidService: uuidService,
     statisticsService: statisticsService,
-    jsonDocumentService: jsonDocumentService,
     dbService: dbService,
     loadingService: loadingService,
     versionService: versionService,
-    objToDomService: objToDomService,
-    domToJsonService: domToJsonService,
     resourceFactory: resourceFactory,
     menuModel: menuModel,
     config: config,

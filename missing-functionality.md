@@ -14,46 +14,46 @@ Old solutions compared:
 
 New solution: this repository (`packages/angular-start-project*`). Already-migrated things are NOT
 listed (consent banner, offline indicator, per-page header title, PWA service worker, geolocation
-with `$log` startup logging, terms/privacy/settings/articles-list views, side-nav language select,
+with `$log` startup logging, terms/privacy/settings views, side-nav language select,
 versioned JSON translations). Where an item is partially done, the missing part is stated.
 
 ## Status summary (2026-07-06 — every item below also carries its own status tag + note)
 
-IMPLEMENTED (13 of 16): 1, 2 (as dependency of 1 and 3), 3, 4, 5, 6, 7, 8, 9, 11,
-12 (for later usage — nothing calls it yet by design), 13 (for later usage — same),
-16 (+ app-version newness detection implemented in the same pass: `versionService.js`,
+IMPLEMENTED (12 of 15): 1, 2 (as dependency of 1 and 3), 3, 4, 5, 6, 7, 8, 10,
+11 (for later usage — nothing calls it yet by design), 12 (for later usage — same),
+15 (+ app-version newness detection implemented in the same pass: `versionService.js`,
 startup log line "New app version: …", "(new version)" marker on the Settings page).
 
-PARTIALLY IMPLEMENTED (3 of 16): 10, 14, 15 — the concrete leftovers are the TODO list below.
+PARTIALLY IMPLEMENTED (2 of 15): 13, 14 — the concrete leftovers are the TODO list below.
+
+NOT IMPLEMENTED (1 of 15): 9 — the utility pipes, also in the TODO list below.
 
 ## Still TODO
 
-1. (from item 10) `inCurrency` transform + pipe — integer cents in, `"12.34 EUR"` out, currency
+1. (from item 9) `inCurrency` transform + pipe — integer cents in, `"12.34 EUR"` out, currency
    code as argument with EUR default. Put the transform function in
    `angular-start-project-library` (pure JS) and wrap it in a thin standalone Angular pipe, like
    the old app's pipe / Vue filter pair.
-2. (from item 10) `toObjectArray` transform + pipe — object in, array of its values out with each
-   key injected as `propertyName`. Same library-function + thin-pipe split. (The third pipe,
-   `skipSanitizingHtml`, is already done.)
-3. (from item 14) `dataService` type-coercion helpers (`isNumber`/`ifNumber`/`ifBoolean`) — small
+2. (from item 9) `toObjectArray` transform + pipe — object in, array of its values out with each
+   key injected as `propertyName`. Same library-function + thin-pipe split.
+3. (from item 13) `dataService` type-coercion helpers (`isNumber`/`ifNumber`/`ifBoolean`) — small
    generic utilities worth keeping in the library; currently nothing needs them, so this is
    low priority until something parses query/path values again.
-4. (from item 14, DECISION) hash routing: the old apps served `#/`-style URLs
+4. (from item 13, DECISION) hash routing: the old apps served `#/`-style URLs
    (`https://setmy.info/old/#/`); the new app deliberately uses path routing. If the old URL shape
    is wanted, it is a one-line change (`provideRouter(routes, withHashLocation())`) — decide,
    don't drift into it.
-5. (from item 15) `package` build step — tar.gz the built app (`dist/application/browser`) as
+5. (from item 14) `package` build step — tar.gz the built app (`dist/application/browser`) as
    `<name>-<version>.tar.gz`, including the old flow's HTTP/2 push config generation
    (`bin/http2pushConfig.sh`) or a conscious decision to drop that part.
-6. (from item 15) `dodeploy` step — scp the tarball to
+6. (from item 14) `dodeploy` step — scp the tarball to
    `$USER_NAME@$HOST_NAME:$DESTINATION` over `$HOST_PORT` (or an `smi-*` script wrapper, since the
    `/opt/setmy.info` tooling exists).
-7. (LICENSING) Write and publish the SMI/HASS proprietary license text. The migrated
-   JSON-document translator (objToDomService/domToJsonService/jsonDocumentService + the sample
-   documents) is NOT MIT — it is proprietary SMI/HASS code; the files carry LICENSE NOTICE
-   headers and `packages/angular-start-project-library/LICENSE-NOTES.md` is the inventory
-   (including the suggested-additional-candidates table awaiting the authors' per-file
-   decision). Until the text exists, external developers need separate permission.
+7. (LICENSING) Write and publish the SMI/HASS proprietary license text.
+   `packages/angular-start-project-library/LICENSE-NOTES.md` is the inventory: the migrated
+   library candidates awaiting the authors' per-file decision, plus the branding assets and the
+   terms/privacy legal texts. Until the text exists, external developers need separate permission
+   for those parts.
 
 Notes:
 
@@ -141,35 +141,18 @@ Notes:
    title on router navigation (Angular `Title` service or route `title` properties +
    `TitleStrategy`), using the translated page title, updated when the language changes.
 
-7. **JSON-document article rendering (`/articles/:id`).** — IMPLEMENTED.
-   DONE 2026-07-06: library objToDomService.js/domToJsonService.js/jsonDocumentService.js ported; route articles/:id + src/app/components/views/article-detail/ (innerHTML + skipSanitizingHtml, contenteditable + Parse round-trip, unknown-id fallback); sample docs public/json/documents/777.json, 7777.json; list items link to 777/7777/888(demo of fallback).
-   Old route
-   `articles/:id` (`app-routing.module.ts`) with `articles` redirecting to
-   `/articles/<config.defaultArticleId>`; `articles-page.component.ts` dispatches ids to
-   subcomponents; ids 777/7777 use `json-articles.component.ts` which calls library
-   `jsonDocumentService.load(id)` → `jsonDocumentResource` GET `/documents/<id>.json` →
-   `objToDomService.toHtmlString(doc.data)` (JSON→HTML renderer) shown via `[innerHTML]` with the
-   `skipSanitizingHtml` pipe; the reverse parser `domToJsonService.parse(element)` powers a
-   `Parse` button that round-trips the rendered (contenteditable) DOM back to JSON into a
-   textarea. Sample documents: old app `src/json/documents/777.json`, `7777.json`. Nothing of this
-   exists in the new app (`/articles` is a static translated list, there is no `:id` route).
-   Implement: port `objToDomService`/`domToJsonService`/`jsonDocumentService` into
-   `angular-start-project-library` (pure JS), add `articles/:id` route + article component
-   rendering a sample JSON document from `public/json/documents/`, unknown-id fallback (old
-   `unknown-article` component), and the parse round-trip demo.
-
-8. **REST resource layer with common configuration.** — IMPLEMENTED.
-   DONE 2026-07-06: library src/resources/resourceFactory.js (fetch, baseUrl/timeout via src/config, AbortSignal.timeout, request/response hooks); statistics, content and JSON documents all go through it.
+7. **REST resource layer with common configuration.** — IMPLEMENTED.
+   DONE 2026-07-06: library src/resources/resourceFactory.js (fetch, baseUrl/timeout via src/config, AbortSignal.timeout, request/response hooks); statistics and content both go through it.
    Old library `src/resources/resourceFactory.js`
    creates configured axios instances (baseURL from `config.resources.jsonUrl`/`restUrl`, timeout
-   2500 ms, default headers, request/response interceptor hooks); `jsonDocumentResource`,
+   2500 ms, default headers, request/response interceptor hooks);
    `statisticsResource`, `testResource` are built on it. The new app's only HTTP code is two bare
    `fetch()` calls inside `translationService.js`. Implement: a small fetch-based
    `resourceFactory` in the library (base URL from the Angular `environment.apiBaseUrl`, timeout
-   via `AbortSignal.timeout`, hook functions as interceptor equivalents) and route items 3, 5 and
-   7 through it, so swapping static JSON for a real REST backend stays a one-file change.
+   via `AbortSignal.timeout`, hook functions as interceptor equivalents) and route items 3 and 5
+   through it, so swapping static JSON for a real REST backend stays a one-file change.
 
-9. **Missing routed pages.** — IMPLEMENTED.
+8. **Missing routed pages.** — IMPLEMENTED.
    DONE 2026-07-06: all eight pages exist as Lorem-Ipsum views (src/app/components/views/{products-services,news,help,tools,commercials,ads,sponsors,template-page}/), routed 1:1 with the old paths (URL-only, not in any menu — same as the old app), with translated titles (view.<name>.title) wired into PageTitleService/document.title.
    Old app routes without any equivalent in the new app
    (`app-routing.module.ts`): `productsServices`, `news`, `help`, `tools`, `commercials`, `ads`,
@@ -180,17 +163,17 @@ Notes:
    as Lorem-Ipsum views following the existing view conventions (standalone component, OnPush,
    translated title, route + optional menu entry).
 
-10. **Utility pipes.** — PARTIALLY IMPLEMENTED.
-    Status: ~1/3 — skipSanitizingHtml exists (src/app/pipes/skip-sanitizing-html.pipe.ts, ported 2026-07-06 for item 7); inCurrency and toObjectArray are still missing.
+9. **Utility pipes.** — NOT IMPLEMENTED.
+    Status: 0/3 — the app has no `src/app/pipes/` directory.
     Old app `src/app/pipes/`: `inCurrency` (integer cents → `"12.34 EUR"`,
     currency code as arg, default EUR; also a Vue filter), `toObjectArray` (object → array of
     values with the key injected as `propertyName` — the old language `<select>` options were built
-    with it), `skipSanitizingHtml` (`DomSanitizer.bypassSecurityTrustHtml`, required by item 7's
-    `[innerHTML]`). None exist in the new app. Implement per `AGENTS.md` conventions: pure-JS
-    transform functions in `angular-start-project-library` plus thin standalone Angular pipes in
-    the app (`skipSanitizingHtml` stays Angular-only since it needs `DomSanitizer`).
+    with it), `skipSanitizingHtml` (a thin `DomSanitizer.bypassSecurityTrustHtml` wrapper; nothing
+    in the template renders raw HTML today, so it has no consumer here). Implement the first two
+    per `AGENTS.md` conventions: pure-JS transform functions in `angular-start-project-library`
+    plus thin standalone Angular pipes in the app.
 
-11. **Browser info on the settings page.** — IMPLEMENTED.
+10. **Browser info on the settings page.** — IMPLEMENTED.
     DONE 2026-07-06: Settings now shows Version (item 1 stamp), Sub system (content JSON via ContentService), Browser (navigator.userAgent).
     Old `settings-page.component.html` showed `Sub system:
     {{modelService.system.subSystem}}` (from per-tenant content JSON, item 5), `Is IE:
@@ -200,7 +183,7 @@ Notes:
     alongside items 1 and 5; replace the obsolete `isIE` with something current (e.g. user-agent
     summary or `navigator.userAgentData` platform/brands).
 
-12. **IndexedDB service skeleton.** — IMPLEMENTED (for later usage).
+11. **IndexedDB service skeleton.** — IMPLEMENTED (for later usage).
     DONE 2026-07-06: library src/services/dbService.js — promise-based rework (open/put/get/getAllKeys/delete/clear/close around database HASDB with a generic keyValue store). Nothing calls it yet by design.
     Old library `src/services/dbService.js`: opens database
     `HASDB` (version 2) with vendor-prefix fallbacks and an `onupgradeneeded` hook full of
@@ -209,7 +192,7 @@ Notes:
     `open/get/put/delete` around IndexedDB) if client-side storage beyond localStorage is wanted;
     otherwise consciously drop it and note that in unused.md-style docs.
 
-13. **Dynamic script/CSS loader.** — IMPLEMENTED (for later usage).
+12. **Dynamic script/CSS loader.** — IMPLEMENTED (for later usage).
     DONE 2026-07-06: library src/services/loadingService.js — promise-based loadJS(url)/loadCSS(url) appending to document.head, deduplicated per URL. Nothing calls it yet by design.
     Old library `src/services/loadingService.js`: `loadJS(url,
     callback)` / `loadCSS(url, callback)` inject `<script>`/`<link>` tags (into elements with ids
@@ -219,20 +202,20 @@ Notes:
     wanted; modern form would be promise-based and appended to `document.head` without the id
     anchors. Otherwise consciously drop.
 
-14. **Hash-URL helper utilities.** — PARTIALLY IMPLEMENTED.
-    Status: small part — referrerOriginSite() logic was absorbed into sessionService.js (2026-07-06, item 2); fillBrowserInfo() was replaced by the Settings page navigator.userAgent row (item 11); dataService coercion helpers and the hash-routing decision remain open.
+13. **Hash-URL helper utilities.** — PARTIALLY IMPLEMENTED.
+    Status: small part — referrerOriginSite() logic was absorbed into sessionService.js (2026-07-06, item 2); fillBrowserInfo() was replaced by the Settings page navigator.userAgent row (item 10); dataService coercion helpers and the hash-routing decision remain open.
     Old library `browserService.js`: `getHashObject(pathConfig)`
     parses `#/path/…?a=1&b=true` into hashPath/pathValues/pathParams/queryParams with type
     coercion via `dataService.js` (`ifNumber`/`ifBoolean`), plus `setHash`/`getHash`,
     `referrerOriginSite()` (external-referrer detection for item 3) and `fillBrowserInfo()` (item
-    11). The old apps used hash routing (`useHash: true`, hence `https://setmy.info/old/#/`); the
+    10). The old apps used hash routing (`useHash: true`, hence `https://setmy.info/old/#/`); the
     new app deliberately uses path routing, so only two pieces are still relevant to port:
     `referrerOriginSite()` and `fillBrowserInfo()`; `dataService`'s coercion helpers are worth
     keeping in the library as generic utilities. (If hash routing itself should be restored to
     match the old deployment, that is a one-line `provideRouter(routes, withHashLocation())`
     decision — flagging it here as a decision, not silently changing it.)
 
-15. **Version-stamped packaging and deploy scripts.** — PARTIALLY IMPLEMENTED.
+14. **Version-stamped packaging and deploy scripts.** — PARTIALLY IMPLEMENTED.
     Status: version-stamp part done — "ver" + "prebuild" npm scripts exist (2026-07-06, item 1); the package (tarball + HTTP/2 push config) and dodeploy (scp) steps are still missing.
     Old app `package.json` scripts: `ver`
     (regenerate the version stamp, item 1 — the `ver`/`prebuild` part now exists, see item 1's
@@ -244,7 +227,7 @@ Notes:
     scripts (or `smi-*` script wrappers, since `/opt/setmy.info` tooling exists) in
     `packages/angular-start-project/package.json`: build → tarball → deploy.
 
-16. **Language selection persistence across reloads.** — IMPLEMENTED.
+15. **Language selection persistence across reloads.** — IMPLEMENTED.
     DONE 2026-07-06: translationService.js getStoredLanguage()/storeLanguage() (localStorage LANG, same key as the old app); LanguageService seeds currentLanguageCode from it and writes it in changeLanguage(). Bonus in the same pass: versionService.js — compares the running version stamp against localStorage appVersion, logs "New app version" at startup and the Settings page marks the version with "(new version)" when it changed.
     Old library `languageService.js`:
     `getLang()` reads localStorage key `LANG` (default `et`, written back on first visit) and

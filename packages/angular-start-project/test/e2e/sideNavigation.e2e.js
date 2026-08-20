@@ -61,11 +61,10 @@ describe('side navigation', () => {
 
     test('panel lists every menu item plus the language row below the separator line', async () => {
         expect(await helper.getText('#sideNavigationHeaderPanel span')).toBe('Menüü');
-        expect(await helper.countOf('li.sideNavMenuItems')).toBe(5); // 4 menu items + language row
+        expect(await helper.countOf('li.sideNavMenuItems')).toBe(4); // 3 menu items + language row
         expect(await helper.getText('li.sideNavMenuItems:nth-child(1) a')).toContain('AVALEHT');
-        expect(await helper.getText('li.sideNavMenuItems:nth-child(2) a')).toContain('ARTIKLID');
-        expect(await helper.getText('li.sideNavMenuItems:nth-child(3) a')).toContain('KONTAKT');
-        expect(await helper.getText('li.sideNavMenuItems:nth-child(4) a')).toContain('SEADED');
+        expect(await helper.getText('li.sideNavMenuItems:nth-child(2) a')).toContain('KONTAKT');
+        expect(await helper.getText('li.sideNavMenuItems:nth-child(3) a')).toContain('SEADED');
         expect(await helper.countOf('li.sideNavThinMenuItems hr')).toBe(1);
         expect(await helper.countOf('#sideNavigationContentPanel select')).toBe(1);
     });
@@ -83,7 +82,7 @@ describe('side navigation', () => {
 
     test('menu item click navigates to Settings and closes the panel', async () => {
         await openSideNav();
-        await helper.click('li.sideNavMenuItems:nth-child(4) a');
+        await helper.click('li.sideNavMenuItems:nth-child(3) a');
         await helper.waitForText('h1', 'Seaded');
         await expectClosed();
         expect(await helper.currentPath()).toBe('/settings');
