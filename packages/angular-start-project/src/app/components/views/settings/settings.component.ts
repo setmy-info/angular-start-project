@@ -3,6 +3,8 @@ import angularStartProjectLibrary from 'angular-start-project-library';
 import { LanguageService } from '../../../services/language.service';
 import { LocationService } from '../../../services/location.service';
 import { ContentService } from '../../../services/content.service';
+import { PwaInstallService } from '../../../services/pwa-install.service';
+import { PwaUpdateService } from '../../../services/pwa-update.service';
 import { environment } from '../../../../environments/environment';
 import { version } from '../../../config/version';
 
@@ -24,6 +26,15 @@ export class SettingsComponent {
         version.version,
     );
     protected readonly hasServiceWorkerSupport = !!navigator.serviceWorker;
+    // PWA diagnostics. `hasServiceWorkerSupport` above only answers "could this browser run one";
+    // these answer "is one actually running, is a new build waiting, and can this be installed" —
+    // the three questions asked whenever a deployed change does not show up for someone.
+    protected readonly pwaUpdateService = inject(PwaUpdateService);
+    protected readonly pwaInstallService = inject(PwaInstallService);
+    protected readonly lastUpdateCheck = computed(() => {
+        const timestamp = this.pwaUpdateService.lastCheckedAt();
+        return timestamp ? new Date(timestamp).toLocaleString() : null;
+    });
     protected readonly referrer = document.referrer;
     // The old settings page showed "Sub system" (per-tenant content JSON) and "Is IE"
     // (browserService.fillBrowserInfo) — subSystem is kept, isIE is replaced with a

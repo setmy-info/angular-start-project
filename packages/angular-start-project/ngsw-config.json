@@ -35,6 +35,27 @@
                 "maxAge": "1d",
                 "timeout": "3s"
             }
+        },
+        {
+            "name": "content",
+            "urls": ["/json/content/**"],
+            "cacheConfig": {
+                "strategy": "freshness",
+                "maxSize": 50,
+                "maxAge": "1d",
+                "timeout": "3s"
+            }
+        },
+        {
+            "name": "api",
+            "urls": ["/api/**", "/rest/**"],
+            "cacheConfig": {
+                "strategy": "freshness",
+                "maxSize": 100,
+                "maxAge": "1h",
+                "timeout": "5s"
+            }
         }
-    ]
+    ],
+    "navigationUrls": ["/**", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/api/**", "!/rest/**"]
 }

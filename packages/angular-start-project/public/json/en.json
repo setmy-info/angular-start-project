@@ -27,6 +27,10 @@
     "view.settings.language": "Language:",
     "view.settings.environment": "Environment:",
     "view.settings.serviceWorker": "Service worker support:",
+    "view.settings.serviceWorkerState": "Service worker state:",
+    "view.settings.updateAvailable": "Update available:",
+    "view.settings.lastUpdateCheck": "Last update check:",
+    "view.settings.installState": "Installable:",
     "view.settings.referrer": "Referrer:",
     "view.settings.location": "Location:",
     "view.settings.version": "Version:",
@@ -46,5 +50,16 @@
     "consent.text": "This website uses cookies to ensure the best user experience.",
     "consent.termsLinkPrefix": "Read more in our",
     "consent.termsLinkText": "terms of use",
-    "consent.acceptButton": "Accept"
+    "consent.acceptButton": "Accept",
+    "pwa.update.text": "A new version of this application is available.",
+    "pwa.update.reloadButton": "Reload now",
+    "pwa.update.laterButton": "Later",
+    "pwa.install.text": "Install this application on your device for offline use.",
+    "pwa.install.installButton": "Install",
+    "pwa.install.laterButton": "Not now",
+    "pwa.unrecoverable.text": "This application is in a broken cached state and must be reloaded.",
+    "pwa.unrecoverable.reloadButton": "Reload",
+    "pwa.yes": "yes",
+    "pwa.no": "no",
+    "pwa.never": "never"
 }

@@ -130,16 +130,18 @@ the last known position.
 
 ### Services (`src/app/services`, all signals-based, `providedIn: 'root'`)
 
-| Service            | State                                                                        | Purpose                                                                                                                                                                                                                                 |
-| ------------------ | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ModalService`     | `isOpen` signal                                                              | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                                                                                                                                                    |
-| `LanguageService`  | `currentLanguageCode`, `translations` signals                                | Current language + translation lookup; loads translations asynchronously (see "Translations" below); the choice persists across reloads (localStorage `LANG`, like the old app); records a `change` statistics event on language switch |
-| `MenuService`      | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Per-tenant menu set (`menuModel.getMenuItems(tenant)`); side navigation shows every item, the top header nav only items whose `header` flag isn't `false`                                                                               |
-| `ConsentService`   | `hasConsented` signal                                                        | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it                                                                                                  |
-| `NetworkService`   | `isOnline` signal                                                            | window `online`/`offline` listeners; drives the header's offline (`signal_wifi_off`) indicator                                                                                                                                          |
-| `LocationService`  | `lastKnownPosition`, `lastError` signals                                     | Last device position from the `$geo` startup example + Google Maps / OpenStreetMap URL builders (Settings page)                                                                                                                         |
-| `ContentService`   | `content` signal                                                             | Per-tenant content JSON (`json/content/<tenant>/<lang>.json`), reloaded on language change — contact data, page title, sub-system (see "Per-tenant content" below)                                                                      |
-| `PageTitleService` | `pageTitleKey` computed                                                      | Single owner of the URL→title-key mapping (header title + translated `document.title`), and records a page-visit statistics event per navigation                                                                                        |
+| Service             | State                                                                                             | Purpose                                                                                                                                                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ModalService`      | `isOpen` signal                                                                                   | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                                                                                                                                                    |
+| `LanguageService`   | `currentLanguageCode`, `translations` signals                                                     | Current language + translation lookup; loads translations asynchronously (see "Translations" below); the choice persists across reloads (localStorage `LANG`, like the old app); records a `change` statistics event on language switch |
+| `MenuService`       | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed                      | Per-tenant menu set (`menuModel.getMenuItems(tenant)`); side navigation shows every item, the top header nav only items whose `header` flag isn't `false`                                                                               |
+| `ConsentService`    | `hasConsented` signal                                                                             | Cookie-consent state, backed by `angularStartProjectLibrary.consentService` (localStorage); `accept()`/`revoke()` grant or withdraw it                                                                                                  |
+| `NetworkService`    | `isOnline` signal                                                                                 | window `online`/`offline` listeners; drives the header's offline (`signal_wifi_off`) indicator                                                                                                                                          |
+| `LocationService`   | `lastKnownPosition`, `lastError` signals                                                          | Last device position from the `$geo` startup example + Google Maps / OpenStreetMap URL builders (Settings page)                                                                                                                         |
+| `ContentService`    | `content` signal                                                                                  | Per-tenant content JSON (`json/content/<tenant>/<lang>.json`), reloaded on language change — contact data, page title, sub-system (see "Per-tenant content" below)                                                                      |
+| `PageTitleService`  | `pageTitleKey` computed                                                                           | Single owner of the URL→title-key mapping (header title + translated `document.title`), and records a page-visit statistics event per navigation                                                                                        |
+| `PwaUpdateService`  | `state` signal (mirrors the library), `showUpdateBanner`/`activating`/`controllerState` computeds | Thin adapter over `SwUpdate`: translates `VERSION_*` events into the library's update state machine, re-checks periodically, activates + reloads (see "Progressive Web App / offline support")                                          |
+| `PwaInstallService` | `state` signal (mirrors the library), `showInstallBanner`/`canInstall`/`standalone` computeds     | Thin adapter over the `beforeinstallprompt` event captured in `main.ts`; `install()` shows the browser's install dialog, `dismiss()` suppresses the banner                                                                              |
 
 ### Layout components (`src/app/components/layout`)
 
@@ -320,6 +322,21 @@ language switch — so a reload keeps the user's language instead of resetting t
 - `loadingService.js` — promise-based `loadJS(url)`/`loadCSS(url)` runtime loaders appending to
   `document.head`, deduplicated per URL.
 
+### PWA state, framework-independent
+
+- `pwaUpdateService.js` — the "a new build is waiting" state machine: `available`, `dismissed`,
+  `activating`, `currentVersion`/`availableVersion`, `lastCheckedAt`, `error`, `unrecoverable`,
+  plus `subscribe(listener)`. Touches no DOM and no service worker, so it is unit tested in a
+  plain Node process (`test/unit/pwaUpdateService.test.js`).
+- `pwaInstallService.js` — the "Add to home screen" state: owns the captured `beforeinstallprompt`
+  event, `shouldPrompt` (installable, not already installed, not recently dismissed), and the
+  persisted "Later" (localStorage `pwaInstallDismissedAt`). `listen()` is the only browser-coupled
+  part and is a no-op outside a browser.
+
+Both are configured from `src/config/index.js` → `config.pwa` (`updateCheckIntervalMs`,
+`reloadOnActivate`, `installPromptDismissDays`) and are the reason the Angular services above are
+only ~100 lines of adapter each.
+
 ### Smaller migrated pieces (documented in their own sections above)
 
 - Consent/cookie banner (`consent-panel`, localStorage-backed, accept/revoke)
@@ -329,8 +346,9 @@ language switch — so a reload keeps the user's language instead of resetting t
 - Side-nav language `<select>` below the menu items
 - Versioned-JSON translations (see "Translations" — new design, the old app had no version gate)
 - Settings diagnostics: version, sub-system (content JSON), browser summary
-  (`navigator.userAgent`, replacing the old `Is IE`), service-worker support, referrer, location
-- PWA/service worker (see "Progressive Web App / offline support")
+  (`navigator.userAgent`, replacing the old `Is IE`), service-worker support and controller state,
+  pending update, last update check, installability, referrer, location
+- PWA/service worker, update banner and install prompt (see "Progressive Web App / offline support")
 
 ## Design principles
 
@@ -417,15 +435,105 @@ Fixed with the standard Angular PWA pieces:
   the table above, so it's active for `ci`/`test`/`prelive`/`live` and inactive for `local`/`dev`
   (avoids a stale cached bundle fighting `ng serve` hot-reload during development).
 
-To actually see offline support working, a plain `ng serve` (`local`, SW disabled by the flag
-above) is not enough — build and serve one of the SW-enabled configurations instead, e.g.:
+### Update flow (`PwaUpdateService` + `pwaUpdateService.js`)
+
+Caching the app shell creates the _next_ problem: the service worker downloads a new deployment in
+the background and then waits for **every** tab of the app to close before it takes over. A tab
+left open for days therefore keeps running the old build indefinitely, and nothing tells the user.
+
+- `src/app/services/pwa-update.service.ts` subscribes to `SwUpdate.versionUpdates` and maps
+  `VERSION_READY` / `NO_NEW_VERSION_DETECTED` / `VERSION_INSTALLATION_FAILED` onto the library's
+  state machine, plus `SwUpdate.unrecoverable` (a cached version that cannot be repaired — the only
+  way out is a reload, so the banner offers one unconditionally).
+- It re-checks every `config.pwa.updateCheckIntervalMs` (default 6h) so an already-open tab does
+  not have to wait for a navigation.
+- `activateUpdate()` swaps the waiting version in and reloads (`config.pwa.reloadOnActivate`).
+  Reloading is not cosmetic: after activation the page's lazy chunks come from the _new_ version
+  while the already-executing code came from the old one.
+- `SwUpdate` is injected `{ optional: true }` — it only exists where `provideServiceWorker()` ran,
+  and requiring it would make the whole app shell (which renders `pwa-panel`) impossible to
+  instantiate in a test bed or in a copy of this template that drops the service worker.
+
+### Install prompt (`PwaInstallService` + `pwaInstallService.js`)
+
+`beforeinstallprompt` fires **once**, early, and is the only handle on the browser's install
+dialog — miss it and there is no install button for the rest of the page's life. It is therefore
+captured in `src/main.ts`, before `bootstrapApplication()`, by
+`angularStartProjectLibrary.pwaInstallService.listen()`; the Angular service only mirrors the
+resulting state into signals. "Later" is persisted for `config.pwa.installPromptDismissDays`
+(default 30) — the update banner's dismissal is deliberately _not_ persisted, because re-offering
+it on the next visit is the whole point.
+
+Both banners live in one component, `src/app/components/layout/pwa-panel/`, mounted in `app.html`
+right below the header. It renders nothing at all unless one of the services says otherwise.
+
+### Diagnostics
+
+The Settings page (`/settings`) reports service-worker support, the **controller state**
+(`unsupported` / `none` / `activated` / …), whether an update is waiting, the last update check and
+whether the app is installable or already installed — the four things worth knowing when a deployed
+change does not show up for someone.
+
+### The build gates it
+
+`ngsw-config.json` also carries a `content` data group (`/json/content/**`) and an `api` data group
+(`/api/**`, `/rest/**`, matching `resourceFactory`'s `restUrl`), both `freshness`, plus explicit
+`navigationUrls` that exclude those two prefixes so an API 404 never gets the SPA shell.
+
+Because an app can emit all the PWA control files and still be silently broken — a manifest whose
+icons 404, an `ngsw.json` that caches nothing — both lifecycle gates check it:
+
+- **Validate** (`tools/validate.js`): if `angular.json` declares a service worker, then
+  `@angular/service-worker` must be a dependency, the referenced config must exist and have an
+  `index` and non-empty `assetGroups`, `public/manifest.webmanifest` must exist with
+  `name`/`short_name`/`start_url`/`display`/`icons` and at least one ≥192px icon, and
+  `src/index.html` must actually link the manifest (HTML comments are stripped first — this file
+  keeps the old `manifest.old.json` links commented out).
+- **Verify** (`tools/verify.js`): the built artifact must contain `ngsw.json`, `ngsw-worker.js` and
+  `manifest.webmanifest`; `ngsw.json` must cache its own index and the manifest; and **every**
+  manifest icon must exist in the artifact. A missing maskable icon is a warning, not an error.
+
+Everything above is conditional on the `angular.json` declaration, so a copy of this template that
+deliberately drops the service worker still passes both phases.
+
+### Icons
+
+`public/manifest.webmanifest` declares the 14 existing sizes as `purpose: "any"` and two dedicated
+`purpose: "maskable"` icons (`icons/{192x192,512x512}/Information-maskable.png`). They are separate
+files on purpose: a maskable icon is cropped to a circle/squircle by Android, so its artwork must
+sit inside the central 80% safe zone on an opaque background. Regenerate them from the 512px master
+with:
 
 ```shell
-npm run build:live -w angular-start-project
-npx http-server packages/angular-start-project/dist/application/browser -p 8080
-# open http://localhost:8080/, wait for the SW to finish installing (~30s, registerWhenStable),
-# then use DevTools > Application > Service Workers > "Offline" (or actually disconnect) and reload
+cd packages/angular-start-project
+for size in 192 512; do
+  magick public/icons/512x512/Information.png -resize $((size * 80 / 100))x \
+    -background '#fafafa' -alpha remove -alpha off -gravity center -extent ${size}x${size} \
+    public/icons/${size}x${size}/Information-maskable.png
+done
 ```
+
+`shortcuts`, `screenshots` and `categories` are present as empty arrays — valid, ignored by
+browsers, and the place to add app shortcuts or store screenshots later without touching anything
+else.
+
+### Trying it out
+
+A plain `ng serve` (`local`, SW disabled by the flag above) is not enough — build and serve one of
+the SW-enabled configurations instead:
+
+```shell
+npm run build -- --profile live
+npm run server -w angular-start-project   # http://127.0.0.1:4210, correct .webmanifest MIME type
+# open it, wait for the SW to finish installing (~30s, registerWhenStable), then use
+# DevTools > Application > Service Workers > "Offline" (or actually disconnect) and reload
+npm run stop-server -w angular-start-project
+```
+
+To see the **update** banner: with that tab open, rebuild (`npm run build -- --profile live`) and
+either wait for the next periodic check or run `checkForUpdate()` — the banner appears as soon as
+the new version reports `VERSION_READY`. To see the **install** banner, open the app over HTTPS or
+`localhost` in Chromium; `beforeinstallprompt` never fires on a plain `http://<lan-ip>` origin.
 
 ## Brand example
 

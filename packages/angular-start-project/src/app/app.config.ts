@@ -12,6 +12,8 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { LocationService } from './services/location.service';
 import { PageTitleService } from './services/page-title.service';
+import { PwaInstallService } from './services/pwa-install.service';
+import { PwaUpdateService } from './services/pwa-update.service';
 import { version } from './config/version';
 
 // Example of calling the legacy jsdi DI service layer (README.md "Legacy jsdi service layer"):
@@ -111,5 +113,12 @@ export const appConfig: ApplicationConfig = {
             enabled: environment.production,
             registrationStrategy: 'registerWhenStable:30000',
         }),
+        // Both PWA services must exist from bootstrap, not from the first template that happens to
+        // read them: PwaUpdateService has to be subscribed to SwUpdate before the first
+        // VERSION_READY can arrive, and PwaInstallService owns the mirror of the install state
+        // captured in main.ts. pwa-panel.component injects them too, but that is a consumer, not
+        // the owner — deleting the banner must not silently switch update detection off.
+        provideAppInitializer(() => void inject(PwaUpdateService)),
+        provideAppInitializer(() => void inject(PwaInstallService)),
     ],
 };

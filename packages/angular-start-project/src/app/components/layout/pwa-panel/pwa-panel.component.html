@@ -1,0 +1,46 @@
+<div id="pwaPanel">
+    @if (updateService.unrecoverable()) {
+        <div class="pwaBanner pwaBannerAlert" role="alert">
+            <p>{{ languageService.translate('pwa.unrecoverable.text') }}</p>
+            <p>
+                <button type="button" (click)="updateService.reload()">
+                    {{ languageService.translate('pwa.unrecoverable.reloadButton') }}
+                </button>
+            </p>
+        </div>
+    } @else if (updateService.showUpdateBanner()) {
+        <div class="pwaBanner" role="status" aria-live="polite">
+            <p>{{ languageService.translate('pwa.update.text') }}</p>
+            <p>
+                <button
+                    type="button"
+                    [disabled]="updateService.activating()"
+                    (click)="updateService.activateUpdate()"
+                >
+                    {{ languageService.translate('pwa.update.reloadButton') }}
+                </button>
+                <button
+                    type="button"
+                    [disabled]="updateService.activating()"
+                    (click)="updateService.dismiss()"
+                >
+                    {{ languageService.translate('pwa.update.laterButton') }}
+                </button>
+            </p>
+        </div>
+    }
+
+    @if (installService.showInstallBanner()) {
+        <div class="pwaBanner" role="status" aria-live="polite">
+            <p>{{ languageService.translate('pwa.install.text') }}</p>
+            <p>
+                <button type="button" (click)="installService.install()">
+                    {{ languageService.translate('pwa.install.installButton') }}
+                </button>
+                <button type="button" (click)="installService.dismiss()">
+                    {{ languageService.translate('pwa.install.laterButton') }}
+                </button>
+            </p>
+        </div>
+    }
+</div>

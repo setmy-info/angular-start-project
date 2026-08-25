@@ -27,6 +27,10 @@
     "view.settings.language": "Keel:",
     "view.settings.environment": "Keskkond:",
     "view.settings.serviceWorker": "Teenusetöötleja (service worker) tugi:",
+    "view.settings.serviceWorkerState": "Teenusetöötleja olek:",
+    "view.settings.updateAvailable": "Uuendus saadaval:",
+    "view.settings.lastUpdateCheck": "Viimane uuenduse kontroll:",
+    "view.settings.installState": "Paigaldatav:",
     "view.settings.referrer": "Viitaja (referrer):",
     "view.settings.location": "Asukoht:",
     "view.settings.version": "Versioon:",
@@ -46,5 +50,16 @@
     "consent.text": "See veebileht kasutab küpsiseid, et tagada parim kasutajakogemus.",
     "consent.termsLinkPrefix": "Loe lähemalt meie",
     "consent.termsLinkText": "kasutustingimustest",
-    "consent.acceptButton": "Nõustun"
+    "consent.acceptButton": "Nõustun",
+    "pwa.update.text": "Rakendusest on saadaval uus versioon.",
+    "pwa.update.reloadButton": "Laadi kohe uuesti",
+    "pwa.update.laterButton": "Hiljem",
+    "pwa.install.text": "Paigalda see rakendus oma seadmesse, et kasutada seda ka võrguühenduseta.",
+    "pwa.install.installButton": "Paigalda",
+    "pwa.install.laterButton": "Mitte praegu",
+    "pwa.unrecoverable.text": "Rakenduse puhver on katki ja leht tuleb uuesti laadida.",
+    "pwa.unrecoverable.reloadButton": "Laadi uuesti",
+    "pwa.yes": "jah",
+    "pwa.no": "ei",
+    "pwa.never": "mitte kunagi"
 }

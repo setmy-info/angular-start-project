@@ -55,6 +55,8 @@ if (workspace.moduleType === 'angular-app') {
             );
         }
     }
+
+    validatePwaSources(angularJson);
 } else if (workspace.moduleType === 'less-package') {
     if (pkg.main !== 'index.less') {
         errors.push('package.json: main must point to index.less (this package ships LESS source)');
@@ -110,6 +112,117 @@ if (errors.length > 0) {
 }
 
 console.log('Validation successful');
+
+// PWA source-level gate. An app that declares a service worker but ships a
+// broken ngsw-config.json, an unlinked manifest or a manifest pointing at
+// icons that are not there still BUILDS - it just silently stops being
+// installable, and nobody notices until someone tries to install it. So the
+// declaration in angular.json is treated as a promise and checked here;
+// tools/verify.js then checks the same promise against the built artifact.
+// Everything is conditional on that declaration: an app with no service
+// worker is a legitimate configuration, not a failure.
+function validatePwaSources(angularJson) {
+    const serviceWorkerConfigs = Object.values(angularJson.projects ?? {})
+        .map(
+            (project) => (project.architect ?? project.targets ?? {}).build?.options?.serviceWorker,
+        )
+        .filter(Boolean);
+
+    if (serviceWorkerConfigs.length === 0) {
+        return;
+    }
+
+    if (!pkg.dependencies?.['@angular/service-worker']) {
+        errors.push(
+            'angular.json declares a service worker but @angular/service-worker is not a dependency',
+        );
+    }
+
+    for (const relativeConfig of serviceWorkerConfigs) {
+        // `true` means "use the default ngsw-config.json"; a string is an explicit path.
+        const configPath = path.join(
+            workspace.workspace,
+            relativeConfig === true ? 'ngsw-config.json' : relativeConfig,
+        );
+
+        if (!fs.existsSync(configPath)) {
+            errors.push(`service worker config missing: ${configPath}`);
+            continue;
+        }
+
+        const ngswConfig = readJson(configPath, `service worker config ${relativeConfig}`);
+
+        if (!ngswConfig) {
+            continue;
+        }
+
+        if (!ngswConfig.index) {
+            errors.push(
+                `${relativeConfig}: "index" missing - the app shell has nothing to serve offline`,
+            );
+        }
+
+        if (!Array.isArray(ngswConfig.assetGroups) || ngswConfig.assetGroups.length === 0) {
+            errors.push(`${relativeConfig}: no assetGroups - nothing would be cached`);
+        }
+    }
+
+    // The manifest is what makes the app installable; the service worker only makes it work
+    // offline. Both halves are needed, and the manifest is the half nothing else would notice.
+    const manifestPath = path.join(workspace.workspace, 'public', 'manifest.webmanifest');
+
+    if (!fs.existsSync(manifestPath)) {
+        errors.push('public/manifest.webmanifest missing - the app would not be installable');
+        return;
+    }
+
+    const manifest = readJson(manifestPath, 'public/manifest.webmanifest');
+
+    if (!manifest) {
+        return;
+    }
+
+    for (const key of ['name', 'short_name', 'start_url', 'display', 'icons']) {
+        if (!manifest[key]) {
+            errors.push(`public/manifest.webmanifest: "${key}" missing`);
+        }
+    }
+
+    // Chrome refuses to offer installation without an icon of at least 192px.
+    const hasLargeIcon = (manifest.icons ?? []).some((icon) =>
+        String(icon.sizes ?? '')
+            .split(/\s+/)
+            .some((size) => Number.parseInt(size, 10) >= 192),
+    );
+
+    if (!hasLargeIcon) {
+        errors.push('public/manifest.webmanifest: no icon of 192x192 or larger');
+    }
+
+    const indexHtmlPath = path.join(workspace.workspace, 'src', 'index.html');
+
+    if (fs.existsSync(indexHtmlPath)) {
+        // Comments are stripped first: this file keeps the old manifest.json
+        // links commented out for reference, and matching one of those would
+        // make the check pass on a page that links no manifest at all.
+        const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8').replace(/<!--[\s\S]*?-->/g, '');
+
+        if (!/rel=["']manifest["']/.test(indexHtml)) {
+            errors.push(
+                'src/index.html: no <link rel="manifest"> - the manifest would never be read',
+            );
+        }
+    }
+}
+
+function readJson(filePath, label) {
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (error) {
+        errors.push(`${label}: not valid JSON (${error.message})`);
+        return null;
+    }
+}
 
 function collectFiles(dir) {
     if (!fs.existsSync(dir)) {

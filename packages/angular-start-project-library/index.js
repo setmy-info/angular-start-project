@@ -10,6 +10,8 @@ const statisticsService = require('./src/services/statisticsService');
 const dbService = require('./src/services/dbService');
 const loadingService = require('./src/services/loadingService');
 const versionService = require('./src/services/versionService');
+const pwaUpdateService = require('./src/services/pwaUpdateService');
+const pwaInstallService = require('./src/services/pwaInstallService');
 const resourceFactory = require('./src/resources/resourceFactory');
 const menuModel = require('./src/models/menuModel');
 const config = require('./src/config');
@@ -29,6 +31,8 @@ module.exports = {
     dbService: dbService,
     loadingService: loadingService,
     versionService: versionService,
+    pwaUpdateService: pwaUpdateService,
+    pwaInstallService: pwaInstallService,
     resourceFactory: resourceFactory,
     menuModel: menuModel,
     config: config,

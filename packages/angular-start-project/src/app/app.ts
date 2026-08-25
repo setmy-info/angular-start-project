@@ -4,11 +4,13 @@ import { SideNavPanelComponent } from './components/layout/side-navigation-panel
 import { ModalOverlayComponent } from './components/layout/modal-body-panel/modal-overlay.component';
 import { BackgroundComponent } from './components/background/background.component';
 import { MainPanelComponent } from './components/layout/main-panel/main-panel.component';
+import { PwaPanelComponent } from './components/layout/pwa-panel/pwa-panel.component';
 
 @Component({
     selector: 'app',
     imports: [
         HeaderPanelComponent,
+        PwaPanelComponent,
         MainPanelComponent,
         SideNavPanelComponent,
         ModalOverlayComponent,

@@ -398,6 +398,10 @@ const contentTypeByExtension = {
     '.js': 'application/javascript; charset=utf-8',
     '.mjs': 'application/javascript; charset=utf-8',
     '.json': 'application/json; charset=utf-8',
+    // The web app manifest has its own type. Served as anything else, Chrome
+    // logs "Manifest: Line: 1, column: 1, Syntax error" and drops it, which
+    // silently un-installs the PWA - the exact failure this tier exists to catch.
+    '.webmanifest': 'application/manifest+json; charset=utf-8',
     '.map': 'application/json; charset=utf-8',
     '.txt': 'text/plain; charset=utf-8',
     '.xml': 'application/xml; charset=utf-8',

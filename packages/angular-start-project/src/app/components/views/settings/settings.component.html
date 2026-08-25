@@ -41,6 +41,45 @@
                 <dd class="definitionDesc">{{ hasServiceWorkerSupport }}</dd>
 
                 <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.serviceWorkerState') }}
+                </dt>
+                <dd class="definitionDesc">{{ pwaUpdateService.controllerState() }}</dd>
+
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.updateAvailable') }}
+                </dt>
+                <dd class="definitionDesc">
+                    @if (pwaUpdateService.updateAvailable()) {
+                        {{ languageService.translate('pwa.yes') }}
+                    } @else {
+                        {{ languageService.translate('pwa.no') }}
+                    }
+                    @if (pwaUpdateService.lastError(); as pwaError) {
+                        ({{ pwaError }})
+                    }
+                </dd>
+
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.lastUpdateCheck') }}
+                </dt>
+                <dd class="definitionDesc">
+                    {{ lastUpdateCheck() || languageService.translate('pwa.never') }}
+                </dd>
+
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.installState') }}
+                </dt>
+                <dd class="definitionDesc">
+                    @if (pwaInstallService.standalone()) {
+                        {{ languageService.translate('pwa.install.installButton') }} &check;
+                    } @else if (pwaInstallService.canInstall()) {
+                        {{ languageService.translate('pwa.yes') }}
+                    } @else {
+                        {{ languageService.translate('pwa.no') }}
+                    }
+                </dd>
+
+                <dt class="definitionTerm">
                     {{ languageService.translate('view.settings.referrer') }}
                 </dt>
                 <dd class="definitionDesc">{{ referrer || '-' }}</dd>

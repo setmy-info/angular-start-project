@@ -6,4 +6,8 @@ module.exports = {
     CREATE_EVENT_NAME: 'create',
     CHANGE_EVENT_NAME: 'change',
     REFERRER_EVENT_NAME: 'referrer',
+    // PWA lifecycle events (pwaUpdateService / pwaInstallService); like every other event here
+    // they only leave the browser once config.features.statistics is on.
+    UPDATE_EVENT_NAME: 'update',
+    INSTALL_EVENT_NAME: 'install',
 };
