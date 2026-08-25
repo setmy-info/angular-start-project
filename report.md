@@ -127,6 +127,45 @@ deployable is `.artifacts/angular-start-project/angular-start-project-1.0.0-SNAP
   (dev server compiled in memory vs the built `dist/` output). Verified by running both simultaneously: 4200 → HTTP
   200, 4210 → HTTP 200, and the SPA fallback route `/settings` on 4210 → HTTP 200.
 
+## Angular 21 -> 22 upgrade
+
+Date: 2026-08-25
+
+Driven off `packages/angular-original`, the untouched `ng new` scaffold, which sits on Angular 22 while the app was on
+21 — so this was a single major hop, done with the official tool rather than by hand-editing versions.
+
+**How it was run.** `ng update` cannot see hoisted dependencies from inside an npm-workspaces member ("Found 0
+dependencies. Package '@angular/core' is not a dependency"), so it was run in an isolated copy of the app package
+(workspace-sibling deps stripped, own install), and the result ported back. That keeps the monorepo's install and
+lockfile out of the upgrade tool's hands.
+
+**What the upgrade actually changed** — very little, which is the useful finding:
+
+- `@angular/*` `^21.0.0` -> `^22.1.3`; `@angular/build` / `@angular/cli` `^21.0.4` -> `^22.1.5`;
+  `@angular/compiler-cli` -> `^22.1.3`; `typescript` `~5.9.2` -> `~6.0.3`; `jsdom` `^27` -> `^28` (aligned with the
+  22 scaffold).
+- `tsconfig.app.json`: the one code-affecting migration — Angular 22 enables the `nullishCoalescingNotNullable` and
+  `optionalChainNotNullable` extended diagnostics by default, which fire throughout an app that compiles non-strict on
+  purpose (`strict: false`, `strictNullChecks: false`). The migration suppresses exactly those two checks; recorded
+  with the reason in the file.
+- **No source-code migrations were required.** Every other schematic reported "No changes made".
+- Two OPTIONAL migrations were offered and deliberately not taken: `migrate-karma-to-vitest` (already on Vitest) and
+  `use-application-builder` (already using `@angular/build:application`).
+
+**The security gate now passes.** This upgrade resolved the 5 high advisories that were previously blocking it — they
+were all Angular-21 framework packages needing a version past the vulnerable `21.0.0-next.0 - 21.2.18` range. One
+remaining `undici` high (via `jsdom`, test-only) was cleared by a non-breaking `npm audit fix`.
+`npm audit --audit-level=high` reports **0 vulnerabilities**, down from 18 high at the start of the migration.
+
+**Verified by running, on Angular 22**: full lifecycle `EXIT 0` (4/4 validated with `tsc --noEmit` under TypeScript 6,
+4/4 verified, packaged, signed, install-local, publish dry-run, deploy, site); **81/81 unit tests**;
+**40/40 e2e tests across 6 suites** against the built app. A pre-upgrade backup of the tree was taken first; it was not
+needed.
+
+**Note on "version by version":** 21 -> 22 was one major step, so one `ng update` hop. If a future upgrade spans more
+than one major (say 22 -> 24), run it one major at a time — `ng update @angular/core@23 @angular/cli@23`, verify, then
+`@24` — because the migration schematics for each major only run when you land on that major.
+
 ## Open / not done
 
 1. **`npm run security` fails: 5 high advisories remain**, all in Angular framework packages (`@angular/common`,

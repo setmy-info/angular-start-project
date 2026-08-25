@@ -7,5 +7,18 @@
         "types": []
     },
     "include": ["src/**/*.ts"],
-    "exclude": ["src/**/*.spec.ts"]
+    "exclude": ["src/**/*.spec.ts"],
+    /* Added by the Angular 21 -> 22 migration (`ng update @angular/core@22`).
+       Angular 22 turns these two extended diagnostics on by default; this app
+       deliberately compiles non-strict (strict/strictNullChecks false, see
+       tsconfig.json), which makes both of them fire on code that is correct
+       under its own settings. Suppressed rather than silenced globally. */
+    "angularCompilerOptions": {
+        "extendedDiagnostics": {
+            "checks": {
+                "nullishCoalescingNotNullable": "suppress",
+                "optionalChainNotNullable": "suppress"
+            }
+        }
+    }
 }
