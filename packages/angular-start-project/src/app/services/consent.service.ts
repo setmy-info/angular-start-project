@@ -1,9 +1,11 @@
-import {Injectable, signal} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import angularStartProjectLibrary from 'angular-start-project-library';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ConsentService {
-    readonly hasConsented = signal<boolean>(angularStartProjectLibrary.consentService.hasConsented());
+    readonly hasConsented = signal<boolean>(
+        angularStartProjectLibrary.consentService.hasConsented(),
+    );
 
     accept(): void {
         angularStartProjectLibrary.consentService.grantConsent();

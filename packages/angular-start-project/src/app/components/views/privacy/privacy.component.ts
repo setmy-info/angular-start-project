@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {LanguageService} from '../../../services/language.service';
-import {ConsentService} from '../../../services/consent.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { LanguageService } from '../../../services/language.service';
+import { ConsentService } from '../../../services/consent.service';
 
 @Component({
     selector: 'app-privacy',
     imports: [RouterLink],
     templateUrl: './privacy.component.html',
     styleUrl: './privacy.component.less',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrivacyComponent {
     protected readonly languageService = inject(LanguageService);

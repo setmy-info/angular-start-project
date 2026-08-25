@@ -17,7 +17,7 @@ commands); see [unused.md](unused.md) for the LESS/CSS dead-code and cleanup pla
 
 This is an npm workspace monorepo. It does **not** mirror `setmy-info-less`'s internal package
 layering (`base`/`extended`/`fancy`/`enterprise`/...) as a folder structure — that project's own
-layering is *its* concern. This repo is one *consumer* of those packages, structured as its own
+layering is _its_ concern. This repo is one _consumer_ of those packages, structured as its own
 three npm workspaces.
 
 ## Workspace modules
@@ -89,7 +89,7 @@ service layer, internally called `jsdi` — a global registry (`window.jsdi`) wi
 published npm packages, each a sibling git submodule during development:
 
 | Package (npm + submodule) | Depends on      | Adds to `jsdi.services`                                                                      |
-|---------------------------|-----------------|----------------------------------------------------------------------------------------------|
+| ------------------------- | --------------- | -------------------------------------------------------------------------------------------- |
 | `js-api-extend`           | —               | (none — `String`/`Array`/`Storage` prototype extensions only)                                |
 | `servicejs`               | `js-api-extend` | the `jsdi` container itself (`service()`/`get()`/`initServices()`)                           |
 | `servedjs`                | `servicejs`     | `$log`, `$browser`, `$localStorage`, `$sessionStorage`, `$placeholders`, `$timer`, `$router` |
@@ -106,7 +106,7 @@ imports (`import 'js-api-extend'; import 'servicejs'; import 'servedjs'; import 
 each attaching its services to the global `jsdi` registry. This is a deliberate, non-obvious
 choice: `angular-start-project-library` is excluded from the dev-server's dependency pre-bundling
 (`angular.json` `serve.options.prebundle.exclude`, for hot-reload on that workspace package — see
-the "Firewall"/dev-server notes above); a file *inside* an excluded package doing
+the "Firewall"/dev-server notes above); a file _inside_ an excluded package doing
 `require('servedjs-geo')` breaks esbuild's bundling of that real npm dependency and surfaces in
 the browser as `Uncaught Error: Dynamic require of "servedjs-geo" is not supported`. Loading the
 chain from Angular app source instead sidesteps that entirely.
@@ -131,7 +131,7 @@ the last known position.
 ### Services (`src/app/services`, all signals-based, `providedIn: 'root'`)
 
 | Service            | State                                                                        | Purpose                                                                                                                                                                                                                                 |
-|--------------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------ | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ModalService`     | `isOpen` signal                                                              | Open/close/toggle for the side-nav off-canvas panel and its backdrop                                                                                                                                                                    |
 | `LanguageService`  | `currentLanguageCode`, `translations` signals                                | Current language + translation lookup; loads translations asynchronously (see "Translations" below); the choice persists across reloads (localStorage `LANG`, like the old app); records a `change` statistics event on language switch |
 | `MenuService`      | `rawMenuItems` signal from `menuModel.js`, plus a `headerMenuItems` computed | Per-tenant menu set (`menuModel.getMenuItems(tenant)`); side navigation shows every item, the top header nav only items whose `header` flag isn't `false`                                                                               |
@@ -158,7 +158,7 @@ app (app.html)
 ### Views / routes (`src/app/components/views`, `app.routes.ts`)
 
 | Path                                                                                              | Component                                             | Header nav | Side nav | Notes                                                                                                                                                        |
-|---------------------------------------------------------------------------------------------------|-------------------------------------------------------|------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `/`                                                                                               | `HomeComponent`                                       | yes        | yes      | Lorem Ipsum home page                                                                                                                                        |
 | `/about`                                                                                          | `AboutComponent`                                      | no         | no       | Lorem Ipsum about page — kept for reference, URL-only, not in `menuModel.js`                                                                                 |
 | `/contact`                                                                                        | `ContactComponent`                                    | yes        | yes      | icon/label/text rows fed from the per-tenant content JSON; three bank rows behind the `bankAccounts` feature flag                                            |
@@ -341,13 +341,13 @@ language switch — so a reload keeps the user's language instead of resetting t
   on a fresh `npm install`. If the font file is ever missing (e.g. a clean checkout without it
   committed), re-fetch it:
 
-  ```shell
-  npm pack material-symbols --pack-destination /tmp
-  tar xzf /tmp/material-symbols-*.tgz -C /tmp
-  cp /tmp/package/material-symbols-outlined.woff2 packages/angular-start-project/public/fonts/
-  ```
+    ```shell
+    npm pack material-symbols --pack-destination /tmp
+    tar xzf /tmp/material-symbols-*.tgz -C /tmp
+    cp /tmp/package/material-symbols-outlined.woff2 packages/angular-start-project/public/fonts/
+    ```
 
-  Do not add a Google Fonts/Icons `<link>` back to `index.html` — see `review.md` section 4.
+    Do not add a Google Fonts/Icons `<link>` back to `index.html` — see `review.md` section 4.
 
 - **Icons render filled, not outlined.** `.material-symbols-outlined` sets
   `font-variation-settings: 'FILL' 1;`. No second font file is needed for this — the self-hosted
@@ -376,7 +376,7 @@ Angular build/serve configuration names — there is no `production`/`developmen
 `angular.json`:
 
 | Configuration | `envName` | `production` | `apiBaseUrl`                                       |
-|---------------|-----------|--------------|----------------------------------------------------|
+| ------------- | --------- | ------------ | -------------------------------------------------- |
 | `local`       | `local`   | `false`      | `http://localhost:4200`                            |
 | `dev`         | `dev`     | `false`      | `https://dev.angular-start-project.setmy.info`     |
 | `ci`          | `ci`      | `true`       | `https://ci.angular-start-project.setmy.info`      |
@@ -490,6 +490,122 @@ until the port is opened on the host firewall (`firewalld`):
 ```shell
 sudo firewall-cmd --permanent --add-port=4200/tcp && sudo firewall-cmd --reload && sudo firewall-cmd --list-ports
 ```
+
+## Running the application locally (development)
+
+The lifecycle below is the _build_. For day-to-day development you want the Angular dev server, not a lifecycle phase:
+
+```shell
+npm start -w angular-start-project
+# → http://localhost:4200/ , "local" environment, live reload on save
+```
+
+That is `ng serve` with the `local` configuration (`angular.json` `defaultConfiguration: local`), so
+`src/environments/local.environment.ts` is the active environment. Nothing needs to be built first — the dev server
+compiles in memory.
+
+Other loops:
+
+```shell
+npm run test:watch -w angular-start-project   # unit tests in Vitest's interactive watcher
+npm run watch -w angular-start-project        # incremental `ng build` to dist/ on every change
+npm run ver -w angular-start-project          # re-stamp the version into src/app/config/version.ts
+```
+
+If you edit `angular-start-project-library` or `angular-start-project-style` while the dev server runs, the change is
+picked up like any other source file — they are consumed as source (plain JS / LESS), not as built packages.
+
+**`npm start` is not the same as `npm run server`.** They serve different things on different ports, on purpose:
+
+| Command                     | Serves                         | Port | Use it for                                 |
+| --------------------------- | ------------------------------ | ---- | ------------------------------------------ |
+| `npm start`                 | `ng serve`, compiled in memory | 4200 | development — live reload, sourcemaps      |
+| `npm run server`            | the **built** `dist/` output   | 4210 | checking a real build before deploying it  |
+| (automatic, `pre-e2e-test`) | the **built** `dist/` output   | 4211 | the e2e tier — started and stopped for you |
+
+Ports 4210/4211 deliberately avoid 4200 so a dev server and a build check can run side by side. Remote access to the
+dev server needs the port opened on the host firewall — see "Firewall" below.
+
+## Lifecycle (Maven-mirroring build)
+
+This repo follows the org's shared build lifecycle: the
+[Maven default lifecycle](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#default-lifecycle)
+phase names and ordering, implemented in npm — the same structure as `setmy.info-js`, `setmy.info-python`,
+`setmy.info-elixir` and `setmy-info-less`. See **ADR-0045** for the cross-language phase table,
+`setmy.info-js/requirements-rules.md` for the spec, and `report.md` here for what the migration changed.
+
+Run from the repository root, in order:
+
+```shell
+npm run bootstrap                      # npm ci
+npm run clean
+npm run validate                       # structure, ADR-0042 profile names, tsc --noEmit, framework-independence
+npm run format:check                   # or: npm run format
+npm run lint
+npm run generate-sources               # version stamp -> src/app/config/version.ts
+npm run resources -- --profile <local|dev|ci|test|prelive|live>
+npm run build -- --profile <profile>   # ng build / lessc / library load check
+npm test                               # unit tier
+npm run pre-integration-test
+npm run integration-test
+npm run post-integration-test
+npm run pre-e2e-test                   # serves the BUILT app; needs Java + Selenium Grid
+npm run e2e-test
+npm run post-e2e-test
+npm run coverage
+npm run security
+npm run verify
+npm run package                        # app -> deployable tar.gz; libraries -> npm pack
+npm run sbom
+npm run sign
+npm run install-local
+npm run publish                        # dry-run unless PUBLISH_EXECUTE=true; private app skipped
+DEPLOY_TARGET=dev npm run deploy
+npm run site
+```
+
+Everything except the Selenium e2e tier has been run clean end to end (`EXIT 0`); `npm run security` currently fails
+on Angular framework advisories — see `report.md` "Open".
+
+Any phase can be run for one package: `npm run build -w angular-start-project -- --profile dev`.
+
+### Three module types, one set of phase names
+
+Each package declares `config.moduleType` in its `package.json` and the shared `tools/*` dispatch on it. The phase
+names are identical everywhere — only what a phase runs differs:
+
+| Package                             | moduleType     | build                          | test               |
+| ----------------------------------- | -------------- | ------------------------------ | ------------------ |
+| `angular-start-project`             | `angular-app`  | `ng build --configuration <p>` | `ng test` (Vitest) |
+| `angular-start-project-library`     | `js-library`   | load check (no transpile)      | `node --test`      |
+| `angular-start-project-style`       | `less-package` | `lessc` → dist/index[.min].css | —                  |
+| `angular-start-project-brand-style` | `less-package` | `lessc` → dist/index[.min].css | —                  |
+
+`packages/angular-original` and `packages/application.old` are legacy directories, deliberately **not** npm
+workspaces, and no phase touches them.
+
+### Framework independence is enforced by the build
+
+`angular-start-project-library` must not depend on Angular (`AGENTS.md`). That is now checked, not just documented:
+**Validate** fails on any `@angular/*` or `rxjs` import in the library's source, and **Compile** loads the whole
+library in a plain Node process with only a minimal DOM present — no framework, no bundler. Keep new logic in the
+library and the Angular layer thin, and the build keeps proving it.
+
+Note: the library is framework-free but _browser-targeted_ — several services touch `localStorage` at module scope, so
+it needs a DOM to load. See `report.md`.
+
+### Profiles
+
+The Angular CLI's own build configurations are the profile mechanism, and they are exactly the ADR-0041 canonical six
+(`local`, `dev`, `ci`, `test`, `prelive`, `live`), each swapping in its `src/environments/<name>.environment.ts`.
+`npm run validate` hard-fails if a non-canonical configuration name is ever added, so ADR-0042 is enforced rather than
+hoped for.
+
+### CI
+
+`Jenkinsfile` (1.1.0, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating
+as the sibling repos: `master`, `devel*`, `release*`, `hotfix*`, and feature branches running everything up to Package
+but never Publish/Deploy/Tag.
 
 ### Day-to-day commands (run from the repo root)
 

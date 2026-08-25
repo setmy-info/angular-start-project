@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
-import {PrivacyComponent} from './privacy.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { PrivacyComponent } from './privacy.component';
 
 describe('PrivacyComponent', () => {
     let fixture: ComponentFixture<PrivacyComponent>;
@@ -8,7 +8,7 @@ describe('PrivacyComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [PrivacyComponent],
-            providers: [provideRouter([])]
+            providers: [provideRouter([])],
         }).compileComponents();
         fixture = TestBed.createComponent(PrivacyComponent);
         fixture.detectChanges();

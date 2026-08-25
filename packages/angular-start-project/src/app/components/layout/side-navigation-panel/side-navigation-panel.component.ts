@@ -1,15 +1,15 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
-import {ModalService} from '../../../services/modal.service';
-import {MenuService} from '../../../services/menu.service';
-import {LanguageService} from '../../../services/language.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ModalService } from '../../../services/modal.service';
+import { MenuService } from '../../../services/menu.service';
+import { LanguageService } from '../../../services/language.service';
 
 @Component({
     selector: 'side-navigation-panel',
     imports: [RouterLink, RouterLinkActive],
     templateUrl: './side-navigation-panel.component.html',
     styleUrl: './side-navigation-panel.component.less',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SideNavPanelComponent {
     protected readonly modalService = inject(ModalService);

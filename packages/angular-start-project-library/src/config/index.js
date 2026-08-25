@@ -6,14 +6,14 @@ const config = {
     resources: {
         restUrl: 'rest',
         jsonUrl: 'json',
-        timeout: 2500
+        timeout: 2500,
     },
     features: {
         // featureName: false
         bankAccounts: false,
         statistics: false,
-        somethingElse: false
-    }
+        somethingElse: false,
+    },
 };
 
 module.exports = config;

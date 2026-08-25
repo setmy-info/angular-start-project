@@ -1,0 +1,4 @@
+{
+    "apiBaseUrl": "https://ci.api.setmy.info",
+    "buildProfile": "ci"
+}

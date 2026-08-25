@@ -3,7 +3,6 @@
 const helper = require('./pageHelper');
 
 describe('main navigation', () => {
-
     beforeAll(async () => {
         await helper.startSession();
         await helper.openPage('/');
@@ -33,7 +32,9 @@ describe('main navigation', () => {
         expect(await helper.countOf('.contactsPage section > div')).toBe(11);
         // bank rows stay hidden while the bankAccounts feature flag is off
         expect(await helper.displayOf('[feature="bankAccounts"]')).toBe('none');
-        expect(await helper.countOf('.contactsPage .iconPanel .material-symbols-outlined')).toBeGreaterThan(0);
+        expect(
+            await helper.countOf('.contactsPage .iconPanel .material-symbols-outlined'),
+        ).toBeGreaterThan(0);
         expect(await helper.getText('.contactsPage a[href*="github"]')).toBe('GitHub');
     });
 

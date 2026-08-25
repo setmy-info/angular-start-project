@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {HeaderPanelComponent} from './components/layout/header-panel/header-panel.component';
-import {SideNavPanelComponent} from './components/layout/side-navigation-panel/side-navigation-panel.component';
-import {ModalOverlayComponent} from './components/layout/modal-body-panel/modal-overlay.component';
-import {BackgroundComponent} from './components/background/background.component';
-import {MainPanelComponent} from './components/layout/main-panel/main-panel.component';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { HeaderPanelComponent } from './components/layout/header-panel/header-panel.component';
+import { SideNavPanelComponent } from './components/layout/side-navigation-panel/side-navigation-panel.component';
+import { ModalOverlayComponent } from './components/layout/modal-body-panel/modal-overlay.component';
+import { BackgroundComponent } from './components/background/background.component';
+import { MainPanelComponent } from './components/layout/main-panel/main-panel.component';
 
 @Component({
     selector: 'app',
@@ -12,10 +12,10 @@ import {MainPanelComponent} from './components/layout/main-panel/main-panel.comp
         MainPanelComponent,
         SideNavPanelComponent,
         ModalOverlayComponent,
-        BackgroundComponent
+        BackgroundComponent,
     ],
     templateUrl: './app.html',
     styleUrl: './app.less',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {}

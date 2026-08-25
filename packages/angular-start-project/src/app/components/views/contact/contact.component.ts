@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
-import {LanguageService} from '../../../services/language.service';
-import {ContentService} from '../../../services/content.service';
-import {FeatureDirective} from '../../../directives/feature.directive';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { LanguageService } from '../../../services/language.service';
+import { ContentService } from '../../../services/content.service';
+import { FeatureDirective } from '../../../directives/feature.directive';
 
 @Component({
     selector: 'app-contact',
     imports: [FeatureDirective],
     templateUrl: './contact.component.html',
     styleUrl: './contact.component.less',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
     protected readonly languageService = inject(LanguageService);

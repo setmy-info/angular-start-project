@@ -3,7 +3,7 @@
 // `create` statistics event and, when the page was entered from an external site, a `referrer`
 // event (the old browserService.referrerOriginSite()).
 const uuidService = require('./uuidService');
-const {SESSION_ID_KEY, CREATE_EVENT_NAME, REFERRER_EVENT_NAME} = require('../constants');
+const { SESSION_ID_KEY, CREATE_EVENT_NAME, REFERRER_EVENT_NAME } = require('../constants');
 
 function referrerOriginSite() {
     try {
@@ -49,7 +49,7 @@ const sessionService = {
         if (referrer) {
             statisticsService.add(referrer, REFERRER_EVENT_NAME);
         }
-    }
+    },
 };
 
 module.exports = sessionService;

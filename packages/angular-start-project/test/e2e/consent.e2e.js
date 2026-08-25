@@ -4,14 +4,11 @@
 const helper = require('./pageHelper');
 
 async function storedConsent() {
-    const raw = await helper.data.driver.executeScript(
-        'return localStorage.getItem("consent");'
-    );
+    const raw = await helper.data.driver.executeScript('return localStorage.getItem("consent");');
     return raw === null ? null : JSON.parse(raw).forCookieUsage;
 }
 
 describe('cookie consent', () => {
-
     beforeAll(async () => {
         await helper.startSession();
         await helper.openPage('/');
@@ -30,8 +27,8 @@ describe('cookie consent', () => {
         await helper.click('#consentBody button');
         await helper.waitUntil(
             'var el = document.querySelector("#consentBody");' +
-            'return el && window.getComputedStyle(el).display === "none";',
-            'consent banner did not hide'
+                'return el && window.getComputedStyle(el).display === "none";',
+            'consent banner did not hide',
         );
         expect(await storedConsent()).toBe(true);
     });
@@ -46,7 +43,7 @@ describe('cookie consent', () => {
         await helper.openPage('/privacy');
         await helper.waitFor('.privacyPage input[type="checkbox"]');
         const checked = await helper.data.driver.executeScript(
-            'return document.querySelector(".privacyPage input[type=checkbox]").checked;'
+            'return document.querySelector(".privacyPage input[type=checkbox]").checked;',
         );
         expect(checked).toBe(true);
     });
@@ -55,8 +52,8 @@ describe('cookie consent', () => {
         await helper.click('.privacyPage input[type="checkbox"]');
         await helper.waitUntil(
             'var el = document.querySelector("#consentBody");' +
-            'return el && window.getComputedStyle(el).display !== "none";',
-            'consent banner did not reappear after revocation'
+                'return el && window.getComputedStyle(el).display !== "none";',
+            'consent banner did not reappear after revocation',
         );
         expect(await storedConsent()).toBe(false);
     });
@@ -67,7 +64,7 @@ describe('cookie consent', () => {
         expect(await helper.displayOf('#consentBody')).not.toBe('none');
         expect(await storedConsent()).toBe(false);
         const checked = await helper.data.driver.executeScript(
-            'return document.querySelector(".privacyPage input[type=checkbox]").checked;'
+            'return document.querySelector(".privacyPage input[type=checkbox]").checked;',
         );
         expect(checked).toBe(false);
     });
@@ -76,8 +73,8 @@ describe('cookie consent', () => {
         await helper.click('.privacyPage input[type="checkbox"]');
         await helper.waitUntil(
             'var el = document.querySelector("#consentBody");' +
-            'return el && window.getComputedStyle(el).display === "none";',
-            'consent banner did not hide after re-granting'
+                'return el && window.getComputedStyle(el).display === "none";',
+            'consent banner did not hide after re-granting',
         );
         expect(await storedConsent()).toBe(true);
     });

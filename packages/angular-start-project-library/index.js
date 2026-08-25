@@ -36,5 +36,5 @@ module.exports = {
     // Live accessor, not a captured value — see legacyServiceLayer.js for why.
     get jsdi() {
         return getJsdi();
-    }
+    },
 };

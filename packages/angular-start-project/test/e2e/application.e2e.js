@@ -4,7 +4,6 @@
 const helper = require('./pageHelper');
 
 describe('application shell', () => {
-
     beforeAll(async () => {
         await helper.startSession();
         await helper.openPage('/');
@@ -31,7 +30,7 @@ describe('application shell', () => {
             top: 0,
             left: 0,
             x: 0,
-            y: 0
+            y: 0,
         });
     });
 
@@ -48,8 +47,8 @@ describe('application shell', () => {
         await helper.click('#consentBody button');
         await helper.waitUntil(
             'var el = document.querySelector("#consentBody");' +
-            'return el && window.getComputedStyle(el).display === "none";',
-            'consent banner did not hide'
+                'return el && window.getComputedStyle(el).display === "none";',
+            'consent banner did not hide',
         );
         expect(await helper.displayOf('#consentBody')).toBe('none');
     });
@@ -67,7 +66,7 @@ describe('application shell', () => {
             top: 0,
             left: 0,
             x: 0,
-            y: 0
+            y: 0,
         });
     });
 
@@ -84,7 +83,7 @@ describe('application shell', () => {
             top: 1150,
             left: 488,
             x: 488,
-            y: 1150
+            y: 1150,
         });
     });
 

@@ -5,7 +5,6 @@
 const helper = require('./pageHelper');
 
 describe('language change', () => {
-
     beforeAll(async () => {
         await helper.startSession();
         await helper.openPage('/');
@@ -15,8 +14,8 @@ describe('language change', () => {
         await helper.click('#consentBody button');
         await helper.waitUntil(
             'var el = document.querySelector("#consentBody");' +
-            'return el && window.getComputedStyle(el).display === "none";',
-            'consent banner did not hide'
+                'return el && window.getComputedStyle(el).display === "none";',
+            'consent banner did not hide',
         );
     });
 
@@ -38,7 +37,9 @@ describe('language change', () => {
         expect(await helper.getText('nav li:nth-child(2) a')).toBe('CONTACT');
         expect(await helper.getTitle()).toBe('Home — Lorem Ipsum Application');
         expect(await helper.getText('header ul:first-child li:last-child span')).toBe('Home');
-        expect(await helper.getText('app-footer-panel footer')).toContain('Lorem Ipsum Application');
+        expect(await helper.getText('app-footer-panel footer')).toContain(
+            'Lorem Ipsum Application',
+        );
         expect(await helper.getText('header ul:last-child button[disabled]')).toBe('EN');
     });
 
@@ -53,11 +54,11 @@ describe('language change', () => {
         await helper.click('header ul:first-child li:first-child button');
         await helper.waitUntil(
             'var el = document.querySelector("#sidenav");' +
-            'return el && window.getComputedStyle(el).display !== "none";',
-            'side nav did not open'
+                'return el && window.getComputedStyle(el).display !== "none";',
+            'side nav did not open',
         );
         const selected = await helper.data.driver.executeScript(
-            'return document.querySelector("#sideNavigationContentPanel select").value;'
+            'return document.querySelector("#sideNavigationContentPanel select").value;',
         );
         expect(selected).toBe('en');
         expect(await helper.getText('#sideNavigationHeaderPanel span')).toBe('Menu');
@@ -68,7 +69,12 @@ describe('language change', () => {
         await helper.selectOption('#sideNavigationContentPanel select', 'et');
         await helper.waitForText('li.sideNavMenuItems:nth-child(1) a', 'AVALEHT');
         expect(await helper.getText('#sideNavigationHeaderPanel span')).toBe('Menüü');
-        expect(await helper.getText('li.sideNavMenuItems:nth-child(4) a')).toContain('SEADED');
+        // Settings is the THIRD menu item, not the fourth: the side navigation
+        // renders 3 menu items (Home, Contact, Settings) plus a language row,
+        // and that language row is the 4th li - see sideNavigation.e2e.js,
+        // which asserts exactly that layout (countOf === 4, nth-child(3) =
+        // SEADED). This assertion was left pointing at the language row.
+        expect(await helper.getText('li.sideNavMenuItems:nth-child(3) a')).toContain('SEADED');
     });
 
     test('after closing the panel the whole page is Estonian again', async () => {

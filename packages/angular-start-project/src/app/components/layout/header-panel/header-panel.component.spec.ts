@@ -1,8 +1,8 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import angularStartProjectLibrary from 'angular-start-project-library';
-import {HeaderPanelComponent} from './header-panel.component';
-import {NetworkService} from '../../../services/network.service';
+import { HeaderPanelComponent } from './header-panel.component';
+import { NetworkService } from '../../../services/network.service';
 
 describe('HeaderPanelComponent', () => {
     let fixture: ComponentFixture<HeaderPanelComponent>;
@@ -10,7 +10,7 @@ describe('HeaderPanelComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [HeaderPanelComponent],
-            providers: [provideRouter([])]
+            providers: [provideRouter([])],
         }).compileComponents();
         fixture = TestBed.createComponent(HeaderPanelComponent);
         fixture.detectChanges();
@@ -45,9 +45,9 @@ describe('HeaderPanelComponent', () => {
     it('should render one nav link per header menu item (items with header:false excluded)', () => {
         const el = fixture.nativeElement as HTMLElement;
         const links = el.querySelectorAll('nav a');
-        const headerMenuCount = angularStartProjectLibrary.menuModel.getMenuItems(
-            angularStartProjectLibrary.tenantService.getTenant()
-        ).filter((item: {header?: boolean}) => item.header !== false).length;
+        const headerMenuCount = angularStartProjectLibrary.menuModel
+            .getMenuItems(angularStartProjectLibrary.tenantService.getTenant())
+            .filter((item: { header?: boolean }) => item.header !== false).length;
         expect(links.length).toBe(headerMenuCount);
     });
 

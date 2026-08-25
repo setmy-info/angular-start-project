@@ -2,9 +2,7 @@
     <header>
         <ul>
             <li>
-                <button
-                    type="button"
-                    (click)="modalService.toggle()">
+                <button type="button" (click)="modalService.toggle()">
                     <i>menu</i>
                 </button>
             </li>
@@ -13,7 +11,8 @@
                     type="button"
                     disabled
                     [attr.aria-label]="languageService.translate('app.offline')"
-                    [attr.title]="languageService.translate('app.offline')">
+                    [attr.title]="languageService.translate('app.offline')"
+                >
                     <i class="alertMaterialIcon">signal_wifi_off</i>
                 </button>
             </li>
@@ -28,7 +27,8 @@
                         type="button"
                         [disabled]="language.code === languageService.currentLanguageCode()"
                         [class.active]="language.code === languageService.currentLanguageCode()"
-                        (click)="languageService.changeLanguage(language.code)">
+                        (click)="languageService.changeLanguage(language.code)"
+                    >
                         {{ language.label }}
                     </button>
                 </li>
@@ -39,7 +39,11 @@
         <ul>
             @for (item of menuService.headerMenuItems(); track item.id) {
                 <li>
-                    <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: item.path === '/'}">
+                    <a
+                        [routerLink]="item.path"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+                    >
                         <!-- i>{{ item.icon }}</i -->
                         <!--i></i-->
                         {{ languageService.translate(item.translationKey || item.label) }}
@@ -48,5 +52,5 @@
             }
         </ul>
     </nav>
-    <consent-body-panel/>
+    <consent-body-panel />
 </div>

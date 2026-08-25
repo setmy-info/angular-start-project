@@ -19,7 +19,7 @@ Deliverable: this `review.md` with findings and a plan for next execution passes
 
 ## 1. Environment naming — ADR-0041 / ADR-0042 vs. current state
 
-Canonical names (the *only* allowed environment/profile names, per ADR-0041 §3 and ADR-0042 §3):
+Canonical names (the _only_ allowed environment/profile names, per ADR-0041 §3 and ADR-0042 §3):
 
 ```
 local · dev · ci · test · prelive · live
@@ -34,7 +34,7 @@ profile identifiers anywhere in setmy.info docs, config, topics, or build/runtim
   `"development"` configurations (Angular CLI defaults), `defaultConfiguration: "production"`. Neither
   name is canonical.
 - No `src/environments/` folder exists in the current Angular 21 app at all (removed vs. the old
-  scaffold) — there is currently *nowhere* that per-environment config values would even live.
+  scaffold) — there is currently _nowhere_ that per-environment config values would even live.
 - The legacy `packages/application.old/src/environments/{environment.ts,environment.prod.ts}` only ever
   held `{ production: boolean }` — a single flag, not real per-environment config, and only 2 of the 6
   canonical environments existed even informally (dev-implicit + prod).
@@ -45,7 +45,7 @@ profile identifiers anywhere in setmy.info docs, config, topics, or build/runtim
 
 1. Add `packages/angular-start-project/src/environments/environment.{local,dev,ci,test,prelive,live}.ts`,
    each exporting a typed config object (not just a boolean) — start with `{ envName, apiBaseUrl,
-   production }` and grow as real config needs appear.
+production }` and grow as real config needs appear.
 2. Rename `angular.json` build **configurations** from `production`/`development` to the 6 canonical
    names, each with its own `fileReplacements` pointing at the matching `environment.<name>.ts`, mapped
    1:1 per ADR-0042 §3 ("Profile systems must stay one-to-one with environments at both build time and
@@ -74,16 +74,16 @@ and the answer is architectural, not a runtime theme switch:
   This is what "fancy, nice, difficult, by-case" brand pages need — total freedom.
 - **Web page / app** (`has-web-app-new-ng`): the many-paged Angular SPA — articles, tools, settings,
   contact, etc. — one consistent look, one build, one deploy. Routing-driven, `views = 1 route = 1 main
-  panel` convention (already the convention this template follows: `home`/`about`/`contact`).
+panel` convention (already the convention this template follows: `home`/`about`/`contact`).
 - No CSS-custom-property brand-override API and no runtime theme switcher exists inside the Angular app.
-  Brand identity variation happens entirely by deploying a *different artifact*, not by parameterizing
+  Brand identity variation happens entirely by deploying a _different artifact_, not by parameterizing
   one.
 
 **`setmy-info-less`'s own package layering mirrors this split exactly** (confirmed from
 `setmy-info-less/{web-page-design.md,setmy-info-design.md}` and the live package tree):
 
 | Layer                      | Depends on           | Audience                                                                                            | Status                            |
-|----------------------------|----------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------|
+| -------------------------- | -------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `base` (`setmy-info-less`) | —                    | everyone                                                                                            | stable                            |
 | `extended`                 | base                 | shared content patterns (cards, articles, modals, forms once promoted)                              | stable                            |
 | `fancy`                    | extended             | **brand / public marketing pages** — opinionated site chrome (header, hero, tile grid, CTA, footer) | empty skeleton, design docs exist |
@@ -92,7 +92,7 @@ and the answer is architectural, not a runtime theme switch:
 | `ide`                      | enterprise           | dev-tool/IDE-chrome frames                                                                          | separate concern, not needed here |
 
 **Plan:** angular-start-project (the template) is itself a **web page/app**, so it should compose
-`base` + `extended` + `enterprise`, never `fancy`. A future *brand* deliverable generated from/alongside
+`base` + `extended` + `enterprise`, never `fancy`. A future _brand_ deliverable generated from/alongside
 this template is a **separate static artifact** (own build, own LESS entry, may or may not import `base`
 utilities), not a "mode" of this Angular app. Don't build a theming API to unify them — the SMI
 architecture has already decided against that, twice (once in HASS, once in the LESS package layering).
@@ -118,7 +118,7 @@ page needs, with a concrete block table and a working demo
 experimental). Relevant existing/planned classes for this template's actual components:
 
 | This template's component                                          | Needed blocks                                                                                                             | Where they live today                                                                 |
-|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `header-panel`                                                     | `.siteHeader`, `.siteHeaderInner`, `.siteLogo`, `.siteNav`, `.langToggle`/`.langToggleItem(Active)`                       | `experimental/web/`                                                                   |
 | `side-nav-panel` (currently **empty**, see §5)                     | `.sideNavList` or compose from `.tabBar`/nav utilities                                                                    | `experimental/ui/navigation`                                                          |
 | `modal-overlay`                                                    | `.overlay`, `.modal`, `.modalHeader/Body/Footer/Close`, `.btn`/`.btnPrimary`                                              | `extended` (overlay/modal) + `experimental/base` (buttons)                            |
@@ -156,7 +156,7 @@ the Angular Material component library.
 
 **Bug already present, independent of the CDN question:** `index.less` defines
 `.material-symbols-outlined { font-family: 'Material Symbols Outlined', ... }`, but no `@font-face` for
-that family exists anywhere, and the CDN link in `index.html` loads a *different* font family
+that family exists anywhere, and the CDN link in `index.html` loads a _different_ font family
 (`Material Icons`, the older ligature-font, matching `.material-icons` not `.material-symbols-outlined`).
 Result: every `.material-symbols-outlined` icon in `contact`, `side-nav-panel`, `footer-panel` etc.
 currently renders as fallback text/tofu, not an icon — this is broken today, independent of the
@@ -179,7 +179,7 @@ the Angular CLI bundles the font files at build time — zero runtime network ca
    `.woff2` from the npm package via `angular.json` asset copying (same mechanism HASS proved out), fixing
    the mismatch bug from §4 in the same change.
 4. Decide on Roboto: either self-host `.woff2` the same way, or drop Roboto and use a system-font stack
-   (simplest, zero extra assets, template stays generic) — recommend system-font stack for a *template*
+   (simplest, zero extra assets, template stays generic) — recommend system-font stack for a _template_
    specifically, since a real brand will supply its own type choice later anyway.
 5. `@angular/material@21.x` is version-compatible with the current `^21.0.0` core packages if/when the
    project wants actual Material components (not just icons) — confirmed available via npm. Its SCSS
@@ -280,7 +280,7 @@ in `angular-start-project-library`:
   `angular-start-project-library` and wrap in a thin Angular pipe locally, keeping the library pure JS
   per `AGENTS.md`.
 - `has-web-app-new-ng/src/app/config/version.js`: a generated build-version stamp — worth adopting the
-  *pattern* (a build step that stamps a version file) rather than the file itself.
+  _pattern_ (a build step that stamps a version file) rather than the file itself.
 - `application.old/src/assets/{js,lib}`: empty — nothing to transfer.
 - Real reusable logic in the HASS ecosystem lives in the sibling `has-web-app-new-library` package,
   which was out of scope for this pass — **next step:** audit that package specifically (not yet done)
@@ -332,7 +332,7 @@ User directed execution of the plan above with four adjustments to the original 
 - `setmy-info-less-extended` pinned to `^3.1.0` (was proposed as a future add; user had already
   bumped `angular-start-project-style/package.json` to this version before this pass started).
 - The `setmy-info-less` package layering (`base`/`extended`/`fancy`/`enterprise`/...) is **not** to
-  be mirrored 1:1 as a folder structure in this repo — only its *documentation style* (how the
+  be mirrored 1:1 as a folder structure in this repo — only its _documentation style_ (how the
   `setmy-info-less` project documents day-to-day monorepo build/update/upgrade workflow) should be
   adopted here, as a `DEVELOPERS-GUIDE.md`.
 - Material Symbols font: fetch via `npm pack` into a scratch/temp directory at dev time and copy the

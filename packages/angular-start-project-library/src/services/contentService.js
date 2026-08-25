@@ -56,7 +56,8 @@ const contentService = {
 
     loadContent: function (tenant, lang) {
         const versionKey = tenant + '.' + lang;
-        return resource.getJson('content/versions.json')
+        return resource
+            .getJson('content/versions.json')
             .then(function (remoteVersions) {
                 const remoteVersion = remoteVersions[versionKey];
                 const cachedContent = readCachedContent(tenant, lang);
@@ -64,7 +65,8 @@ const contentService = {
                 if (cachedContent && cachedVersions[versionKey] === remoteVersion) {
                     return cachedContent;
                 }
-                return resource.getJson('content/' + tenant + '/' + lang + '.json')
+                return resource
+                    .getJson('content/' + tenant + '/' + lang + '.json')
                     .then(function (content) {
                         writeCachedContent(tenant, lang, content);
                         cachedVersions[versionKey] = remoteVersion;
@@ -75,7 +77,7 @@ const contentService = {
             .catch(function () {
                 return readCachedContent(tenant, lang) || {};
             });
-    }
+    },
 };
 
 module.exports = contentService;

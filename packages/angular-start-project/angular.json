@@ -1,200 +1,196 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "cli": {
-    "packageManager": "npm",
-    "analytics": false
-  },
-  "newProjectRoot": "projects",
-  "projects": {
-    "application": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "less"
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "cli": {
+        "packageManager": "npm",
+        "analytics": false
+    },
+    "newProjectRoot": "projects",
+    "projects": {
+        "application": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "style": "less"
+                }
+            },
+            "root": "",
+            "sourceRoot": "src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "browser": "src/main.ts",
+                        "tsConfig": "tsconfig.app.json",
+                        "inlineStyleLanguage": "less",
+                        "preserveSymlinks": true,
+                        "assets": [
+                            {
+                                "glob": "**/*",
+                                "input": "public"
+                            }
+                        ],
+                        "styles": ["src/styles.less"],
+                        "allowedCommonJsDependencies": [
+                            "angular-start-project-library",
+                            "js-api-extend",
+                            "servicejs",
+                            "servedjs",
+                            "servedjs-geo"
+                        ],
+                        "serviceWorker": "ngsw-config.json"
+                    },
+                    "configurations": {
+                        "local": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/local.environment.ts"
+                                }
+                            ]
+                        },
+                        "dev": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/dev.environment.ts"
+                                }
+                            ]
+                        },
+                        "ci": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kB",
+                                    "maximumError": "1MB"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "4kB",
+                                    "maximumError": "8kB"
+                                }
+                            ],
+                            "outputHashing": "all",
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/ci.environment.ts"
+                                }
+                            ]
+                        },
+                        "test": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kB",
+                                    "maximumError": "1MB"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "4kB",
+                                    "maximumError": "8kB"
+                                }
+                            ],
+                            "outputHashing": "all",
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/test.environment.ts"
+                                }
+                            ]
+                        },
+                        "prelive": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kB",
+                                    "maximumError": "1MB"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "4kB",
+                                    "maximumError": "8kB"
+                                }
+                            ],
+                            "outputHashing": "all",
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/prelive.environment.ts"
+                                }
+                            ]
+                        },
+                        "live": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "500kB",
+                                    "maximumError": "1MB"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "4kB",
+                                    "maximumError": "8kB"
+                                }
+                            ],
+                            "outputHashing": "all",
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/live.environment.ts"
+                                }
+                            ]
+                        }
+                    },
+                    "defaultConfiguration": "local"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "options": {
+                        "host": "0.0.0.0",
+                        "prebundle": {
+                            "exclude": ["angular-start-project-library"]
+                        }
+                    },
+                    "configurations": {
+                        "local": {
+                            "buildTarget": "application:build:local"
+                        },
+                        "dev": {
+                            "buildTarget": "application:build:dev"
+                        },
+                        "ci": {
+                            "buildTarget": "application:build:ci"
+                        },
+                        "test": {
+                            "buildTarget": "application:build:test"
+                        },
+                        "prelive": {
+                            "buildTarget": "application:build:prelive"
+                        },
+                        "live": {
+                            "buildTarget": "application:build:live"
+                        }
+                    },
+                    "defaultConfiguration": "local"
+                },
+                "test": {
+                    "builder": "@angular/build:unit-test",
+                    "configurations": {
+                        "local": {
+                            "buildTarget": "application:build:local"
+                        }
+                    },
+                    "defaultConfiguration": "local"
+                }
+            }
         }
-      },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "less",
-            "preserveSymlinks": true,
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.less"
-            ],
-            "allowedCommonJsDependencies": [
-              "angular-start-project-library",
-              "js-api-extend",
-              "servicejs",
-              "servedjs",
-              "servedjs-geo"
-            ],
-            "serviceWorker": "ngsw-config.json"
-          },
-          "configurations": {
-            "local": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/local.environment.ts"
-                }
-              ]
-            },
-            "dev": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/dev.environment.ts"
-                }
-              ]
-            },
-            "ci": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/ci.environment.ts"
-                }
-              ]
-            },
-            "test": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/test.environment.ts"
-                }
-              ]
-            },
-            "prelive": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/prelive.environment.ts"
-                }
-              ]
-            },
-            "live": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/live.environment.ts"
-                }
-              ]
-            }
-          },
-          "defaultConfiguration": "local"
-        },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "options": {
-            "host": "0.0.0.0",
-            "prebundle": {
-              "exclude": [
-                "angular-start-project-library"
-              ]
-            }
-          },
-          "configurations": {
-            "local": {
-              "buildTarget": "application:build:local"
-            },
-            "dev": {
-              "buildTarget": "application:build:dev"
-            },
-            "ci": {
-              "buildTarget": "application:build:ci"
-            },
-            "test": {
-              "buildTarget": "application:build:test"
-            },
-            "prelive": {
-              "buildTarget": "application:build:prelive"
-            },
-            "live": {
-              "buildTarget": "application:build:live"
-            }
-          },
-          "defaultConfiguration": "local"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test",
-          "configurations": {
-            "local": {
-              "buildTarget": "application:build:local"
-            }
-          },
-          "defaultConfiguration": "local"
-        }
-      }
     }
-  }
 }

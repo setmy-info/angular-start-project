@@ -1,16 +1,16 @@
-import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import angularStartProjectLibrary from 'angular-start-project-library';
-import {LanguageService} from '../../../services/language.service';
-import {LocationService} from '../../../services/location.service';
-import {ContentService} from '../../../services/content.service';
-import {environment} from '../../../../environments/environment';
-import {version} from '../../../config/version';
+import { LanguageService } from '../../../services/language.service';
+import { LocationService } from '../../../services/location.service';
+import { ContentService } from '../../../services/content.service';
+import { environment } from '../../../../environments/environment';
+import { version } from '../../../config/version';
 
 @Component({
     selector: 'app-settings',
     templateUrl: './settings.component.html',
     styleUrl: './settings.component.less',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
     protected readonly languageService = inject(LanguageService);
@@ -20,7 +20,9 @@ export class SettingsComponent {
     protected readonly version = version;
     // Whether this build's version differs from the one stored on the previous visit
     // (check() is idempotent — cached after the first call at startup, see versionService.js).
-    protected readonly versionState = angularStartProjectLibrary.versionService.check(version.version);
+    protected readonly versionState = angularStartProjectLibrary.versionService.check(
+        version.version,
+    );
     protected readonly hasServiceWorkerSupport = !!navigator.serviceWorker;
     protected readonly referrer = document.referrer;
     // The old settings page showed "Sub system" (per-tenant content JSON) and "Is IE"

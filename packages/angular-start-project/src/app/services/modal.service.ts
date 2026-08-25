@@ -1,6 +1,6 @@
-import {Injectable, signal} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ModalService {
     readonly isOpen = signal<boolean>(false);
 
@@ -13,6 +13,6 @@ export class ModalService {
     }
 
     toggle(): void {
-        this.isOpen.update(v => !v);
+        this.isOpen.update((v) => !v);
     }
 }

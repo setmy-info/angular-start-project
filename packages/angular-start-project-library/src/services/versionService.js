@@ -23,7 +23,7 @@ const versionService = {
         state = {
             version: currentVersion,
             previousVersion: previousVersion,
-            isNewVersion: previousVersion !== currentVersion
+            isNewVersion: previousVersion !== currentVersion,
         };
         try {
             localStorage.setItem(VERSION_STORAGE_KEY, currentVersion);
@@ -36,7 +36,7 @@ const versionService = {
     // The cached result of check(); null if check() has not run yet this page load.
     getState: function () {
         return state;
-    }
+    },
 };
 
 module.exports = versionService;

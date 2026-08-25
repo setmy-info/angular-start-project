@@ -1,6 +1,6 @@
-import {TestBed} from '@angular/core/testing';
-import {vi} from 'vitest';
-import {NetworkService} from './network.service';
+import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
+import { NetworkService } from './network.service';
 
 describe('NetworkService', () => {
     afterEach(() => {
@@ -8,7 +8,7 @@ describe('NetworkService', () => {
     });
 
     it('starts from navigator.onLine', () => {
-        vi.stubGlobal('navigator', {onLine: false});
+        vi.stubGlobal('navigator', { onLine: false });
         const service = TestBed.inject(NetworkService);
         expect(service.isOnline()).toBe(false);
     });

@@ -3,37 +3,64 @@
         <div class="articleSectionPanel">
             <h1>{{ languageService.translate('view.settings.title') }}</h1>
             <dl>
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.version') }}</dt>
-                <dd class="definitionDesc">{{ version.version }}@if (versionState.isNewVersion) {
-                    ({{ languageService.translate('view.settings.versionNew') }})
-                }</dd>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.version') }}
+                </dt>
+                <dd class="definitionDesc">
+                    {{ version.version }}
+                    @if (versionState.isNewVersion) {
+                        ({{ languageService.translate('view.settings.versionNew') }})
+                    }
+                </dd>
 
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.language') }}</dt>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.language') }}
+                </dt>
                 <dd class="definitionDesc">{{ languageService.currentLanguageCode() }}</dd>
 
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.environment') }}</dt>
-                <dd class="definitionDesc">{{ environment.envName }} ({{ environment.apiBaseUrl }})</dd>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.environment') }}
+                </dt>
+                <dd class="definitionDesc">
+                    {{ environment.envName }} ({{ environment.apiBaseUrl }})
+                </dd>
 
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.subSystem') }}</dt>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.subSystem') }}
+                </dt>
                 <dd class="definitionDesc">{{ subSystem() || '-' }}</dd>
 
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.browser') }}</dt>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.browser') }}
+                </dt>
                 <dd class="definitionDesc">{{ browserInfo }}</dd>
 
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.serviceWorker') }}</dt>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.serviceWorker') }}
+                </dt>
                 <dd class="definitionDesc">{{ hasServiceWorkerSupport }}</dd>
 
-                <dt class="definitionTerm">{{ languageService.translate('view.settings.referrer') }}</dt>
+                <dt class="definitionTerm">
+                    {{ languageService.translate('view.settings.referrer') }}
+                </dt>
                 <dd class="definitionDesc">{{ referrer || '-' }}</dd>
 
                 @if (googleMapsUrl(); as googleUrl) {
-                    <dt class="definitionTerm">{{ languageService.translate('view.settings.location') }}</dt>
+                    <dt class="definitionTerm">
+                        {{ languageService.translate('view.settings.location') }}
+                    </dt>
                     <dd class="definitionDesc">
-                        <a [href]="googleUrl" target="_blank" rel="noopener noreferrer">Google Maps</a>
-                        <a [href]="openStreetMapUrl()" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                        <a [href]="googleUrl" target="_blank" rel="noopener noreferrer"
+                            >Google Maps</a
+                        >
+                        <a [href]="openStreetMapUrl()" target="_blank" rel="noopener noreferrer"
+                            >OpenStreetMap</a
+                        >
                     </dd>
                 } @else if (locationService.lastError(); as error) {
-                    <dt class="definitionTerm">{{ languageService.translate('view.settings.location') }}</dt>
+                    <dt class="definitionTerm">
+                        {{ languageService.translate('view.settings.location') }}
+                    </dt>
                     <dd class="definitionDesc">{{ error }}</dd>
                 }
             </dl>

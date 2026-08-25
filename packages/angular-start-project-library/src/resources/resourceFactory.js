@@ -10,17 +10,21 @@ const resourceFactory = {
         const opts = options || {};
         const baseUrl = opts.baseUrl !== undefined ? opts.baseUrl : config.resources.jsonUrl;
         const timeoutMs = opts.timeoutMs !== undefined ? opts.timeoutMs : config.resources.timeout;
-        const requestHook = opts.requestHook || function (request) {
-            return request;
-        };
-        const responseHook = opts.responseHook || function (response) {
-            return response;
-        };
+        const requestHook =
+            opts.requestHook ||
+            function (request) {
+                return request;
+            };
+        const responseHook =
+            opts.responseHook ||
+            function (response) {
+                return response;
+            };
 
         function doFetch(path, init) {
             const request = requestHook({
                 url: baseUrl + '/' + path,
-                init: Object.assign({signal: AbortSignal.timeout(timeoutMs)}, init)
+                init: Object.assign({ signal: AbortSignal.timeout(timeoutMs) }, init),
             });
             return fetch(request.url, request.init)
                 .then(responseHook)
@@ -34,17 +38,17 @@ const resourceFactory = {
 
         return {
             getJson: function (path) {
-                return doFetch(path, {method: 'GET'});
+                return doFetch(path, { method: 'GET' });
             },
             postJson: function (path, data) {
                 return doFetch(path, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
                 });
-            }
+            },
         };
-    }
+    },
 };
 
 module.exports = resourceFactory;

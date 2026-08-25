@@ -24,7 +24,7 @@ should decide per file whether it stays MIT (generic utility) or gets the propri
 (product code):
 
 | File                                                                        | Origin in the old solution                                                     | Note                                                                             |
-|-----------------------------------------------------------------------------|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | `src/services/statisticsService.js` + `src/resources/statisticsResource.js` | `library/src/services/statisticsService.js`, `resources/statisticsResource.js` | product telemetry design                                                         |
 | `src/services/sessionService.js`                                            | `library/src/services/sessionService.js`                                       | session/statistics pattern; `uuidService.js` itself is a trivial generic wrapper |
 | `src/services/contentService.js`                                            | equivalent of `library/src/services/pagesService.js`                           | new implementation, old design                                                   |

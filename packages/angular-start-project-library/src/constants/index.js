@@ -5,5 +5,5 @@ module.exports = {
     STATISTICS_LIMIT: 500,
     CREATE_EVENT_NAME: 'create',
     CHANGE_EVENT_NAME: 'change',
-    REFERRER_EVENT_NAME: 'referrer'
+    REFERRER_EVENT_NAME: 'referrer',
 };

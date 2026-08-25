@@ -1,4 +1,4 @@
-import {Directive, ElementRef, effect, inject, input} from '@angular/core';
+import { Directive, ElementRef, effect, inject, input } from '@angular/core';
 import angularStartProjectLibrary from 'angular-start-project-library';
 
 // Feature-toggle directive — ported from the old app's feature.directive.ts / the Vue app's
@@ -6,7 +6,7 @@ import angularStartProjectLibrary from 'angular-start-project-library';
 // the flag in the library's config.features is missing or false. Flags live in
 // angular-start-project-library/src/config/index.js.
 @Directive({
-    selector: '[feature]'
+    selector: '[feature]',
 })
 export class FeatureDirective {
     readonly feature = input.required<string>();

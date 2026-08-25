@@ -6,13 +6,7 @@
             "name": "app",
             "installMode": "prefetch",
             "resources": {
-                "files": [
-                    "/favicon.ico",
-                    "/index.html",
-                    "/manifest.webmanifest",
-                    "/*.css",
-                    "/*.js"
-                ]
+                "files": ["/favicon.ico", "/index.html", "/manifest.webmanifest", "/*.css", "/*.js"]
             }
         },
         {
@@ -34,11 +28,7 @@
     "dataGroups": [
         {
             "name": "translations",
-            "urls": [
-                "/json/en.json",
-                "/json/et.json",
-                "/json/translations-version.json"
-            ],
+            "urls": ["/json/en.json", "/json/et.json", "/json/translations-version.json"],
             "cacheConfig": {
                 "strategy": "freshness",
                 "maxSize": 10,

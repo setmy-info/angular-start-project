@@ -45,7 +45,7 @@ lerna bootstrap
 lerna run start
 ```
 
-## Upgrading version 
+## Upgrading version
 
 ```shell
 lerna version

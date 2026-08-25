@@ -164,21 +164,21 @@ Notes:
    translated title, route + optional menu entry).
 
 9. **Utility pipes.** — NOT IMPLEMENTED.
-    Status: 0/3 — the app has no `src/app/pipes/` directory.
-    Old app `src/app/pipes/`: `inCurrency` (integer cents → `"12.34 EUR"`,
-    currency code as arg, default EUR; also a Vue filter), `toObjectArray` (object → array of
-    values with the key injected as `propertyName` — the old language `<select>` options were built
-    with it), `skipSanitizingHtml` (a thin `DomSanitizer.bypassSecurityTrustHtml` wrapper; nothing
-    in the template renders raw HTML today, so it has no consumer here). Implement the first two
-    per `AGENTS.md` conventions: pure-JS transform functions in `angular-start-project-library`
-    plus thin standalone Angular pipes in the app.
+   Status: 0/3 — the app has no `src/app/pipes/` directory.
+   Old app `src/app/pipes/`: `inCurrency` (integer cents → `"12.34 EUR"`,
+   currency code as arg, default EUR; also a Vue filter), `toObjectArray` (object → array of
+   values with the key injected as `propertyName` — the old language `<select>` options were built
+   with it), `skipSanitizingHtml` (a thin `DomSanitizer.bypassSecurityTrustHtml` wrapper; nothing
+   in the template renders raw HTML today, so it has no consumer here). Implement the first two
+   per `AGENTS.md` conventions: pure-JS transform functions in `angular-start-project-library`
+   plus thin standalone Angular pipes in the app.
 
 10. **Browser info on the settings page.** — IMPLEMENTED.
     DONE 2026-07-06: Settings now shows Version (item 1 stamp), Sub system (content JSON via ContentService), Browser (navigator.userAgent).
     Old `settings-page.component.html` showed `Sub system:
-    {{modelService.system.subSystem}}` (from per-tenant content JSON, item 5), `Is IE:
-    {{modelService.browser.isIE}}` (from `browserService.fillBrowserInfo()`), and `Version:
-    {{version.version}}` (item 1). The new settings page already shows language, environment,
+{{modelService.system.subSystem}}` (from per-tenant content JSON, item 5), `Is IE:
+{{modelService.browser.isIE}}` (from `browserService.fillBrowserInfo()`), and `Version:
+{{version.version}}` (item 1). The new settings page already shows language, environment,
     service-worker support, referrer and location links, but none of these three. Implement
     alongside items 1 and 5; replace the obsolete `isIE` with something current (e.g. user-agent
     summary or `navigator.userAgentData` platform/brands).
@@ -195,7 +195,7 @@ Notes:
 12. **Dynamic script/CSS loader.** — IMPLEMENTED (for later usage).
     DONE 2026-07-06: library src/services/loadingService.js — promise-based loadJS(url)/loadCSS(url) appending to document.head, deduplicated per URL. Nothing calls it yet by design.
     Old library `src/services/loadingService.js`: `loadJS(url,
-    callback)` / `loadCSS(url, callback)` inject `<script>`/`<link>` tags (into elements with ids
+callback)` / `loadCSS(url, callback)` inject `<script>`/`<link>` tags (into elements with ids
     `scripts` and `head` that the old `index.html` provided) with cross-browser onload callbacks.
     No equivalent in the new app (nothing uses runtime script injection today — the tsParticles
     dynamic `import()` covers its own case). Implement only if runtime third-party loading is
@@ -221,7 +221,7 @@ Notes:
     (regenerate the version stamp, item 1 — the `ver`/`prebuild` part now exists, see item 1's
     DONE note), `package` (rename `dist/<name>`, run
     `bin/http2pushConfig.sh` to generate an HTTP/2 push config, then `tar czf
-    <name>-<version>.tar.gz`), `dodeploy` (scp the tarball to `$USER_NAME@$HOST_NAME:$DESTINATION`
+<name>-<version>.tar.gz`), `dodeploy` (scp the tarball to `$USER_NAME@$HOST_NAME:$DESTINATION`
     over `$HOST_PORT`); the Vue app additionally has a `Makefile` wrapping the same flow. The new
     repo builds with `ng build` only — no packaging, no deploy step. Implement equivalent npm
     scripts (or `smi-*` script wrappers, since `/opt/setmy.info` tooling exists) in
@@ -232,7 +232,7 @@ Notes:
     Old library `languageService.js`:
     `getLang()` reads localStorage key `LANG` (default `et`, written back on first visit) and
     `changeLanguage(language)` updates it — the chosen language survived a page reload. The new
-    `LanguageService` (src/app/services/language.service.ts) caches the translation *content* in
+    `LanguageService` (src/app/services/language.service.ts) caches the translation _content_ in
     localStorage but always resets `currentLanguageCode` to the first supported language
     (`supportedLanguages[0]`, i.e. `et`) on every load — a user who switched to EN gets ET back
     after a reload. Implement: read the initial `currentLanguageCode` from a localStorage key

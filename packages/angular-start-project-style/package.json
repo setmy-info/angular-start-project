@@ -6,12 +6,49 @@
     "author": "Imre Tabur",
     "main": "index.less",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "clean": "node ../../tools/clean.js",
+        "validate": "node ../../tools/validate.js",
+        "format": "prettier --write .",
+        "lint": "eslint .",
+        "generate-sources": "node ../../tools/generate-sources.js",
+        "resources": "node ../../tools/resources.js",
+        "build": "node ../../tools/build.js",
+        "test": "node ../../tools/run-tests.js unit",
+        "pre-integration-test": "node ../../tools/preintegration-test.js",
+        "integration-test": "node ../../tools/integration-test.js",
+        "post-integration-test": "node ../../tools/postintegration-test.js",
+        "pre-e2e-test": "node ../../tools/pree2e-test.js",
+        "e2e-test": "node ../../tools/e2e-test.js",
+        "post-e2e-test": "node ../../tools/poste2e-test.js",
+        "coverage": "node ../../tools/coverage.js",
+        "verify": "node ../../tools/verify.js",
+        "package": "node ../../tools/package.js",
+        "sbom": "node ../../tools/package.js --sbom",
+        "sign": "node ../../tools/sign.js",
+        "install-local": "node ../../tools/install-local.js",
+        "publish": "node ../../tools/publish.js",
+        "deploy": "node ../../tools/deploy.js",
+        "docs": "node ../../tools/docs.js",
+        "site": "node ../../tools/site.js",
+        "server": "node ../../tools/http-server.js",
+        "stop-server": "node ../../tools/http-server.js stop"
     },
     "devDependencies": {
         "less": "^4.5.1"
     },
     "dependencies": {
         "setmy-info-less-extended": "^5.0.0"
-    }
+    },
+    "config": {
+        "moduleType": "less-package",
+        "server": {
+            "port": 4400,
+            "directory": "dist"
+        }
+    },
+    "files": [
+        "index.less",
+        "src",
+        "README.md"
+    ]
 }

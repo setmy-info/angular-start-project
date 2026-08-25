@@ -3,7 +3,11 @@
     <div id="sideNavigationHeaderPanel">
         <ul>
             <li>
-                <button type="button" aria-label="Close navigation menu" (click)="modalService.close()">
+                <button
+                    type="button"
+                    aria-label="Close navigation menu"
+                    (click)="modalService.close()"
+                >
                     <i>close</i>
                 </button>
             </li>
@@ -23,25 +27,28 @@
                     <a
                         [routerLink]="item.path"
                         routerLinkActive="active"
-                        [routerLinkActiveOptions]="{exact: item.path === '/'}"
-                        (click)="modalService.close()">
+                        [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+                        (click)="modalService.close()"
+                    >
                         <i class="material-symbols-outlined">{{ item.icon }}</i>
                         {{ languageService.translate(item.translationKey || item.label) }}
                     </a>
                 </li>
             }
             <li class="sideNavThinMenuItems">
-                <hr>
+                <hr />
             </li>
             <li class="sideNavMenuItems">
                 <a href="javaScript:void(0);" class="noHover textCursor">
-                    <i>language</i>{{ languageService.translate('view.language') }}:</a>
+                    <i>language</i>{{ languageService.translate('view.language') }}:</a
+                >
                 <div>
                     <select (change)="onLanguageChange($event)">
                         @for (language of languageService.supportedLanguages; track language.code) {
                             <option
                                 [value]="language.code"
-                                [selected]="language.code === languageService.currentLanguageCode()">
+                                [selected]="language.code === languageService.currentLanguageCode()"
+                            >
                                 {{ language.label }}
                             </option>
                         }

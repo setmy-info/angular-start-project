@@ -5,68 +5,121 @@
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">work</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.organisation') }}</span></small>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.organisation')
+                            }}</span></small
+                        >
                     </div>
                     <div class="textPanel">{{ contacts().organisation }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">place</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.address') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.address')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">{{ contacts().address }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">phone</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.phone') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.phone')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">{{ contacts().phone }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">email</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.email') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.email')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">{{ contacts().email }}</div>
                 </div>
                 <!-- Feature-gated rows (old app's <div feature="bankAccounts"> pattern) — hidden
                      until config.features.bankAccounts is turned on in the library config. -->
                 <div feature="bankAccounts">
-                    <div class="iconPanel"><i class="material-symbols-outlined">account_balance</i></div>
+                    <div class="iconPanel">
+                        <i class="material-symbols-outlined">account_balance</i>
+                    </div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.bank') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.bank')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">{{ contacts().bank }}</div>
                 </div>
                 <div feature="bankAccounts">
                     <div class="iconPanel"></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.swift') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.swift')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">{{ contacts().swift }}</div>
                 </div>
                 <div feature="bankAccounts">
                     <div class="iconPanel"></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.bankAccount') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.bankAccount')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">{{ contacts().bankAccount }}</div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">link</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.facebook') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.facebook')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">
-                        <a [href]="contacts().facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
+                        <a [href]="contacts().facebook" target="_blank" rel="noopener noreferrer"
+                            >Facebook</a
+                        >
                     </div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">link</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.github') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.github')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">
-                        <a [href]="contacts().github" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        <a [href]="contacts().github" target="_blank" rel="noopener noreferrer"
+                            >GitHub</a
+                        >
                     </div>
                 </div>
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">link</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.x') }}</span></small></div>
+                        <small
+                            ><span>{{ languageService.translate('view.contact.x') }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">
                         <a [href]="contacts().x" target="_blank" rel="noopener noreferrer">X</a>
                     </div>
@@ -74,9 +127,16 @@
                 <div>
                     <div class="iconPanel"><i class="material-symbols-outlined">link</i></div>
                     <div class="labelPanel">
-                        <small><span>{{ languageService.translate('view.contact.slack') }}</span></small></div>
+                        <small
+                            ><span>{{
+                                languageService.translate('view.contact.slack')
+                            }}</span></small
+                        >
+                    </div>
                     <div class="textPanel">
-                        <a [href]="contacts().slack" target="_blank" rel="noopener noreferrer">Slack</a>
+                        <a [href]="contacts().slack" target="_blank" rel="noopener noreferrer"
+                            >Slack</a
+                        >
                     </div>
                 </div>
             </section>

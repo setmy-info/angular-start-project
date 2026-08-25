@@ -23,10 +23,12 @@ const QUIT_TIMEOUT_MS = Number(process.env.SELENIUM_QUIT_TIMEOUT_MS) || 15000;
 // page map links, the startup location log) is deterministic. Tallinn town hall by default.
 const GEO_LAT = Number(process.env.TEST_GEO_LAT) || 59.437;
 const GEO_LNG = Number(process.env.TEST_GEO_LNG) || 24.7536;
-const GEO_PROVIDER_URL = 'data:application/json,' + JSON.stringify({
-    location: { lat: GEO_LAT, lng: GEO_LNG },
-    accuracy: 10
-});
+const GEO_PROVIDER_URL =
+    'data:application/json,' +
+    JSON.stringify({
+        location: { lat: GEO_LAT, lng: GEO_LNG },
+        accuracy: 10,
+    });
 
 const data = {};
 
@@ -41,23 +43,31 @@ function withTimeout(promise, ms, label) {
         }, ms);
     });
     return Promise.race([
-        Promise.resolve(promise).then(() => true, (err) => {
-            console.warn(`pageHelper: ${label} failed: ${err && err.message ? err.message : err}`);
-            return true;
-        }),
-        timeout
+        Promise.resolve(promise).then(
+            () => true,
+            (err) => {
+                console.warn(
+                    `pageHelper: ${label} failed: ${err && err.message ? err.message : err}`,
+                );
+                return true;
+            },
+        ),
+        timeout,
     ]).finally(() => clearTimeout(timer));
 }
 
 async function setViewport(width, height) {
     await data.driver.manage().window().setRect({ width, height });
     const viewport = await data.driver.executeScript(
-        'return { w: window.innerWidth, h: window.innerHeight };'
+        'return { w: window.innerWidth, h: window.innerHeight };',
     );
     const wDiff = width - viewport.w;
     const hDiff = height - viewport.h;
     if (wDiff !== 0 || hDiff !== 0) {
-        await data.driver.manage().window().setRect({ width: width + wDiff, height: height + hDiff });
+        await data.driver
+            .manage()
+            .window()
+            .setRect({ width: width + wDiff, height: height + hDiff });
     }
 }
 
@@ -86,13 +96,17 @@ async function openPage(route) {
     const url = APP_BASE_URL + (route || '/');
     await data.driver.get(url);
     await waitFor('#application');
-    await data.driver.wait(async () => {
-        const text = await data.driver.executeScript(
-            'var el = document.querySelector("header ul:first-child li:last-child span");' +
-            'return el ? el.textContent.trim() : "";'
-        );
-        return text.length > 0 && !/^[a-z]+(\.[a-zA-Z]+)+$/.test(text);
-    }, WAIT_MS, 'translated header title did not appear');
+    await data.driver.wait(
+        async () => {
+            const text = await data.driver.executeScript(
+                'var el = document.querySelector("header ul:first-child li:last-child span");' +
+                    'return el ? el.textContent.trim() : "";',
+            );
+            return text.length > 0 && !/^[a-z]+(\.[a-zA-Z]+)+$/.test(text);
+        },
+        WAIT_MS,
+        'translated header title did not appear',
+    );
 }
 
 function find(selector) {
@@ -100,8 +114,11 @@ function find(selector) {
 }
 
 async function waitFor(selector) {
-    await data.driver.wait(until.elementLocated(By.css(selector)), WAIT_MS,
-        `element not found: ${selector}`);
+    await data.driver.wait(
+        until.elementLocated(By.css(selector)),
+        WAIT_MS,
+        `element not found: ${selector}`,
+    );
     return find(selector);
 }
 
@@ -110,15 +127,19 @@ async function waitUntil(script, label) {
     await data.driver.wait(
         async () => data.driver.executeScript(script),
         WAIT_MS,
-        label || `condition did not become true: ${script}`
+        label || `condition did not become true: ${script}`,
     );
 }
 
 async function waitForText(selector, expected) {
-    await data.driver.wait(async () => {
-        const text = await getText(selector).catch(() => '');
-        return text.includes(expected);
-    }, WAIT_MS, `text "${expected}" did not appear in ${selector}`);
+    await data.driver.wait(
+        async () => {
+            const text = await getText(selector).catch(() => '');
+            return text.includes(expected);
+        },
+        WAIT_MS,
+        `text "${expected}" did not appear in ${selector}`,
+    );
 }
 
 async function click(selector) {
@@ -137,15 +158,16 @@ async function countOf(selector) {
 // Emulate a real mouse move onto the element (for :hover styling tests).
 async function hover(selector) {
     const el = await waitFor(selector);
-    await data.driver.actions({async: true}).move({origin: el}).perform();
+    await data.driver.actions({ async: true }).move({ origin: el }).perform();
 }
 
 // One computed CSS property of an element (e.g. 'background-color' while hovered).
 async function cssValueOf(selector, property) {
     return data.driver.executeScript(
         'var el = document.querySelector(arguments[0]);' +
-        'return el ? window.getComputedStyle(el).getPropertyValue(arguments[1]) : null;',
-        selector, property
+            'return el ? window.getComputedStyle(el).getPropertyValue(arguments[1]) : null;',
+        selector,
+        property,
     );
 }
 
@@ -154,8 +176,8 @@ async function cssValueOf(selector, property) {
 async function displayOf(selector) {
     return data.driver.executeScript(
         'var el = document.querySelector(arguments[0]);' +
-        'return el ? window.getComputedStyle(el).display : null;',
-        selector
+            'return el ? window.getComputedStyle(el).display : null;',
+        selector,
     );
 }
 
@@ -178,24 +200,24 @@ async function selectOption(selectSelector, value) {
 async function elementIs(selector) {
     data.computedStyles = await data.driver.executeScript(
         'var el = document.querySelector(arguments[0]);' +
-        'if (!el) return null;' +
-        'var style = window.getComputedStyle(el);' +
-        'var rect = el.getBoundingClientRect();' +
-        'return {' +
-        '  margin: style.marginTop + " " + style.marginRight + " " + style.marginBottom + " " + style.marginLeft,' +
-        '  padding: style.paddingTop + " " + style.paddingRight + " " + style.paddingBottom + " " + style.paddingLeft,' +
-        '  fontFamily: style.fontFamily,' +
-        '  fontSize: style.fontSize,' +
-        '  x: Math.round(rect.x),' +
-        '  y: Math.round(rect.y),' +
-        '  top: Math.round(rect.top),' +
-        '  left: Math.round(rect.left),' +
-        '  width: Math.round(rect.width),' +
-        '  height: Math.round(rect.height),' +
-        '  backgroundColor: style.backgroundColor,' +
-        '  color: style.color' +
-        '};',
-        selector
+            'if (!el) return null;' +
+            'var style = window.getComputedStyle(el);' +
+            'var rect = el.getBoundingClientRect();' +
+            'return {' +
+            '  margin: style.marginTop + " " + style.marginRight + " " + style.marginBottom + " " + style.marginLeft,' +
+            '  padding: style.paddingTop + " " + style.paddingRight + " " + style.paddingBottom + " " + style.paddingLeft,' +
+            '  fontFamily: style.fontFamily,' +
+            '  fontSize: style.fontSize,' +
+            '  x: Math.round(rect.x),' +
+            '  y: Math.round(rect.y),' +
+            '  top: Math.round(rect.top),' +
+            '  left: Math.round(rect.left),' +
+            '  width: Math.round(rect.width),' +
+            '  height: Math.round(rect.height),' +
+            '  backgroundColor: style.backgroundColor,' +
+            '  color: style.color' +
+            '};',
+        selector,
     );
     if (!data.computedStyles) {
         throw new Error(`Element '${selector}' not found`);
@@ -253,5 +275,5 @@ module.exports = {
     elementIs,
     expectations,
     elementExpectations,
-    close
+    close,
 };

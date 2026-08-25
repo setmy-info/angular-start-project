@@ -1,13 +1,13 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {SettingsComponent} from './settings.component';
-import {LocationService} from '../../../services/location.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SettingsComponent } from './settings.component';
+import { LocationService } from '../../../services/location.service';
 
 describe('SettingsComponent', () => {
     let fixture: ComponentFixture<SettingsComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [SettingsComponent]
+            imports: [SettingsComponent],
         }).compileComponents();
         fixture = TestBed.createComponent(SettingsComponent);
         fixture.detectChanges();
@@ -37,7 +37,7 @@ describe('SettingsComponent', () => {
 
     it('should render Google Maps and OpenStreetMap links once a position is set', () => {
         const locationService = TestBed.inject(LocationService);
-        locationService.set({latitude: 59.437, longitude: 24.7536});
+        locationService.set({ latitude: 59.437, longitude: 24.7536 });
         fixture.detectChanges();
 
         const el = fixture.nativeElement as HTMLElement;

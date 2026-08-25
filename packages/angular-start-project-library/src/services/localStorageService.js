@@ -1,6 +1,6 @@
 const localStorageService = {
-    storage: localStorage
-}
+    storage: localStorage,
+};
 
 window.localStorageService = localStorageService;
 export default localStorageService; //module.exports = localStorageService;

@@ -1,62 +1,88 @@
 {
-  "name": "angular-start-project",
-  "version": "1.0.0-SNAPSHOT",
-  "description": "Angular Application",
-  "license": "SEE LICENSE IN ../../LICENSE.md",
-  "scripts": {
-    "ng": "ng",
-    "ver": "node bin/versionModule.js",
-    "prebuild": "npm run ver",
-    "start": "ng serve",
-    "build": "ng build",
-    "build:dev": "ng build --configuration dev",
-    "build:ci": "ng build --configuration ci",
-    "build:test": "ng build --configuration test",
-    "build:prelive": "ng build --configuration prelive",
-    "build:live": "ng build --configuration live",
-    "watch": "ng build --watch --configuration local",
-    "test": "ng test",
-    "e2e": "jest --config=jest.e2e.config.js",
-    "e2e:one": "jest --config=jest.e2e.config.js --testNamePattern"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
+    "name": "angular-start-project",
+    "version": "1.0.0-SNAPSHOT",
+    "description": "Angular Application",
+    "license": "SEE LICENSE IN ../../LICENSE.md",
+    "scripts": {
+        "clean": "node ../../tools/clean.js",
+        "validate": "node ../../tools/validate.js",
+        "format": "prettier --write .",
+        "lint": "eslint .",
+        "generate-sources": "node ../../tools/generate-sources.js",
+        "resources": "node ../../tools/resources.js",
+        "build": "node ../../tools/build.js",
+        "test": "node ../../tools/run-tests.js unit",
+        "test:watch": "ng test --watch",
+        "pre-integration-test": "node ../../tools/preintegration-test.js",
+        "integration-test": "node ../../tools/integration-test.js",
+        "post-integration-test": "node ../../tools/postintegration-test.js",
+        "pre-e2e-test": "node ../../tools/pree2e-test.js",
+        "e2e-test": "node ../../tools/e2e-test.js",
+        "post-e2e-test": "node ../../tools/poste2e-test.js",
+        "coverage": "node ../../tools/coverage.js",
+        "verify": "node ../../tools/verify.js",
+        "package": "node ../../tools/package.js",
+        "sbom": "node ../../tools/package.js --sbom",
+        "sign": "node ../../tools/sign.js",
+        "install-local": "node ../../tools/install-local.js",
+        "publish": "node ../../tools/publish.js",
+        "deploy": "node ../../tools/deploy.js",
+        "docs": "node ../../tools/docs.js",
+        "site": "node ../../tools/site.js",
+        "ng": "ng",
+        "ver": "node bin/versionModule.js",
+        "start": "ng serve",
+        "watch": "ng build --watch --configuration local",
+        "e2e:one": "jest --config=jest.e2e.config.js --testNamePattern",
+        "server": "node ../../tools/http-server.js",
+        "stop-server": "node ../../tools/http-server.js stop"
+    },
+    "prettier": {
+        "printWidth": 100,
+        "singleQuote": true,
+        "overrides": [
+            {
+                "files": "*.html",
+                "options": {
+                    "parser": "angular"
+                }
+            }
+        ]
+    },
+    "private": true,
+    "packageManager": "npm@11.7.0",
+    "dependencies": {
+        "@angular/common": "^21.0.0",
+        "@angular/compiler": "^21.0.0",
+        "@angular/core": "^21.0.0",
+        "@angular/forms": "^21.0.0",
+        "@angular/platform-browser": "^21.0.0",
+        "@angular/router": "^21.0.0",
+        "@angular/service-worker": "^21.0.0",
+        "@tsparticles/engine": "^3.0.0",
+        "@tsparticles/slim": "^3.0.0",
+        "angular-start-project-library": "^1.0.0-SNAPSHOT",
+        "angular-start-project-style": "^1.0.0-SNAPSHOT",
+        "rxjs": "~7.8.0",
+        "tslib": "^2.3.0"
+    },
+    "devDependencies": {
+        "@angular/build": "^21.0.4",
+        "@angular/cli": "^21.0.4",
+        "@angular/compiler-cli": "^21.0.0",
+        "jest": "^30.4.2",
+        "jsdom": "^27.1.0",
+        "less": "^4.2.0",
+        "selenium-webdriver": "^4.46.0",
+        "typescript": "~5.9.2",
+        "vitest": "^4.0.8"
+    },
+    "config": {
+        "moduleType": "angular-app",
+        "server": {
+            "port": 4210,
+            "directory": "dist/application/browser",
+            "spa": true
         }
-      }
-    ]
-  },
-  "private": true,
-  "packageManager": "npm@11.7.0",
-  "dependencies": {
-    "@angular/common": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/forms": "^21.0.0",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/router": "^21.0.0",
-    "@angular/service-worker": "^21.0.0",
-    "@tsparticles/engine": "^3.0.0",
-    "@tsparticles/slim": "^3.0.0",
-    "angular-start-project-library": "^1.0.0-SNAPSHOT",
-    "angular-start-project-style": "^1.0.0-SNAPSHOT",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
-  },
-  "devDependencies": {
-    "@angular/build": "^21.0.4",
-    "@angular/cli": "^21.0.4",
-    "@angular/compiler-cli": "^21.0.0",
-    "jest": "^30.4.2",
-    "jsdom": "^27.1.0",
-    "less": "^4.2.0",
-    "selenium-webdriver": "^4.46.0",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
-  }
+    }
 }

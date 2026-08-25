@@ -1,4 +1,4 @@
-import {computed, Injectable, signal} from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import angularStartProjectLibrary from 'angular-start-project-library';
 
 export interface MenuItem {
@@ -12,14 +12,17 @@ export interface MenuItem {
     header?: boolean;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class MenuService {
-
     // Per-tenant menu set (the old app's menuService ngo*/llc* selection, keyed by
     // tenantService.getTenant() here) — see menuModel.js in the library.
     readonly rawMenuItems = signal<MenuItem[]>(
-        angularStartProjectLibrary.menuModel.getMenuItems(angularStartProjectLibrary.tenantService.getTenant()) || []
+        angularStartProjectLibrary.menuModel.getMenuItems(
+            angularStartProjectLibrary.tenantService.getTenant(),
+        ) || [],
     );
 
-    readonly headerMenuItems = computed(() => this.rawMenuItems().filter(item => item.header !== false));
+    readonly headerMenuItems = computed(() =>
+        this.rawMenuItems().filter((item) => item.header !== false),
+    );
 }

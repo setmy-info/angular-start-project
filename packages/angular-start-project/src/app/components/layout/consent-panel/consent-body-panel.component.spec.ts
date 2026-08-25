@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
-import {ConsentBodyPanelComponent} from './consent-body-panel.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { ConsentBodyPanelComponent } from './consent-body-panel.component';
 
 describe('ConsentBodyPanelComponent', () => {
     let fixture: ComponentFixture<ConsentBodyPanelComponent>;
@@ -9,7 +9,7 @@ describe('ConsentBodyPanelComponent', () => {
         localStorage.clear();
         await TestBed.configureTestingModule({
             imports: [ConsentBodyPanelComponent],
-            providers: [provideRouter([])]
+            providers: [provideRouter([])],
         }).compileComponents();
         fixture = TestBed.createComponent(ConsentBodyPanelComponent);
         fixture.detectChanges();

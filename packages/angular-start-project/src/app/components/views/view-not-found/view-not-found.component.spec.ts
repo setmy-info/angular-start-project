@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
-import {ViewNotFoundComponent} from './view-not-found.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { ViewNotFoundComponent } from './view-not-found.component';
 
 describe('ViewNotFoundComponent', () => {
     let fixture: ComponentFixture<ViewNotFoundComponent>;
@@ -8,7 +8,7 @@ describe('ViewNotFoundComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [ViewNotFoundComponent],
-            providers: [provideRouter([])]
+            providers: [provideRouter([])],
         }).compileComponents();
         fixture = TestBed.createComponent(ViewNotFoundComponent);
         fixture.detectChanges();

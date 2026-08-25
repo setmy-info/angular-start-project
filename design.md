@@ -38,7 +38,7 @@ erDiagram
   exists), same build framework/toolchain present in the monorepo, but **zero Angular runtime**
   (per review.md §2: a brand is a different deployable artifact, not a themed mode of the app).
 - **Application** — Angular PWA built from this template. May itself be multi-tenant
-  (tenant chosen by hostname, see §5) and may be a *multiapp* (several small "one view = one
+  (tenant chosen by hostname, see §5) and may be a _multiapp_ (several small "one view = one
   app" units inside one Angular build).
 
 Two deployment models are supported (both designed here, §8 and §9), plus a shared
@@ -59,12 +59,12 @@ The scheme has three axes: **what** (brand vs app), **which environment** (ADR-0
 canonical names: `local`, `dev`, `ci`, `test`, `prelive`, `live`), and **which tenant** (for
 multi-tenant apps). Rules, in order:
 
-| Thing | Live DNS name | Non-live environments |
-|---|---|---|
-| Brand page | `brand.name` (apex; customer-registered, fully independent name) + `www.brand.name` → 301 to apex | `dev.brand.name`, `test.brand.name`, `prelive.brand.name`, … |
-| App platform of a brand (small apps, mounted at paths) | `apps.brand.name` | `dev.apps.brand.name`, … |
-| Big / standalone app | `<app>.apps.brand.name` — or its own registered domain if the customer wants one | `dev.<app>.apps.brand.name`, … |
-| Multi-tenant app, tenant selection | `<tenant>.<app>.apps.brand.name` (tenant is always the **leftmost** label) | env prefix goes left of tenant only via separate zone, see §2.3 |
+| Thing                                                  | Live DNS name                                                                                     | Non-live environments                                           |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Brand page                                             | `brand.name` (apex; customer-registered, fully independent name) + `www.brand.name` → 301 to apex | `dev.brand.name`, `test.brand.name`, `prelive.brand.name`, …    |
+| App platform of a brand (small apps, mounted at paths) | `apps.brand.name`                                                                                 | `dev.apps.brand.name`, …                                        |
+| Big / standalone app                                   | `<app>.apps.brand.name` — or its own registered domain if the customer wants one                  | `dev.<app>.apps.brand.name`, …                                  |
+| Multi-tenant app, tenant selection                     | `<tenant>.<app>.apps.brand.name` (tenant is always the **leftmost** label)                        | env prefix goes left of tenant only via separate zone, see §2.3 |
 
 Key decisions:
 
@@ -80,7 +80,7 @@ Key decisions:
 
 ### 2.2 Examples for one concrete customer
 
-Customer *ACME* with two brands and four apps:
+Customer _ACME_ with two brands and four apps:
 
 ```
 acmecoffee.example              → brand page "acmecoffee"      (static, fancy)
@@ -111,14 +111,14 @@ with the environment prefix (`dev.crm…` would resolve tenant "dev"). Decision:
 
 ### 3.1 Path layout per vhost
 
-| Path | Meaning | Served by |
-|---|---|---|
-| `/` | brand page (on brand hosts) or app-platform launcher/default app (on app hosts) | static files |
-| `/apps/<appId>/` | one mounted Angular app (path-based multiapp) | static files, own base-href |
-| `/api/` | API gateway prefix — **reserved on every vhost**, never used by frontend routing | proxy → Spring Boot |
-| `/api/<service>/` | one microservice | proxy → that service's upstream |
-| `/assets/`, hashed `*.js/*.css` | immutable build output | static, `Cache-Control: immutable` |
-| `/ngsw-worker.js`, `/index.html`, `/manifest.webmanifest` | PWA control files | static, `no-cache` |
+| Path                                                      | Meaning                                                                          | Served by                          |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------- |
+| `/`                                                       | brand page (on brand hosts) or app-platform launcher/default app (on app hosts)  | static files                       |
+| `/apps/<appId>/`                                          | one mounted Angular app (path-based multiapp)                                    | static files, own base-href        |
+| `/api/`                                                   | API gateway prefix — **reserved on every vhost**, never used by frontend routing | proxy → Spring Boot                |
+| `/api/<service>/`                                         | one microservice                                                                 | proxy → that service's upstream    |
+| `/assets/`, hashed `*.js/*.css`                           | immutable build output                                                           | static, `Cache-Control: immutable` |
+| `/ngsw-worker.js`, `/index.html`, `/manifest.webmanifest` | PWA control files                                                                | static, `no-cache`                 |
 
 Reserving `/api/` uniformly means one Nginx snippet handles API proxying identically on every
 vhost, and Angular routes must simply never start with `api` (add a lint/convention note).
@@ -166,26 +166,39 @@ install manifest. Example shape:
 
 ```jsonc
 {
-  "customer": "acme",
-  "brands": [
-    { "name": "acmecoffee", "domain": "acmecoffee.example", "source": "packages/brand-acmecoffee" }
-  ],
-  "apps": [
-    { "name": "platform", "mount": { "type": "host", "domain": "apps.acmecoffee.example" },
-      "source": "packages/angular-start-project", "multiapp": true },
-    { "name": "loyalty123", "mount": { "type": "path", "under": "apps.acmecoffee.example", "path": "/apps/loyalty123/" },
-      "source": "packages/app-loyalty123" },
-    { "name": "crm", "mount": { "type": "host", "domain": "crm.apps.acmetools.example" },
-      "source": "packages/app-crm", "multiTenant": true }
-  ],
-  "api": [
-    { "prefix": "/api/orders/", "upstream": "http://127.0.0.1:8081" },
-    { "prefix": "/api/",        "upstream": "http://127.0.0.1:8080" }
-  ],
-  "cdn": {
-    "domain": "cdn.setmy.info",
-    "sources": ["packages/cdn-content", "packages/angular-start-project-style", "packages/angular-start-project-brand-style"]
-  }
+    "customer": "acme",
+    "brands": [{ "name": "acmecoffee", "domain": "acmecoffee.example", "source": "packages/brand-acmecoffee" }],
+    "apps": [
+        {
+            "name": "platform",
+            "mount": { "type": "host", "domain": "apps.acmecoffee.example" },
+            "source": "packages/angular-start-project",
+            "multiapp": true,
+        },
+        {
+            "name": "loyalty123",
+            "mount": { "type": "path", "under": "apps.acmecoffee.example", "path": "/apps/loyalty123/" },
+            "source": "packages/app-loyalty123",
+        },
+        {
+            "name": "crm",
+            "mount": { "type": "host", "domain": "crm.apps.acmetools.example" },
+            "source": "packages/app-crm",
+            "multiTenant": true,
+        },
+    ],
+    "api": [
+        { "prefix": "/api/orders/", "upstream": "http://127.0.0.1:8081" },
+        { "prefix": "/api/", "upstream": "http://127.0.0.1:8080" },
+    ],
+    "cdn": {
+        "domain": "cdn.setmy.info",
+        "sources": [
+            "packages/cdn-content",
+            "packages/angular-start-project-style",
+            "packages/angular-start-project-brand-style",
+        ],
+    },
 }
 ```
 
@@ -406,7 +419,7 @@ Plus one trivial port-80 server per zone doing ACME challenges + 301 → https.
 ## 7. Nginx as CDN — shared assets across brands, apps, customers
 
 Secondary but integral plan: the same Nginx installation also acts as a **first-party CDN** —
-one shared origin for common static files used by *all* tenants, customers, brands, and apps:
+one shared origin for common static files used by _all_ tenants, customers, brands, and apps:
 shared JS libraries, the compiled design-system CSS (`setmy-info-less`), fonts (e.g. the
 self-hosted Material Symbols `woff2`), background videos, large images. One copy, one deploy,
 one URL every artifact references.
@@ -418,10 +431,10 @@ here is our own Nginx serving our own build artifacts.
 
 ### 7.1 DNS names and scopes
 
-| Scope | Name | Contents |
-|---|---|---|
-| Operator-wide (all customers) | `cdn.<operator-domain>` (e.g. `cdn.setmy.info`) | design-system CSS, fonts, common JS libs, stock background media |
-| Customer-wide (optional, only if a customer needs private shared assets) | `cdn.<customer-main-domain>` | that customer's shared brand videos/imagery used across their N brands and M apps |
+| Scope                                                                    | Name                                            | Contents                                                                          |
+| ------------------------------------------------------------------------ | ----------------------------------------------- | --------------------------------------------------------------------------------- |
+| Operator-wide (all customers)                                            | `cdn.<operator-domain>` (e.g. `cdn.setmy.info`) | design-system CSS, fonts, common JS libs, stock background media                  |
+| Customer-wide (optional, only if a customer needs private shared assets) | `cdn.<customer-main-domain>`                    | that customer's shared brand videos/imagery used across their N brands and M apps |
 
 Environment prefixes follow §2 (`dev.cdn.setmy.info`, …; `live` unprefixed). Locally (§10)
 the map renders `cdn.localhost` — Tier 2 play includes the CDN vhost like any other.
@@ -481,7 +494,7 @@ server {
   shared vendor JS used by static brand pages.
 - **No:** Angular application bundles. `ng build` output (hashed JS/CSS) stays on the app's
   own vhost — it is already per-app, already immutable, and moving it breaks the service
-  worker's same-scope update model. The CDN carries *shared and heavy* assets, never an app's
+  worker's same-scope update model. The CDN carries _shared and heavy_ assets, never an app's
   critical path.
 - **PWA interaction:** apps that use CDN assets list them in `ngsw.json` asset-group `urls`
   patterns (fonts, CSS — cacheable cross-origin), but **never precache videos**; those load
@@ -491,7 +504,7 @@ server {
   so "user visits brand A, then app B, font is already cached" no longer happens across
   different registrable domains. The CDN's real wins are operational — one copy, one deploy,
   version consistency across all consumers, one tuning point, cookieless requests — plus
-  server-side efficiency. Don't oversell cross-site cache hits; they mostly apply *within*
+  server-side efficiency. Don't oversell cross-site cache hits; they mostly apply _within_
   one customer's domain tree.
 
 ### 7.5 Build and artifact integration
@@ -582,11 +595,11 @@ seems to need a new configuration, the workflow is wrong, not the rule.
 
 A developer plays at three tiers, from fastest loop to fullest fidelity:
 
-| Tier | What runs | What it exercises | Loop speed |
-|---|---|---|---|
-| 1 — single unit | `npm start -w <app>` (ng serve, `local`); brands: `npm run build:brand-example -w angular-start-project-brand-style` + open the HTML file | one app or one brand in isolation; HMR, unit tests | seconds |
-| 2 — full topology | `build:all` for `local` + local Nginx on port 80 with the **generated** `*.localhost` confs + Spring Boot services (`local` profile) on their deploy-map ports | DNS-name selection, brand-vs-app routing, path mounts, base-href, PWA/service-worker scopes, `/api/` proxying, tenant mapping | a rebuild per change |
-| 3 — mixed | Tier 2, but the one app under active development is proxied by Nginx to its `ng serve` instead of static files | full topology **around** a hot-reloading app | seconds, inside real routing |
+| Tier              | What runs                                                                                                                                                      | What it exercises                                                                                                             | Loop speed                   |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| 1 — single unit   | `npm start -w <app>` (ng serve, `local`); brands: `npm run build:brand-example -w angular-start-project-brand-style` + open the HTML file                      | one app or one brand in isolation; HMR, unit tests                                                                            | seconds                      |
+| 2 — full topology | `build:all` for `local` + local Nginx on port 80 with the **generated** `*.localhost` confs + Spring Boot services (`local` profile) on their deploy-map ports | DNS-name selection, brand-vs-app routing, path mounts, base-href, PWA/service-worker scopes, `/api/` proxying, tenant mapping | a rebuild per change         |
+| 3 — mixed         | Tier 2, but the one app under active development is proxied by Nginx to its `ng serve` instead of static files                                                 | full topology **around** a hot-reloading app                                                                                  | seconds, inside real routing |
 
 ### 10.1 Local DNS names
 
@@ -730,7 +743,7 @@ Ranked alternatives, all still "root applies, CI only uploads":
    command). Gains **synchronous** CI feedback (exit code = deploy result); costs a slightly
    wider SSH surface. Reasonable when CI must fail the pipeline on a failed deploy.
 3. Rejected: CI over SSH as root (violates the constraint); any custom long-running watcher
-   daemon (systemd `.path` *is* that, maintained by someone else); Node-based deploy tooling
+   daemon (systemd `.path` _is_ that, maintained by someone else); Node-based deploy tooling
    on the VM (no runtime Node on servers, same rule as serving).
 
 With the async options (1 and the `.path` unit), CI feedback comes from `deploy-apply`
@@ -781,14 +794,14 @@ Is there ready-made software for "unprivileged upload, privileged apply"? Yes, i
 tiers; the plan above deliberately sits at the lowest tier because most of it is already
 stock:
 
-| Option | What it is | Fit |
-|---|---|---|
-| **systemd `.path`/`.timer` + oneshot service** | already installed on every EL VM; the *only* custom piece left is the ~100-line `deploy-apply` script | **recommended (what §11.2 designs)** — nothing new to install or trust |
-| **RPM + private dnf repo + `dnf-automatic`** | package each artifact as an RPM (`%files` carries ownership/modes, GPG signing built-in, `%post` runs `nginx -t` + reload as root, `dnf history undo` = rollback); CI pushes to a repo server, the VM's stock `dnf-automatic` timer applies updates as root | **the most "already-made" complete solution on EL** — eliminates the custom script *and* the SSH upload entirely (CI talks to a repo, not to the VM); costs RPM packaging work in `build:all` |
-| **`incron`** (EPEL) | inotify-driven cron: config lines mapping file events → commands | same idea as the `.path` unit, but an extra package and daemon for something systemd already does — use only where systemd is somehow off-limits |
-| **`ansible-pull` on a timer** | VM pulls a playbook from git as root and converges (unpack, perms, confs, reload) | good middle ground if Ansible is already in the shop; playbook replaces `deploy-apply`, git replaces the SFTP drop |
-| **Podman Quadlet + `podman-auto-update`** | if serving were containerized: CI pushes an image, the stock auto-update timer pulls + restarts as root | prebuilt and elegant, but out of scope while Nginx/static-files stay uncontainerized |
-| Push deployers (Capistrano/Deployer/Fabric style) | CI SSHes in and orchestrates remotely | **does not fit** — they assume the SSH user has (sudo) rights on the VM, which is exactly what this design forbids |
+| Option                                            | What it is                                                                                                                                                                                                                                                  | Fit                                                                                                                                                                                           |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **systemd `.path`/`.timer` + oneshot service**    | already installed on every EL VM; the _only_ custom piece left is the ~100-line `deploy-apply` script                                                                                                                                                       | **recommended (what §11.2 designs)** — nothing new to install or trust                                                                                                                        |
+| **RPM + private dnf repo + `dnf-automatic`**      | package each artifact as an RPM (`%files` carries ownership/modes, GPG signing built-in, `%post` runs `nginx -t` + reload as root, `dnf history undo` = rollback); CI pushes to a repo server, the VM's stock `dnf-automatic` timer applies updates as root | **the most "already-made" complete solution on EL** — eliminates the custom script _and_ the SSH upload entirely (CI talks to a repo, not to the VM); costs RPM packaging work in `build:all` |
+| **`incron`** (EPEL)                               | inotify-driven cron: config lines mapping file events → commands                                                                                                                                                                                            | same idea as the `.path` unit, but an extra package and daemon for something systemd already does — use only where systemd is somehow off-limits                                              |
+| **`ansible-pull` on a timer**                     | VM pulls a playbook from git as root and converges (unpack, perms, confs, reload)                                                                                                                                                                           | good middle ground if Ansible is already in the shop; playbook replaces `deploy-apply`, git replaces the SFTP drop                                                                            |
+| **Podman Quadlet + `podman-auto-update`**         | if serving were containerized: CI pushes an image, the stock auto-update timer pulls + restarts as root                                                                                                                                                     | prebuilt and elegant, but out of scope while Nginx/static-files stay uncontainerized                                                                                                          |
+| Push deployers (Capistrano/Deployer/Fabric style) | CI SSHes in and orchestrates remotely                                                                                                                                                                                                                       | **does not fit** — they assume the SSH user has (sudo) rights on the VM, which is exactly what this design forbids                                                                            |
 
 Decision: start with systemd units + `deploy-apply` (§11.2–11.3, near-zero new software).
 If/when artifact count or fleet size grows, the natural upgrade is the **RPM/`dnf-automatic`**
@@ -798,20 +811,20 @@ the artifact design (§4), so the migration is packaging work, not redesign.
 
 ## 12. What must be configured, where — checklist
 
-| # | Item | Where | When |
-|---|---|---|---|
-| 1 | `deploy-map.json` (customer, brands, apps, domains, mounts, upstreams, packaging) | repo root | per customer project, evolves with each new brand/app |
-| 2 | DNS records: apex + `www` per brand; `apps.` and app/tenant labels (wildcard where multi-tenant) | DNS provider | per brand/app |
-| 3 | TLS certs: one per brand apex, wildcard per tenant zone (`*.crm.apps.…`) | certbot/ACME on the server | per DNS name |
-| 4 | `build:all` root script (brands → apps → nginx templating → tar + manifest) | root `package.json` + small build script | once, then maintained |
-| 5 | Per-app `--base-href`/`--deploy-url` derived from deploy map | build script → `ng build` flags | automatic |
-| 6 | Nginx snippets (pwa-app, brand-static, api-proxy, security-headers) | `dist/artifacts/nginx/snippets` → `/etc/nginx/snippets/<customer>/` | once per customer |
-| 7 | Generated site confs, one per DNS name | `dist/artifacts/nginx/sites` → `/etc/nginx/conf.d/` | every deploy that changes topology |
-| 8 | Static roots + `current` symlinks | `/srv/www/<customer>/…` | every release |
-| 9 | Spring Boot services as systemd units on localhost ports matching the deploy map upstreams | server | per service |
-| 10 | `tenantService` upgrade: prefer `config/runtime.json` / header over hostname parsing | `angular-start-project-library` | before first multi-tenant customer |
-| 11 | Renaming/refactoring the starter per customer (this repo stays the template) | new customer repo cloned from this | per customer |
-| 12 | CDN: `cdn.` DNS record + cert, `cdn` section in the deploy map, `packages/cdn-content/` sources, `/srv/cdn/` root (§7) | DNS provider, repo, server | once per operator, then per shared-asset version bump |
+| #   | Item                                                                                                                   | Where                                                               | When                                                  |
+| --- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------- |
+| 1   | `deploy-map.json` (customer, brands, apps, domains, mounts, upstreams, packaging)                                      | repo root                                                           | per customer project, evolves with each new brand/app |
+| 2   | DNS records: apex + `www` per brand; `apps.` and app/tenant labels (wildcard where multi-tenant)                       | DNS provider                                                        | per brand/app                                         |
+| 3   | TLS certs: one per brand apex, wildcard per tenant zone (`*.crm.apps.…`)                                               | certbot/ACME on the server                                          | per DNS name                                          |
+| 4   | `build:all` root script (brands → apps → nginx templating → tar + manifest)                                            | root `package.json` + small build script                            | once, then maintained                                 |
+| 5   | Per-app `--base-href`/`--deploy-url` derived from deploy map                                                           | build script → `ng build` flags                                     | automatic                                             |
+| 6   | Nginx snippets (pwa-app, brand-static, api-proxy, security-headers)                                                    | `dist/artifacts/nginx/snippets` → `/etc/nginx/snippets/<customer>/` | once per customer                                     |
+| 7   | Generated site confs, one per DNS name                                                                                 | `dist/artifacts/nginx/sites` → `/etc/nginx/conf.d/`                 | every deploy that changes topology                    |
+| 8   | Static roots + `current` symlinks                                                                                      | `/srv/www/<customer>/…`                                             | every release                                         |
+| 9   | Spring Boot services as systemd units on localhost ports matching the deploy map upstreams                             | server                                                              | per service                                           |
+| 10  | `tenantService` upgrade: prefer `config/runtime.json` / header over hostname parsing                                   | `angular-start-project-library`                                     | before first multi-tenant customer                    |
+| 11  | Renaming/refactoring the starter per customer (this repo stays the template)                                           | new customer repo cloned from this                                  | per customer                                          |
+| 12  | CDN: `cdn.` DNS record + cert, `cdn` section in the deploy map, `packages/cdn-content/` sources, `/srv/cdn/` root (§7) | DNS provider, repo, server                                          | once per operator, then per shared-asset version bump |
 
 ## 13. Open decisions (deliberately not decided here)
 

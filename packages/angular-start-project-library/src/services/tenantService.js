@@ -17,7 +17,7 @@ const tenantService = {
     },
     isBrandPage: function () {
         return this.getTenant() === 'root';
-    }
+    },
 };
 
 module.exports = tenantService;

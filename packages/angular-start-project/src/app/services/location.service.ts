@@ -1,11 +1,11 @@
-import {Injectable, signal} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export interface GeoPosition {
     latitude: number;
     longitude: number;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class LocationService {
     readonly lastKnownPosition = signal<GeoPosition | null>(null);
     readonly lastError = signal<string | null>(null);

@@ -1,4 +1,4 @@
-import {Environment} from './environment.model';
+import { Environment } from './environment.model';
 
 // Default file, used by `ng serve`/`ng test` when no build configuration replaces it.
 // Identical to local.environment.ts — see angular.json "fileReplacements" per configuration
@@ -8,5 +8,5 @@ import {Environment} from './environment.model';
 export const environment: Environment = {
     envName: 'local',
     production: false,
-    apiBaseUrl: 'http://localhost:4200'
+    apiBaseUrl: 'http://localhost:4200',
 };

@@ -45,7 +45,7 @@ const loadingService = {
             document.head.appendChild(css);
         });
         return loaded[url];
-    }
+    },
 };
 
 module.exports = loadingService;

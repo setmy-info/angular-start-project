@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ModalOverlayComponent} from './modal-overlay.component';
-import {ModalService} from '../../../services/modal.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ModalOverlayComponent } from './modal-overlay.component';
+import { ModalService } from '../../../services/modal.service';
 
 describe('ModalOverlayComponent', () => {
     let fixture: ComponentFixture<ModalOverlayComponent>;
@@ -8,7 +8,7 @@ describe('ModalOverlayComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [ModalOverlayComponent]
+            imports: [ModalOverlayComponent],
         }).compileComponents();
         fixture = TestBed.createComponent(ModalOverlayComponent);
         modalService = TestBed.inject(ModalService);

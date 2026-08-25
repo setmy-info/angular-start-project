@@ -8,8 +8,8 @@
 // getCachedTranslations, and loadTranslations.
 
 const SUPPORTED_LANGUAGES = [
-    {code: 'et', label: 'ET'},
-    {code: 'en', label: 'EN'}
+    { code: 'et', label: 'ET' },
+    { code: 'en', label: 'EN' },
 ];
 
 const TRANSLATIONS_CACHE_KEY_PREFIX = 'translations.';
@@ -67,7 +67,7 @@ const translationService = {
         const supported = SUPPORTED_LANGUAGES.some(function (lang) {
             return lang.code === stored;
         });
-        return supported ? stored : (SUPPORTED_LANGUAGES[0] && SUPPORTED_LANGUAGES[0].code);
+        return supported ? stored : SUPPORTED_LANGUAGES[0] && SUPPORTED_LANGUAGES[0].code;
     },
 
     storeLanguage: function (code) {
@@ -114,7 +114,7 @@ const translationService = {
                 // offline, or the version/translations request failed — reuse whatever is cached
                 return readCachedTranslations(lang) || {};
             });
-    }
+    },
 };
 
 module.exports = translationService;

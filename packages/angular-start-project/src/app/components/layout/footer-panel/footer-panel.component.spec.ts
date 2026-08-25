@@ -1,10 +1,10 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
-import {vi} from 'vitest';
-import {FooterPanelComponent} from './footer-panel.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { vi } from 'vitest';
+import { FooterPanelComponent } from './footer-panel.component';
 
 function flushPromises(): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, 0));
+    return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe('FooterPanelComponent', () => {
@@ -14,13 +14,24 @@ describe('FooterPanelComponent', () => {
         // LanguageService loads its translations asynchronously (see language.service.ts /
         // translationService.js) — stub fetch so `app.title` resolves to real text instead of
         // staying on the "no cache yet" fallback for the duration of this test.
-        vi.stubGlobal('fetch', vi.fn((url: string) => Promise.resolve(new Response(JSON.stringify(
-            url.includes('translations-version.json') ? {et: 1, en: 1} : {'app.title': 'Lorem Ipsum Application'}
-        )))));
+        vi.stubGlobal(
+            'fetch',
+            vi.fn((url: string) =>
+                Promise.resolve(
+                    new Response(
+                        JSON.stringify(
+                            url.includes('translations-version.json')
+                                ? { et: 1, en: 1 }
+                                : { 'app.title': 'Lorem Ipsum Application' },
+                        ),
+                    ),
+                ),
+            ),
+        );
 
         await TestBed.configureTestingModule({
             imports: [FooterPanelComponent],
-            providers: [provideRouter([])]
+            providers: [provideRouter([])],
         }).compileComponents();
         fixture = TestBed.createComponent(FooterPanelComponent);
         fixture.detectChanges();

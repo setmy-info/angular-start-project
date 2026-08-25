@@ -5,7 +5,7 @@ const config = require('../config');
 const resourceFactory = require('./resourceFactory');
 
 const statisticsResource = {
-    resource: resourceFactory.newResource({baseUrl: config.resources.restUrl}),
+    resource: resourceFactory.newResource({ baseUrl: config.resources.restUrl }),
 
     send: function (data) {
         if (!config.features.statistics) {
@@ -15,7 +15,7 @@ const statisticsResource = {
             // statistics are best-effort — a failed send must never break the app
             return null;
         });
-    }
+    },
 };
 
 module.exports = statisticsResource;

@@ -91,7 +91,7 @@ const dbService = {
             this.db.close();
             this.db = null;
         }
-    }
+    },
 };
 
 module.exports = dbService;

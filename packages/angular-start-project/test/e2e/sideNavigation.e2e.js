@@ -4,7 +4,6 @@
 const helper = require('./pageHelper');
 
 describe('side navigation', () => {
-
     beforeAll(async () => {
         await helper.startSession();
         await helper.openPage('/');
@@ -18,16 +17,16 @@ describe('side navigation', () => {
         await helper.click('header ul:first-child li:first-child button');
         await helper.waitUntil(
             'var el = document.querySelector("#sidenav");' +
-            'return el && window.getComputedStyle(el).display !== "none";',
-            'side nav did not open'
+                'return el && window.getComputedStyle(el).display !== "none";',
+            'side nav did not open',
         );
     }
 
     async function expectClosed() {
         await helper.waitUntil(
             'var el = document.querySelector("#sidenav");' +
-            'return el && window.getComputedStyle(el).display === "none";',
-            'side nav did not close'
+                'return el && window.getComputedStyle(el).display === "none";',
+            'side nav did not close',
         );
         expect(await helper.displayOf('#sidenav')).toBe('none');
         expect(await helper.displayOf('#modalBody')).toBe('none');
@@ -55,7 +54,7 @@ describe('side navigation', () => {
             top: 0,
             left: 0,
             x: 0,
-            y: 0
+            y: 0,
         });
     });
 
@@ -96,7 +95,13 @@ describe('side navigation', () => {
         expect(dl).toContain('1.0.0-SNAPSHOT');
         expect(dl).toContain('Keel:');
         expect(dl).toContain('Keskkond:');
-        expect(dl).toContain('local');
+        // The environment row shows whichever build profile the app under test
+        // was built with. The e2e tier runs against the BUILT app (Maven
+        // failsafe: test the artifact, not a dev server), and CI builds with
+        // the `ci` profile per ADR-0041 §4.4 - so this must follow the build,
+        // not hardcode one environment. BUILD_PROFILE is set by whoever built
+        // it; a plain local build defaults to `local`.
+        expect(dl).toContain(process.env.BUILD_PROFILE || 'local');
     });
 
     test('settings page shows the location links from the allowed test geolocation', async () => {

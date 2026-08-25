@@ -1,12 +1,12 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TermsComponent} from './terms.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TermsComponent } from './terms.component';
 
 describe('TermsComponent', () => {
     let fixture: ComponentFixture<TermsComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [TermsComponent]
+            imports: [TermsComponent],
         }).compileComponents();
         fixture = TestBed.createComponent(TermsComponent);
         fixture.detectChanges();

@@ -1,8 +1,8 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import angularStartProjectLibrary from 'angular-start-project-library';
-import {SideNavPanelComponent} from './side-navigation-panel.component';
-import {ModalService} from '../../../services/modal.service';
+import { SideNavPanelComponent } from './side-navigation-panel.component';
+import { ModalService } from '../../../services/modal.service';
 
 describe('SideNavPanelComponent', () => {
     let fixture: ComponentFixture<SideNavPanelComponent>;
@@ -11,7 +11,7 @@ describe('SideNavPanelComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [SideNavPanelComponent],
-            providers: [provideRouter([])]
+            providers: [provideRouter([])],
         }).compileComponents();
         fixture = TestBed.createComponent(SideNavPanelComponent);
         modalService = TestBed.inject(ModalService);
@@ -47,7 +47,7 @@ describe('SideNavPanelComponent', () => {
         const el = fixture.nativeElement as HTMLElement;
         const items = el.querySelectorAll('li.sideNavMenuItems');
         const menuCount = angularStartProjectLibrary.menuModel.getMenuItems(
-            angularStartProjectLibrary.tenantService.getTenant()
+            angularStartProjectLibrary.tenantService.getTenant(),
         ).length;
         expect(items.length).toBe(menuCount + 1);
     });

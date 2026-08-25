@@ -2,7 +2,7 @@
 // STATISTICS_LIMIT) flushed to statisticsResource. Events recorded by the new app: session
 // `create` + external `referrer` (sessionService), language `change` (LanguageService), and page
 // visits (PageTitleService router hook — the Angular equivalent of the old Vue page mixin).
-const {STATISTICS_LIMIT} = require('../constants');
+const { STATISTICS_LIMIT } = require('../constants');
 const statisticsResource = require('../resources/statisticsResource');
 
 const statisticsService = {
@@ -20,7 +20,7 @@ const statisticsService = {
         this.addObject({
             sessionId: sessionService.getSessionId(),
             object: object,
-            eventName: eventName
+            eventName: eventName,
         });
     },
 
@@ -34,10 +34,10 @@ const statisticsService = {
         if (this.log.length === 0) {
             return;
         }
-        const data = {log: this.log.slice()};
+        const data = { log: this.log.slice() };
         statisticsResource.send(data);
         this.log.length = 0;
-    }
+    },
 };
 
 module.exports = statisticsService;

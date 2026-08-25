@@ -9,7 +9,6 @@ const LIGHTYELLOW = 'rgb(255, 255, 224)';
 const WHITE = 'rgb(255, 255, 255)';
 
 describe('hover and selected-state colors', () => {
-
     beforeAll(async () => {
         await helper.startSession();
         await helper.openPage('/');
@@ -23,8 +22,8 @@ describe('hover and selected-state colors', () => {
         await helper.click('header ul:first-child li:first-child button');
         await helper.waitUntil(
             'var el = document.querySelector("#sidenav");' +
-            'return el && window.getComputedStyle(el).display !== "none";',
-            'side nav did not open'
+                'return el && window.getComputedStyle(el).display !== "none";',
+            'side nav did not open',
         );
     }
 
@@ -39,10 +38,12 @@ describe('hover and selected-state colors', () => {
         await helper.hover('nav li:nth-child(2) a');
         await helper.waitUntil(
             'var el = document.querySelector("nav li:nth-child(2) a");' +
-            `return window.getComputedStyle(el).borderBottomColor === "${HOVER_ORANGE}";`,
-            'main-menu hover color did not apply'
+                `return window.getComputedStyle(el).borderBottomColor === "${HOVER_ORANGE}";`,
+            'main-menu hover color did not apply',
         );
-        expect(await helper.cssValueOf('nav li:nth-child(2) a', 'border-bottom-color')).toBe(HOVER_ORANGE);
+        expect(await helper.cssValueOf('nav li:nth-child(2) a', 'border-bottom-color')).toBe(
+            HOVER_ORANGE,
+        );
     });
 
     test('active language button is the sunken gray/green one', async () => {
@@ -55,24 +56,30 @@ describe('hover and selected-state colors', () => {
 
     test('active side-menu item carries the red selection left border', async () => {
         await openSideNav();
-        expect(await helper.cssValueOf('li.sideNavMenuItems a.active', 'border-left-color')).toBe(ACTIVE_RED);
+        expect(await helper.cssValueOf('li.sideNavMenuItems a.active', 'border-left-color')).toBe(
+            ACTIVE_RED,
+        );
     });
 
     test('hovering a side-menu item gives the lightyellow background and orange left border', async () => {
         await helper.hover('li.sideNavMenuItems:nth-child(2) a');
         await helper.waitUntil(
             'var el = document.querySelector("li.sideNavMenuItems:nth-child(2) a");' +
-            `return window.getComputedStyle(el).backgroundColor === "${LIGHTYELLOW}";`,
-            'side-menu hover background did not apply'
+                `return window.getComputedStyle(el).backgroundColor === "${LIGHTYELLOW}";`,
+            'side-menu hover background did not apply',
         );
-        expect(await helper.cssValueOf('li.sideNavMenuItems:nth-child(2) a', 'background-color')).toBe(LIGHTYELLOW);
-        expect(await helper.cssValueOf('li.sideNavMenuItems:nth-child(2) a', 'border-left-color')).toBe(HOVER_ORANGE);
+        expect(
+            await helper.cssValueOf('li.sideNavMenuItems:nth-child(2) a', 'background-color'),
+        ).toBe(LIGHTYELLOW);
+        expect(
+            await helper.cssValueOf('li.sideNavMenuItems:nth-child(2) a', 'border-left-color'),
+        ).toBe(HOVER_ORANGE);
     });
 
     test('the side-menu language row is a noHover element: hovering keeps it white', async () => {
         await helper.hover('a.noHover');
         // give any (wrong) hover style a moment to apply before asserting it did not
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 300));
         expect(await helper.cssValueOf('a.noHover', 'background-color')).toBe(WHITE);
         expect(await helper.cssValueOf('a.noHover', 'border-left-color')).toBe(WHITE);
     });
