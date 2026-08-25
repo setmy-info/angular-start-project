@@ -4,11 +4,14 @@ import {
     provideAppInitializer,
     provideBrowserGlobalErrorListeners,
 } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import angularStartProjectLibrary from 'angular-start-project-library';
 
 import { routes } from './app.routes';
+import { AuthService } from './auth/auth.service';
+import { authInterceptor } from './auth/auth.interceptor';
 import { environment } from '../environments/environment';
 import { LocationService } from './services/location.service';
 import { PageTitleService } from './services/page-title.service';
@@ -103,6 +106,16 @@ export const appConfig: ApplicationConfig = {
     providers: [
         provideBrowserGlobalErrorListeners(),
         provideRouter(routes),
+        // Keycloak: authInterceptor obtains a valid access token (renewing it lazily when it is
+        // within 30s of expiry) and adds the bearer header to every request whose URL matches
+        // environment.keycloak.protectedResourceUrls. With environment.keycloak.enabled = false
+        // it is a pass-through, so wiring it in unconditionally costs nothing.
+        provideHttpClient(withInterceptors([authInterceptor])),
+        // Optional (environment.keycloak.silentSsoOnStartup): after a reload the tokens are gone,
+        // because they are only ever held in memory. This bounces once through Keycloak with
+        // prompt=none to pick up an existing SSO session without showing anything to the user.
+        // A no-op when the flag is off — the route guard already does this on demand.
+        provideAppInitializer(() => void inject(AuthService).restoreSessionSilently()),
         provideAppInitializer(logAppStarted),
         provideAppInitializer(logAppOpenedTimeAndTimezone),
         provideAppInitializer(logAppOpenedLocationOnce), // comment out to disable the $geo example

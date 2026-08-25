@@ -14,6 +14,9 @@ import { AdsComponent } from './components/views/ads/ads.component';
 import { SponsorsComponent } from './components/views/sponsors/sponsors.component';
 import { TemplatePageComponent } from './components/views/template-page/template-page.component';
 import { ViewNotFoundComponent } from './components/views/view-not-found/view-not-found.component';
+import { AuthCallbackComponent } from './components/views/auth-callback/auth-callback.component';
+import { ProfileComponent } from './components/views/profile/profile.component';
+import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -32,5 +35,14 @@ export const routes: Routes = [
     { path: 'ads', component: AdsComponent },
     { path: 'sponsors', component: SponsorsComponent },
     { path: 'template', component: TemplatePageComponent },
+    // Keycloak OIDC redirect target. Its path must match environment.keycloak.redirectUri, and
+    // it must NOT be guarded — this route is how a session is created in the first place.
+    { path: 'auth/callback', component: AuthCallbackComponent },
+    // EXAMPLE of a protected route. authGuard renews an expired access token silently, and sends
+    // the browser to Keycloak when there is no usable session; with the feature flag off it lets
+    // everything through. Lazy-loaded feature routes take the same guard:
+    //     { path: 'admin', canActivate: [authGuard],
+    //       loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes) }
+    { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
     { path: '**', component: ViewNotFoundComponent },
 ];

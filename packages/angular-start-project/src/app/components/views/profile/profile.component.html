@@ -1,0 +1,69 @@
+<div class="applicationContentMain">
+    <article class="articleBody">
+        <div class="articleSectionPanel">
+            <section>
+                @if (languageService.currentLanguageCode() === 'et') {
+                    <h1>Profiil</h1>
+                } @else {
+                    <h1>Profile</h1>
+                }
+
+                @if (!authService.enabled) {
+                    <p>
+                        @if (languageService.currentLanguageCode() === 'et') {
+                            Keycloaki autentimine on välja lülitatud (environment.keycloak.enabled =
+                            false) — see leht on avalik.
+                        } @else {
+                            Keycloak authentication is switched off (environment.keycloak.enabled =
+                            false) — this page is public.
+                        }
+                    </p>
+                }
+
+                @if (authService.session(); as session) {
+                    <dl>
+                        <dt>User</dt>
+                        <dd>{{ session.displayName }} ({{ session.userName }})</dd>
+                        <dt>Email</dt>
+                        <dd>{{ session.email }}</dd>
+                        <dt>Realm roles</dt>
+                        <dd>{{ session.realmRoles.join(', ') || '—' }}</dd>
+                        <dt>Client roles</dt>
+                        <dd>{{ session.clientRoles.join(', ') || '—' }}</dd>
+                    </dl>
+
+                    <!-- Role check for RENDERING only. The backend enforces the same role. -->
+                    @if (isAdmin()) {
+                        <p>Administrator tools would be shown here.</p>
+                    }
+                }
+
+                <p>
+                    <button type="button" (click)="loadProfile()">
+                        @if (languageService.currentLanguageCode() === 'et') {
+                            Lae profiil
+                        } @else {
+                            Load profile
+                        }
+                    </button>
+                    @if (authService.isAuthenticated()) {
+                        <button type="button" (click)="logout()">
+                            @if (languageService.currentLanguageCode() === 'et') {
+                                Logi välja
+                            } @else {
+                                Log out
+                            }
+                        </button>
+                    }
+                </p>
+
+                @if (profile(); as loaded) {
+                    <p>{{ loaded.displayName }} &lt;{{ loaded.email }}&gt;</p>
+                }
+                @if (loadError(); as error) {
+                    <p role="alert">{{ error }}</p>
+                }
+            </section>
+        </div>
+    </article>
+</div>

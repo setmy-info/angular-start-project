@@ -403,7 +403,8 @@ Angular build/serve configuration names — there is no `production`/`developmen
 | `live`        | `live`    | `true`       | `https://angular-start-project.setmy.info`         |
 
 Each configuration swaps in `src/environments/<name>.environment.ts` via `fileReplacements` (see
-`src/environments/environment.model.ts` for the shape). Files are named `<name>.environment.ts`,
+`src/environments/environment.model.ts` for the shape — it also carries the `keycloak` block
+described in "Keycloak authentication" below). Files are named `<name>.environment.ts`,
 **not** `environment.<name>.ts` — Vitest's default test-file glob matches `*.test.ts`, which would
 otherwise swallow `environment.test.ts`.
 
@@ -411,6 +412,244 @@ otherwise swallow `environment.test.ts`.
 npx ng serve --configuration dev      # any configuration also works with serve
 npm run build:dev -w angular-start-project   # or build:ci / build:test / build:prelive / build:live
 ```
+
+## Keycloak authentication (OIDC Authorization Code + PKCE)
+
+Ships **switched off**. One boolean per environment turns the whole thing on:
+
+```ts
+// src/environments/<name>.environment.ts
+keycloak: {
+    enabled: false,   // <- the feature flag. Nothing below runs while this is false.
+    ...
+}
+```
+
+With `enabled: false` the app behaves exactly as it did before Keycloak existed: `AuthService`
+methods are no-ops, the HTTP interceptor is a pass-through, `authGuard` lets every route in, and
+`hasRole()` answers `true` so role-gated UI stays visible. Flipping it to `true` is the only code
+change needed to activate the flow — everything else is configuration.
+
+No third-party authentication code is involved: no `keycloak-js`, no `keycloak-angular`, no
+`angular-auth-oidc-client`, no OIDC library of any kind, and no state-management library. The
+implementation is Angular's own APIs plus `fetch`, `URL`/`URLSearchParams`, `crypto.getRandomValues`,
+`crypto.subtle.digest`, `btoa`/`atob` and `sessionStorage`.
+
+### Configuration
+
+| Key                     | Meaning                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| `enabled`               | Feature flag — the master switch described above.                                |
+| `issuer`                | Keycloak base URL **without** `/realms/...`, e.g. `https://keycloak.setmy.info`. |
+| `realm`                 | Realm name. The OIDC issuer is `${issuer}/realms/${realm}`.                      |
+| `clientId`              | Public client id (Keycloak "Client authentication" **off**).                     |
+| `redirectUri`           | Absolute URL whose path is the `auth/callback` Angular route.                    |
+| `postLogoutRedirectUri` | Absolute URL to land on after logout.                                            |
+| `scopes`                | `['openid', 'profile', 'email']` by default; `openid` is required.               |
+| `silentSsoOnStartup`    | Optional prompt=none probe at bootstrap (see "Browser reloads" below).           |
+| `protectedResourceUrls` | URL prefixes that receive the bearer token. Nothing else gets one.               |
+
+`src/app/auth/auth.config.ts` is the **only** place Keycloak URLs are assembled
+(`/protocol/openid-connect/auth`, `/token`, `/logout`, `/userinfo`). Repointing the app at a
+different server or realm is an environment-file edit, nothing more.
+
+The Angular app is a **public client**: it holds no client secret and none is ever sent. That is
+safe precisely because the flow is Authorization Code **with PKCE** — see below.
+
+### The files
+
+| File                                              | Role                                                        |
+| ------------------------------------------------- | ----------------------------------------------------------- |
+| `src/environments/environment.model.ts`           | `KeycloakEnvironmentConfig` — the flag and all settings.    |
+| `src/app/auth/auth.config.ts`                     | Endpoint building, the 30s skew constant, URL matching.     |
+| `src/app/auth/pkce.ts`                            | base64url, CSPRNG values, S256 code challenge (Web Crypto). |
+| `src/app/auth/jwt.ts`                             | Claim reading and role extraction — **UI only**.            |
+| `src/app/auth/auth.model.ts`                      | Token/session/callback/error types.                         |
+| `src/app/auth/auth.service.ts`                    | The flow, the token state, the single-flight refresh.       |
+| `src/app/auth/auth.interceptor.ts`                | Bearer header, lazy renewal, one 401 retry.                 |
+| `src/app/auth/auth.guard.ts`                      | `canActivate` for protected routes.                         |
+| `.../views/auth-callback/auth-callback.component` | Owns the `auth/callback` route.                             |
+| `.../views/profile/profile.component`             | Example protected view.                                     |
+| `src/app/services/profile-api.service.ts`         | Example authenticated API call.                             |
+
+`AuthService` is a standalone `providedIn: 'root'` service; wiring is `provideHttpClient(withInterceptors([authInterceptor]))`
+in `app.config.ts`. There is no NgModule anywhere.
+
+### The flow
+
+1. **`login(returnUrl)`** generates a PKCE pair (32 random bytes → 43-character verifier, challenge
+   = base64url(SHA-256(verifier)), method `S256`), plus a random `state` and `nonce`. All four,
+   with the route to return to, are written to `sessionStorage` as one short-lived _transaction_.
+2. The browser is sent to Keycloak's authorization endpoint with `response_type=code`,
+   `code_challenge`, `code_challenge_method=S256`, `state` and `nonce`. Only the **hash** of the
+   verifier travels; the verifier itself stays in the tab.
+3. Keycloak redirects back to `auth/callback` with `?code=...&state=...`.
+4. **`handleCallback()`** validates before it trusts:
+    - an `?error=` response is reported, never exchanged;
+    - `code` and `state` must both be present;
+    - a transaction must exist, and the returned `state` must equal the stored one — **a callback
+      whose state does not match is refused and no token request is made at all** (CSRF / session
+      fixation protection);
+    - the transaction is deleted immediately, so a replayed callback URL cannot be used twice;
+    - the code is exchanged at the token endpoint with `code_verifier` (the PKCE proof that replaces
+      a client secret), and the returned `id_token`'s `nonce` claim must match the one requested.
+5. The token set is stored in memory and the claims are published as signals.
+
+All authorization and token parameters go through `URLSearchParams`, so every name and value is
+correctly percent-encoded / form-encoded.
+
+### Refresh: lazy, never on a timer
+
+There is **no `setInterval`, no `setTimeout` and no background refresh loop.** Renewal happens at
+exactly one moment: when something needs a usable token.
+
+`getAccessToken()` returns the current token if it has more than **30 seconds** left
+(`TOKEN_EXPIRY_SKEW_MS`), and otherwise refreshes first. A token inside that window counts as
+expired, so a request never leaves the browser with a token that dies in flight.
+
+**Single-flight (concurrent refresh).** Five requests firing at once against a token that just
+expired would naively cause five refreshes — and with refresh-token rotation that is actively
+harmful: Keycloak invalidates a rotated refresh token the moment it is used, so calls two through
+five would present a token that no longer exists and the app would destroy its own session.
+`AuthService.refresh()` therefore holds a latch:
+
+```ts
+if (this.refreshInFlight) {
+    return await this.refreshInFlight; // every concurrent caller awaits the SAME promise
+}
+this.refreshInFlight = this.performRefresh(refreshToken).finally(() => {
+    this.refreshInFlight = null; // released on success AND on failure
+});
+```
+
+The latch is assigned synchronously before any `await`, so two callers in the same task cannot both
+see `null`. One HTTP request to Keycloak, N waiters, all released with the same result — and the
+`finally` guarantees no waiter is ever stranded. `auth.service.spec.ts` pins this with five
+simultaneous callers and asserts exactly one `fetch`.
+
+**Rotation.** Whenever the token response carries a new `refresh_token`, it replaces the old value
+and the old one is dropped on the spot. When the realm does not rotate, the previous token stays.
+
+**Failure handling** distinguishes two cases, and only one of them logs anybody out:
+
+| Outcome                       | What happens                                                                |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `400 invalid_grant`           | Session is over → local state and tokens cleared, `refresh()` returns null. |
+| Network failure, `5xx`, `429` | `AuthTransientError` — **tokens are left untouched**, the caller retries.   |
+
+A flaky network can therefore never corrupt the authentication state or silently sign the user out.
+
+### Interceptor and guard
+
+`authInterceptor` attaches `Authorization: Bearer <access_token>` to any request matching
+`protectedResourceUrls`, and **never** to a Keycloak URL (authorization, token, logout, userinfo) or
+to anything else. It awaits `getAccessToken()` first, which is where lazy renewal happens.
+
+On a `401` it refreshes once and retries the request **exactly once**. The retry is deliberately not
+wrapped in the same `catchError`, which makes an infinite `401 → refresh → 401` loop structurally
+impossible; a second 401 propagates to the caller. If the refresh comes back null, the local state
+has already been cleared and the user is sent to Keycloak for a new login.
+
+`authGuard` covers four cases: flag off → allow; live session → allow (renewing an expired access
+token silently, so the user never sees a login screen); dead Keycloak session → clear and redirect
+to Keycloak, remembering `state.url` so the user lands on the page they asked for; Keycloak
+unreachable → **allow**, because a network blip is not a reason to throw someone out of the app.
+
+```ts
+// app.routes.ts — protecting a route
+{ path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+// lazy feature routes take the same guard
+{ path: 'admin', canActivate: [authGuard],
+  loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes) },
+```
+
+```ts
+// An authenticated API call — no auth code in the business service at all
+@Injectable({ providedIn: 'root' })
+export class ProfileApiService {
+    private readonly httpClient = inject(HttpClient);
+
+    loadProfile() {
+        return this.httpClient.get<UserProfile>(`${environment.apiBaseUrl}/rest/profile`);
+    }
+}
+```
+
+### Who owns the session
+
+**Keycloak does.** The Angular signals are a cache of what Keycloak last told this tab, never the
+authority on whether the user is still logged in. Access-token lifetime (~5 min), SSO Session Idle
+(~14 days) and SSO Session Max (~30 days) are all enforced by Keycloak; this app implements none of
+them and only reacts to a refresh succeeding or failing. That is exactly what lets someone stay
+logged in for weeks without re-entering credentials, and still be forced through a fresh login once
+the session max is reached.
+
+### Browser reloads, and why tokens are in memory
+
+Access, refresh and id tokens live in a private field of the `AuthService` singleton — **runtime
+memory**. They are never written to `localStorage`, and `sessionStorage` holds only the seconds-long
+authorization transaction (PKCE verifier, state, nonce, return URL), which has to survive the
+redirect and is deleted as soon as the callback is processed.
+
+The consequence is explicit: **a full page reload throws the tokens away and the authentication
+state has to be re-established.** That is the trade-off being bought — a refresh token in
+`localStorage` is readable by any XSS on the origin and stays valid for as long as SSO Session Idle.
+
+The cost is paid by Keycloak's SSO cookie rather than by the user. After a reload the app has no
+tokens, the route guard calls `login()`, the browser bounces through Keycloak, and because the SSO
+session cookie is still there Keycloak redirects straight back with a fresh code — no login screen,
+no credentials, typically just a flash of the loading bar. Setting `silentSsoOnStartup: true` does
+that probe once at bootstrap with `prompt=none` instead of waiting for the first protected
+navigation; it runs at most once per tab, so a realm with no SSO session cannot turn into a redirect
+loop.
+
+One interaction to be aware of: `ngsw-config.json` caches `/rest/**` as a `freshness` data group
+for an hour. Those responses are now per-user, and the service worker cache outlives a logout and is
+shared by everyone using that browser profile. Nothing in this implementation depends on that cache
+— if the protected endpoints return anything user-specific, drop `/rest/**` from the `api` data
+group (or narrow it to genuinely public paths) before switching the flag on.
+
+### Roles are a UI concern
+
+Roles are read from the access token's claims:
+
+- **realm roles** — `realm_access.roles`
+- **client roles** — `resource_access['<clientId>'].roles`
+
+`hasRole('admin')` checks the realm roles first, then this client's roles. `jwt.ts` decodes the
+payload and **does not verify the signature** — deliberately, and it should not: a browser holding
+the token cannot meaningfully validate it, and there is no non-security UI reason to try.
+
+Treat every Angular role check as a rendering decision. The API gateway / backend performs the
+authoritative validation (signature, issuer, audience, expiry, roles) on every request. If Angular's
+view of the roles is wrong, the backend answers 403 and the UI is merely out of step — nothing is
+bypassed. **Never** decode a JWT in Angular and treat the result as trustworthy.
+
+### Keycloak realm setup
+
+Configure the client in Keycloak to match — the Angular side assumes nothing else:
+
+- Client type **OpenID Connect**, Client ID = `keycloak.clientId`.
+- **Client authentication: Off** (public client) — no secret is issued or used.
+- **Standard flow: On**; Direct access grants / Implicit flow: Off.
+- **Valid redirect URIs**: the exact `redirectUri`, e.g. `https://…/auth/callback`.
+- **Valid post logout redirect URIs**: the exact `postLogoutRedirectUri`.
+- **Web origins**: the app origin, so the token endpoint accepts the browser's CORS request.
+- **Proof Key for Code Exchange Code Challenge Method: S256** (Advanced → Advanced settings). With
+  this set, Keycloak _requires_ PKCE and rejects any code exchange without a valid verifier.
+- Realm sessions: Access Token Lifespan ~5 min, SSO Session Idle ~14 days, SSO Session Max ~30 days.
+
+The app must be served over `https://` or `localhost`: `crypto.subtle` — and therefore the S256
+challenge — is unavailable in an insecure context, the same restriction the geolocation example
+hits.
+
+### Tests
+
+`src/app/auth/*.spec.ts` (44 specs) stand in for a live Keycloak: the RFC 7636 Appendix B PKCE
+vector, base64url round-trips, UTF-8 claim decoding, the authorization-request parameters,
+state-mismatch and nonce-mismatch refusal, the 30-second skew, five-concurrent-callers →
+one refresh, refresh-token rotation, `invalid_grant` → cleared vs. network failure → preserved,
+one-retry-only on 401, every guard branch, and the feature flag being genuinely inert.
 
 ## Progressive Web App / offline support
 

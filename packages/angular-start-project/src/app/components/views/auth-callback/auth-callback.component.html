@@ -1,0 +1,38 @@
+<div class="applicationContentMain">
+    <article class="articleBody">
+        <div class="articleSectionPanel">
+            <section aria-live="polite">
+                @if (failure(); as callbackFailure) {
+                    @if (languageService.currentLanguageCode() === 'et') {
+                        <h1>Sisselogimine ebaõnnestus</h1>
+                        <p>Keycloakist tagasi tulnud vastust ei saanud kasutada.</p>
+                    } @else {
+                        <h1>Sign-in failed</h1>
+                        <p>The response returned from Keycloak could not be used.</p>
+                    }
+                    <p>
+                        <code>{{ callbackFailure.reason }}</code>
+                    </p>
+                    @if (callbackFailure.errorDescription) {
+                        <p>{{ callbackFailure.errorDescription }}</p>
+                    }
+                    <button type="button" (click)="retry()">
+                        @if (languageService.currentLanguageCode() === 'et') {
+                            Proovi uuesti
+                        } @else {
+                            Try again
+                        }
+                    </button>
+                } @else {
+                    @if (languageService.currentLanguageCode() === 'et') {
+                        <h1>Sisselogimine…</h1>
+                        <p>Palun oota, viime sisselogimise lõpuni.</p>
+                    } @else {
+                        <h1>Signing in…</h1>
+                        <p>Please wait while the sign-in is completed.</p>
+                    }
+                }
+            </section>
+        </div>
+    </article>
+</div>
