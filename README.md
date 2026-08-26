@@ -950,7 +950,7 @@ hoped for.
 
 ### CI
 
-`Jenkinsfile` (1.1.0, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating
+`Jenkinsfile` (1.2.0, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating
 as the sibling repos: `master`, `devel*`, `release*`, `hotfix*`, and feature branches running everything up to Package
 but never Publish/Deploy/Tag.
 
