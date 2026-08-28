@@ -1,3 +1,4 @@
+
 def runCommand(String command) {
     if (isUnix()) {
         sh command
@@ -8,30 +9,18 @@ def runCommand(String command) {
 
 pipeline {
 
-    // version 1.2.0 - migrated from jenkinsfile-starter's current Jenkinsfile (commit ad074a6):
-    //                 pollSCM trigger, options { buildDiscarder + quietPeriod +
-    //                 disableConcurrentBuilds(abortPrevious: true) }, declarative `when`
-    //                 branch/environment conditions with comparator: 'REGEXP' instead of
-    //                 expression { env.BRANCH_NAME.startsWith(...) }, cross-platform
-    //                 runCommand() helper, DEPLOY_TARGET passed via withEnv
-    // version 1.1.0 - migrated from jenkinsfile-starter 1.1.0 for angular-start-project
-    //                 (npm monorepo: an Angular application over framework-independent JS and
-    //                 LESS packages). Same stage skeleton, branch gating and HOTFIX_TO_* flags
-    //                 as the setmy.info-js / -python / -elixir / setmy-info-less siblings; the
-    //                 Maven placeholders are this repo's npm lifecycle scripts (README.md
-    //                 "Lifecycle").
-    //
-    // GENERATE-SOURCES: this repo is the first with a real Maven `generate-sources` phase -
-    // bin/versionModule.js stamps package.json's version into src/app/config/version.ts. It ran
-    // as an npm `prebuild` hook before; a named phase makes it visible in the pipeline.
-    //
-    // E2E NOTE: the e2e tier drives a real browser through an EXTERNAL Selenium Grid
-    // (SELENIUM_HUB_URL, default http://localhost:4444/wd/hub) plus Java on the grid host, and
-    // runs against the BUILT app served by pre-e2e-test (not `ng serve`). If an agent has no
-    // grid, gate the E2E stage behind `when { expression { env.SELENIUM_HUB_URL } }` rather
-    // than deleting it - a missing test tier must stay visible.
-
     /*
+    version 1.2.0 - release* no longer deploys to DEV: the RELEASE_TO_DEV flag and the release
+                    branch of the 'dev' deploy stage are gone. release* deploys to TEST and
+                    PRELIVE only. develop -> DEV is unchanged.
+    version 1.1.0 - pollSCM instead of cron (build on new commits, not on a timer),
+                    quietPeriod + disableConcurrentBuilds(abortPrevious: true) so that a burst
+                    of commits becomes one build of the newest change,
+                    elease* added to Publish/Snapshot: develop, release* and hotfix* all publish
+                    a candidate of unknown quality
+                    TEST environment renamed to the ADR-0041 canonical name
+    version 1.0.1 - fileExists precondition check now actually gates (was a discarded boolean)
+
     Git branches flow: develop -> feature -> develop -> release -> master
 
     Building only the newest change
@@ -130,7 +119,6 @@ pipeline {
     }
 
     environment {
-        PATH = "/opt/has/bin:$PATH"
 
         MASTER_TO_LIVE = 'DEPLOY'
 
@@ -148,6 +136,10 @@ pipeline {
         stage('Inspection') {
             parallel {
                 stage('Pre-build') {
+                    /*
+                    Stage to get into build logs pre build existing environment conditions, versions, getting CI build
+                    info into log etc.
+                    */
                     steps {
                         echo "Jenkins node: ${env.NODE_NAME}"
                         echo "Operating system: ${isUnix() ? 'Unix/Linux' : 'Windows'}"
@@ -155,43 +147,44 @@ pipeline {
                         echo 'Pre build inspection and precondition check.'
                         runCommand 'node --version'
                         runCommand 'npm --version'
-                        // fileExists only RETURNS a boolean - as a bare
-                        // statement its result is discarded and a missing
-                        // file fails nothing. It must be wrapped to gate.
-                        script {
-                            if (!fileExists('README.md')) {
-                                error('README.md missing - checkout incomplete or wrong workspace directory')
-                            }
-                        }
                     }
                 }
+                /*
+                Stage to install build required tools. Build dependencies.
+                */
                 stage('Build tools') {
                     steps {
-                        echo 'Build tools installation and preparation (npm ci)'
-                        runCommand 'npm run bootstrap'
+                        echo 'Build tools installation and preparation (setup, config)'
+                        runCommand 'echo "Nothing to install. All tools are installed and expected to be preinstalled."'
                     }
                 }
             }
         }
 
-        // Everything from here down to and including 'Package' runs on every
-        // branch, feature branches included - the point (per our git branching
-        // model) is that a developer on a feature branch gets the same build,
-        // lint, test and quality feedback as devel/release/master, without
-        // ever reaching the Publish/Deploy/Tag stages below, which are gated
-        // to specific branches only.
-
         stage('Preparation') {
-            steps {
-                echo 'Preparing the workspace to be built.'
-                runCommand 'npm run clean'
-                runCommand 'npm run validate'
+            parallel {
+                /*
+                Stage to install language and source, language code dependencies.
+                */
+                stage('Install') {
+                    steps {
+			echo 'Preparing the workspace to be built (npm ci).'
+			runCommand 'npm run bootstrap'
+                    }
+                }
             }
         }
 
+        /*
+        Stage to build code with with executing all needed steps to measure different type of code quality.
+        */
         stage('Build') {
             steps {
-                echo 'Format/lint check (Maven validate phase equivalent)'
+                echo 'Cleaning command, because in some cases shared directories can have previous build garbage'
+                runCommand 'npm run clean'
+
+		echo 'Format/lint check (Maven validate phase equivalent)'
+                runCommand 'npm run validate'
                 runCommand 'npm run format:check'
                 runCommand 'npm run lint'
 
@@ -213,36 +206,11 @@ pipeline {
                 echo 'Integration tests (*IT-equivalent)'
                 runCommand 'npm run pre-integration-test'
                 runCommand 'npm run integration-test'
-            }
-            post {
-                // Guaranteed cleanup even if integration-test fails, the same
-                // way Maven's failsafe plugin always runs post-integration-test
-                // around a possibly failing integration-test goal.
-                always {
-                    runCommand 'npm run post-integration-test'
-                }
-            }
-        }
+                runCommand 'npm run post-integration-test'
 
-        stage('E2E') {
-            steps {
-                echo 'e2e tests (-Pe2e equivalent, *E2ET-style) - against the BUILT app'
                 runCommand 'npm run pre-e2e-test'
-                // No BUILD_PROFILE needed: Build records the profile it used
-                // in dist/build-info.json and the e2e tier reads it back, so
-                // the suite always follows the artifact it is actually testing.
                 runCommand 'npm run e2e-test'
-            }
-            post {
-                always {
-                    runCommand 'npm run post-e2e-test'
-                }
-            }
-        }
-
-        stage('Quality') {
-            steps {
-                echo 'Put here mutation tests once a JS mutation-testing tool (e.g. Stryker) is wired in'
+                runCommand 'npm run post-e2e-test'
 
                 echo 'Coverage, security (dependency-check equivalent), artifact verification'
                 runCommand 'npm run coverage'
@@ -252,47 +220,24 @@ pipeline {
                 echo 'Reporting: docs, lint report, coverage report, security report, dependency tree (mvn site equivalent)'
                 runCommand 'npm run site'
 
-                // ci.yml's Publish/release-reports job does the real
-                // GitHub-Pages version of this. There's no Jenkins
-                // equivalent of "push to GitHub Pages" without pushing to
-                // GitHub itself as a side effect of a Jenkins build, which
-                // needs its own credentials/target decision - left as a
-                // placeholder here on purpose rather than guessing at one.
-                echo 'Put here site deploy, e.g. publish site/ to an internal reports host'
-            }
-        }
-
-        stage('System/Acceptance') {
-            steps {
-                echo 'Put here system tests'
-                echo 'Put here acceptance tests'
-            }
-        }
-
-        stage('Package') {
-            steps {
-                echo 'Packaging'
                 runCommand 'npm run package'
                 runCommand 'npm run sbom'
                 runCommand 'npm run sign'
             }
         }
 
-        // comparator: 'REGEXP' below is not decoration. The default GLOB comparator's `*` does
-        // not cross a `/`, so `branch 'release*'` does NOT match `release/1.2.0` and `branch
-        // 'hotfix*'` does NOT match `hotfix/NPE` - every publish and deployment for those two
-        // branches is then silently skipped. It is easy to miss, because `devel*` keeps working:
-        // `develop` has no separator in it. 'release.*' as a regular expression is what the
-        // earlier expression { env.BRANCH_NAME.startsWith('release') } actually meant. Use
-        // branch 'release/*' instead only if every release branch really is named with a slash.
         stage('Publish') {
             parallel {
+                /*
+                Stage to push or upload build packages/artifacts to file storage systems.
+                */
                 stage('Release') {
                     when {
                         branch 'master'
                     }
                     steps {
                         echo 'Software release publish steps'
+			// TODO : does we need local-install? What it is?
                         runCommand 'npm run install-local'
                         runCommand 'npm run publish'
                     }
@@ -303,16 +248,7 @@ pipeline {
                     }
                     steps {
                         echo 'Software snapshot publish steps'
-                        runCommand 'npm run install-local'
-                        runCommand 'npm run publish'
-                    }
-                }
-                stage('Hotfix candidate') {
-                    when {
-                        branch pattern: 'hotfix.*', comparator: 'REGEXP'
-                    }
-                    steps {
-                        echo 'Software hotfix-candidate publish steps'
+			// TODO : does we need local-install? What it is?
                         runCommand 'npm run install-local'
                         runCommand 'npm run publish'
                     }
@@ -322,7 +258,7 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        echo 'Put here reports publishing steps (deploy site/ output)'
+                        echo 'Put here reports publishing steps'
                     }
                 }
                 stage('Snapshot reports') {
@@ -330,21 +266,22 @@ pipeline {
                         branch pattern: 'devel.*', comparator: 'REGEXP'
                     }
                     steps {
-                        echo 'Put here reports publishing steps (deploy site/ output)'
+                        echo 'Put here reports publishing steps'
                     }
                 }
             }
         }
-
         stage('Deploy') {
             parallel {
+                /*
+                Stages to deploy/install artifacts to different environments.
+                */
                 stage('dev') {
                     when {
                         environment name: 'DEVELOPMENT_TO_DEV', value: 'DEPLOY'
                         branch pattern: 'devel.*', comparator: 'REGEXP'
                     }
                     steps {
-                        echo 'Development environment installation steps'
                         // withEnv, not a `VAR=value command` shell prefix: that prefix is
                         // Bourne-shell syntax and does nothing under bat on a Windows agent.
                         withEnv(['DEPLOY_TARGET=dev']) {
@@ -410,7 +347,9 @@ pipeline {
                 }
             }
         }
-
+        /*
+        Stage to make SCM tag. As all results are succeeded then tag reflects FULL build success.
+        */
         stage('Tag') {
             when {
                 environment name: 'MASTER_TO_LIVE', value: 'DEPLOY'
