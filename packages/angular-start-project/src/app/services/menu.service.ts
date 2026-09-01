@@ -14,8 +14,7 @@ export interface MenuItem {
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-    // Per-tenant menu set (the old app's menuService ngo*/llc* selection, keyed by
-    // tenantService.getTenant() here) — see menuModel.js in the library.
+    // Per-tenant menu set (hostname → tenant via systemsService) — see menuModel.js in the library.
     readonly rawMenuItems = signal<MenuItem[]>(
         angularStartProjectLibrary.menuModel.getMenuItems(
             angularStartProjectLibrary.tenantService.getTenant(),

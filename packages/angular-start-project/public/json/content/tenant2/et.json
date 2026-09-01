@@ -1,0 +1,17 @@
+{
+    "pageTitle": "Lorem Ipsum Rakendus",
+    "subSystem": "tenant2",
+    "contacts": {
+        "organisation": "Tenant Two Organisation",
+        "address": "Dolor sit amet 2, 10112 Tallinn",
+        "phone": "+372 000 0002",
+        "email": "tenant2@example.invalid",
+        "facebook": "https://www.facebook.com/example",
+        "github": "https://github.com/example",
+        "x": "https://x.com/example",
+        "slack": "https://example.slack.com",
+        "bank": "Consectetur Pank AS",
+        "swift": "EXAMPLEYY",
+        "bankAccount": "EE00 0000 0000 0000 0002"
+    }
+}

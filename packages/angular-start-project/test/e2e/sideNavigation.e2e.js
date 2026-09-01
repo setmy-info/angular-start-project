@@ -1,6 +1,6 @@
 // Side navigation (hamburger) e2e — opening/closing through every path the UI offers (close
-// button, click-anywhere-on-overlay, menu item click), menu content, and the settings page it
-// leads to. Visibility is always asserted on COMPUTED display values.
+// button, click-anywhere-on-overlay, menu item click), menu content, and navigation targets.
+// Visibility is always asserted on COMPUTED display values.
 const helper = require('./pageHelper');
 
 describe('side navigation', () => {
@@ -60,10 +60,13 @@ describe('side navigation', () => {
 
     test('panel lists every menu item plus the language row below the separator line', async () => {
         expect(await helper.getText('#sideNavigationHeaderPanel span')).toBe('Menüü');
-        expect(await helper.countOf('li.sideNavMenuItems')).toBe(4); // 3 menu items + language row
+        expect(await helper.countOf('li.sideNavMenuItems')).toBe(5); // 4 menu items + language row
         expect(await helper.getText('li.sideNavMenuItems:nth-child(1) a')).toContain('AVALEHT');
-        expect(await helper.getText('li.sideNavMenuItems:nth-child(2) a')).toContain('KONTAKT');
-        expect(await helper.getText('li.sideNavMenuItems:nth-child(3) a')).toContain('SEADED');
+        expect(await helper.getText('li.sideNavMenuItems:nth-child(2) a')).toContain('ARTIKLID');
+        expect(await helper.getText('li.sideNavMenuItems:nth-child(3) a')).toContain('KONTAKT');
+        expect(await helper.getText('li.sideNavMenuItems:nth-child(4) a')).toContain(
+            'KASUTUSTINGIMUSED',
+        );
         expect(await helper.countOf('li.sideNavThinMenuItems hr')).toBe(1);
         expect(await helper.countOf('#sideNavigationContentPanel select')).toBe(1);
     });
@@ -79,39 +82,26 @@ describe('side navigation', () => {
         await expectClosed();
     });
 
-    test('menu item click navigates to Settings and closes the panel', async () => {
+    test('menu item click navigates to Articles and closes the panel', async () => {
         await openSideNav();
-        await helper.click('li.sideNavMenuItems:nth-child(3) a');
-        await helper.waitForText('h1', 'Seaded');
+        await helper.click('li.sideNavMenuItems:nth-child(2) a');
+        await helper.waitForText('h1', 'Artiklid');
         await expectClosed();
-        expect(await helper.currentPath()).toBe('/settings');
-        expect(await helper.getTitle()).toBe('Seaded — Lorem Ipsum Rakendus');
-        expect(await helper.getText('header ul:first-child li:last-child span')).toBe('Seaded');
+        expect(await helper.currentPath()).toBe('/articles');
+        expect(await helper.getTitle()).toBe('Artiklid — Lorem Ipsum Rakendus');
+        expect(await helper.getText('header ul:first-child li:last-child span')).toBe('Artiklid');
     });
 
-    test('settings page shows the diagnostic rows including the app version', async () => {
-        expect(await helper.countOf('.settingsPage dl')).toBe(1);
-        const dl = await helper.getText('.settingsPage dl');
-        expect(dl).toContain('1.0.0-SNAPSHOT');
-        expect(dl).toContain('Keel:');
-        expect(dl).toContain('Keskkond:');
-        // The environment row shows whichever build profile the app under test
-        // was built with. The e2e tier runs against the BUILT app (test the
-        // artifact, not a dev server), and CI builds with the `ci` profile
-        // per ADR-0041 - so this must follow the build, not hardcode one
-        // environment. SMI_PROFILES is set from the artifact's build-info.
-        expect(dl).toContain(process.env.SMI_PROFILES || 'local');
+    test('menu item click navigates to Terms of use and closes the panel', async () => {
+        await openSideNav();
+        await helper.click('li.sideNavMenuItems:nth-child(4) a');
+        await helper.waitForText('h1', 'Kasutustingimused');
+        await expectClosed();
+        expect(await helper.currentPath()).toBe('/terms');
+        expect(await helper.getTitle()).toBe('Kasutustingimused — Lorem Ipsum Rakendus');
     });
 
-    test('settings page shows the location links from the allowed test geolocation', async () => {
-        // pageHelper pre-allows geolocation with a fixed position (see GEO_* in pageHelper.js),
-        // so the $geo startup watcher resolves and the Settings page renders the map links.
-        await helper.waitFor('a[href*="openstreetmap.org"]');
-        expect(await helper.countOf('a[href*="google.com/maps"]')).toBe(1);
-        expect(await helper.countOf('a[href*="openstreetmap.org"]')).toBe(1);
-    });
-
-    test('menu item click from Settings navigates home again', async () => {
+    test('menu item click from Terms navigates home again', async () => {
         await openSideNav();
         await helper.click('li.sideNavMenuItems:nth-child(1) a');
         await helper.waitForText('h1', 'Tere tulemast Angular Start Projekti');

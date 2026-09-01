@@ -30,6 +30,27 @@
                 </dt>
                 <dd class="definitionDesc">{{ subSystem() || '-' }}</dd>
 
+                @if (devTenantSwitchEnabled) {
+                    <dt class="definitionTerm">
+                        {{ languageService.translate('view.settings.tenant') }}
+                    </dt>
+                    <dd class="definitionDesc">
+                        <select [value]="activeTenant" (change)="onTenantOverrideChange($event)">
+                            @for (tenant of knownTenants; track tenant) {
+                                <option [value]="tenant">{{ tenant }}</option>
+                            }
+                        </select>
+                        @if (tenantOverride) {
+                            <button type="button" (click)="clearTenantOverride()">
+                                {{ languageService.translate('view.settings.tenantClear') }}
+                            </button>
+                        }
+                        <p class="settingsHint">
+                            {{ languageService.translate('view.settings.tenantHint') }}
+                        </p>
+                    </dd>
+                }
+
                 <dt class="definitionTerm">
                     {{ languageService.translate('view.settings.browser') }}
                 </dt>

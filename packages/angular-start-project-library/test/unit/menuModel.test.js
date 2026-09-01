@@ -2,14 +2,25 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const menuModel = require('../../src/models/menuModel');
+const systemsService = require('../../src/services/systemsService');
 
 test("getMenuItems returns the tenant's menu set", () => {
-    assert.deepEqual(menuModel.getMenuItems('root'), menuModel.getMenuItems('root'));
-    assert.ok(menuModel.getMenuItems('default').length > 0);
+    assert.deepEqual(menuModel.getMenuItems('tenant1'), menuModel.getMenuItems('tenant1'));
+    assert.ok(menuModel.getMenuItems('tenant1').length > 0);
 });
 
-test('getMenuItems falls back to the default set for an unknown tenant', () => {
-    assert.deepEqual(menuModel.getMenuItems('no-such-tenant'), menuModel.getMenuItems('default'));
+test('getMenuItems falls back to the tenant1 set for an unknown tenant', () => {
+    assert.deepEqual(menuModel.getMenuItems('no-such-tenant'), menuModel.getMenuItems('tenant1'));
+});
+
+test('tenant1 menu includes Articles; tenant2 menu includes Products and services', () => {
+    const tenant1Paths = menuModel.getMenuItems(systemsService.TENANT1).map((item) => item.path);
+    const tenant2Paths = menuModel.getMenuItems(systemsService.TENANT2).map((item) => item.path);
+
+    assert.ok(tenant1Paths.includes('/articles'));
+    assert.ok(!tenant2Paths.includes('/articles'));
+    assert.ok(tenant2Paths.includes('/productsServices'));
+    assert.ok(!tenant1Paths.includes('/productsServices'));
 });
 
 test('every menu item carries the fields the Angular layer renders', () => {

@@ -22,9 +22,8 @@ export interface TenantContent {
     contacts?: ContactsContent;
 }
 
-// Per-tenant content (the old app's pagesService/modelService.system equivalent): loads
-// public/json/content/<tenant>/<lang>.json through the library's version-checked cache and
-// re-loads whenever the language changes. See contentService.js in the library.
+// Per-tenant content: public/json/content/<tenant>/<lang>.json (tenant from systemsService
+// hostname map). Re-loaded on language change — see contentService.js in the library.
 @Injectable({ providedIn: 'root' })
 export class ContentService {
     private readonly languageService = inject(LanguageService);

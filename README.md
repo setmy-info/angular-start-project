@@ -204,7 +204,7 @@ app (app.html)
 | `**`                                                                                              | `ViewNotFoundComponent`                               | —          | —        | 404 fallback                                                                                                                                                 |
 
 `menuModel.js` (in `angular-start-project-library`) is the single source of the menu items: an
-`ALL_MENUS` catalog plus per-tenant menu sets, selected via `menuModel.getMenuItems(tenant)` with the tenant coming from `tenantService.getTenant()` (the new-solution equivalent of the old app's per-system `ngo*`/`llc*` menu sets). `MenuService.rawMenuItems` feeds the side navigation panel as-is, while `MenuService.headerMenuItems` filters out any item with `header: false` (currently just Settings) for the top header nav.
+`ALL_MENUS` catalog plus per-tenant menu sets, selected via `menuModel.getMenuItems(tenant)` with the tenant from `systemsService.getTenant()` (hostname map in `systemsService.js`; `tenant1` on localhost). **tenant1** is articles-focused; **tenant2** is products/services-focused. `MenuService.rawMenuItems` feeds the side navigation panel as-is, while `MenuService.headerMenuItems` filters out any item with `header: false` (Terms of use) for the top header nav.
 
 ## Consuming `setmy-info-less`
 
@@ -280,9 +280,34 @@ session create + external referrer (sessionService), language change (`LanguageS
 ### Per-tenant content
 
 The old app loaded per-system content JSON (`pagesService`); here it is
-`json/content/<tenant>/<lang>.json` (tenant from `tenantService.getTenant()`, `default` on localhost), loaded by the library's `contentService.js` with the **same version-checked localStorage cache pattern as translations** (`json/content/versions.json` is always fetched; the content file only when its version changed; offline falls back to the cache). The Angular
+`json/content/<tenant>/<lang>.json` (tenant from `systemsService.getTenant()` — `tenant1` on localhost; extend `HOSTNAME_TENANT` in `systemsService.js` per deployment), loaded by the library's `contentService.js` with the **same version-checked localStorage cache pattern as translations** (`json/content/versions.json` is always fetched; the content file only when its version changed; offline falls back to the cache). The Angular
 `ContentService` re-loads it on every language change. Current content shape: `pageTitle`,
 `subSystem`, and the full `contacts` block (organisation/address/phone/email, social links, bank/SWIFT/account) that the contact page renders — contact data is **not** hardcoded in the template anymore.
+
+#### Switching tenants on a developer machine
+
+Resolution order in `systemsService.js`:
+
+1. **`localStorage` `SMI_TENANT`** — only when the hostname is `localhost` or `127.0.0.1` (overrides the localhost default of `tenant1`).
+2. **`HOSTNAME_TENANT` map** — e.g. `tenant1.test` → `tenant1`, `tenant2.test` → `tenant2`.
+3. **Fallback** — `tenant1`.
+
+**Option A — Settings page** (localhost only): open `/settings`, use the **Tenant (dev)** dropdown; the choice is stored as `SMI_TENANT` and the page reloads.
+
+**Option B — DevTools console:**
+
+```javascript
+localStorage.setItem('SMI_TENANT', 'tenant2'); location.reload();
+localStorage.removeItem('SMI_TENANT'); location.reload(); // back to hostname default
+```
+
+**Option C — `/etc/hosts` aliases** (`.test` is reserved for documentation/testing per RFC 6761):
+
+```text
+127.0.0.1   tenant1.test tenant2.test
+```
+
+Then `http://tenant1.test:4200` and `http://tenant2.test:4200` — no `SMI_TENANT` needed; the hostname map selects the tenant.
 
 ### Browser tab title per page
 

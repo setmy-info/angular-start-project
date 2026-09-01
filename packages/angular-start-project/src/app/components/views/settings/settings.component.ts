@@ -42,6 +42,23 @@ export class SettingsComponent {
     protected readonly subSystem = computed(() => this.contentService.content().subSystem);
     protected readonly browserInfo = `${navigator.userAgent}`;
 
+    protected readonly systemsService = angularStartProjectLibrary.systemsService;
+    protected readonly devTenantSwitchEnabled = this.systemsService.isLocalDevHostname();
+    protected readonly knownTenants = this.systemsService.KNOWN_TENANTS;
+    protected readonly activeTenant = this.systemsService.getTenant();
+    protected readonly tenantOverride = this.systemsService.getTenantOverride();
+
+    protected onTenantOverrideChange(event: Event): void {
+        const select = event.target as HTMLSelectElement;
+        this.systemsService.setTenantOverride(select.value);
+        globalThis.location.reload();
+    }
+
+    protected clearTenantOverride(): void {
+        this.systemsService.clearTenantOverride();
+        globalThis.location.reload();
+    }
+
     protected readonly googleMapsUrl = computed(() => {
         const position = this.locationService.lastKnownPosition();
         return position ? this.locationService.googleMapsUrl(position) : null;
