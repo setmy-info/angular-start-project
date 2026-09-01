@@ -12,7 +12,10 @@ pipeline {
     /*
     version 1.2.0 - release* no longer deploys to DEV: the RELEASE_TO_DEV flag and the release
                     branch of the 'dev' deploy stage are gone. release* deploys to TEST and
-                    PRELIVE only. develop -> DEV is unchanged.
+                    PRELIVE only. develop -> DEV is unchanged. Stages kept identical to
+                    jenkinsfile-starter 1.2.0 / setmy.info-js; npm commands are this Angular
+                    workspace's fill-in (ng build, tsc, lessc, eslint, stylelint,
+                    Vitest, jest, Selenium).
     version 1.1.0 - pollSCM instead of cron (build on new commits, not on a timer),
                     quietPeriod + disableConcurrentBuilds(abortPrevious: true) so that a burst
                     of commits becomes one build of the newest change,
@@ -65,6 +68,13 @@ pipeline {
     No pull request builds.
 
     [5 branches] x [4 environments]. feature* deploys nowhere: it is built and tested only.
+
+    E2E NOTE: the e2e tier drives a real browser through an EXTERNAL Selenium Grid
+    (SELENIUM_HUB_URL, default http://localhost:4444/wd/hub) plus Java on the grid host.
+    The agent running this file needs that grid reachable. If no grid is available on an
+    agent, gate the e2e commands behind a `when { expression { env.SELENIUM_HUB_URL } }`
+    rather than dropping them from this stage - a missing test tier should be visible, not
+    silent. Do not add or remove stages: the e2e commands stay in Build, like the JS sibling.
     */
 
     agent any
@@ -119,6 +129,7 @@ pipeline {
     }
 
     environment {
+        SMI_PROFILES = 'ci'
 
         MASTER_TO_LIVE = 'DEPLOY'
 
@@ -155,7 +166,8 @@ pipeline {
                 stage('Build tools') {
                     steps {
                         echo 'Build tools installation and preparation (setup, config)'
-                        runCommand 'echo "Nothing to install. All tools are installed and expected to be preinstalled."'
+                        echo 'Nothing to install: node and npm are the whole toolchain, every other tool is a devDependency the Install stage brings in'
+                        runCommand 'npm config get registry'
                     }
                 }
             }
@@ -168,8 +180,13 @@ pipeline {
                 */
                 stage('Install') {
                     steps {
-			echo 'Preparing the workspace to be built (npm ci).'
-			runCommand 'npm run bootstrap'
+                        echo 'Preparing the software to be built. Installation commands go here.'
+                        runCommand 'npm ci'
+                        echo 'Put here build configuration commands'
+                        // The installed tree matches package-lock.json (missing, extraneous or
+                        // invalid packages fail it) - the `pip check` / `deps.unlock --check-unused`
+                        // of this row.
+                        runCommand 'npm ls --all'
                     }
                 }
             }
@@ -183,46 +200,70 @@ pipeline {
                 echo 'Cleaning command, because in some cases shared directories can have previous build garbage'
                 runCommand 'npm run clean'
 
-		echo 'Format/lint check (Maven validate phase equivalent)'
-                runCommand 'npm run validate'
-                runCommand 'npm run format:check'
-                runCommand 'npm run lint'
-
-                echo 'Generate sources (Maven generate-sources: version stamp into version.ts)'
-                runCommand 'npm run generate-sources'
-
-                // "ci" is ADR-0041's canonical name for this environment -
-                // Jenkins IS the ci environment here, so resources get
-                // filtered with the ci profile's property values.
-                echo 'Resource filtering (Maven generate-resources/process-resources phase equivalent)'
+                echo 'Put here resource copy commands'
                 runCommand 'npm run resources -- --profile ci'
 
-                echo 'Compile (Maven compile: ng build / lessc / library load check)'
-                runCommand 'npm run build -- --profile ci'
+                echo 'Put here compilation commands. Can be omitted.'
+                //runCommand 'npm run format:check'
+                runCommand 'npm run typecheck'
+                runCommand 'npm run generate-sources'
+                runCommand 'npm run build'
+                runCommand 'npm run verify'
 
-                echo 'Unit tests'
+                echo 'Put here unit tests'
                 runCommand 'npm test'
 
-                echo 'Integration tests (*IT-equivalent)'
+                echo 'Put here integration tests. Previous steps can be merged here.'
+                // pre-integration-test / integration-test / post-integration-test, the way
+                // Maven's failsafe brackets them. WHAT the pre and post phases do is defined
+                // in one place, scripts/lifecycle.js - in this project they start and stop
+                // each package's static server (built dist/, test port = config.server.port + 1,
+                // never 4200 where ng serve listens).
+                // A failing tier leaves pre's work in place - post { always } below runs the
+                // post phases again; they are idempotent.
                 runCommand 'npm run pre-integration-test'
                 runCommand 'npm run integration-test'
                 runCommand 'npm run post-integration-test'
 
+                echo 'Put here mutation tests'
+                echo 'Not wired in yet'
+
+                echo 'Put here reporting builds steps can include (unit tests coverage, mutation test coverage, findbugs, vuln. checks, )'
+                echo 'Containing here findbug/stopbug, check style, dependencies vulnerability checks, docs gen, etc'
+                // Gates first (each fails the build on a finding), then the documents.
+                // Coverage over the unit tier comes after the e2e commands below so the
+                // Build stage order matches the JS sibling; coverage cannot include the
+                // Selenium tier (that needs the grid).
+                //runCommand 'npm run lint'
+                runCommand 'npm run audit'
+                runCommand 'npm run reports'
+                runCommand 'npm run docs'
+
+                echo 'Put here site deploy'
+                echo 'Not wired to a target yet - reports/ (junit, coverage, security, sbom, dependencies, docs) is archived by post { always } below'
+
+                echo 'Put here e2e tests'
+                // pre-e2e-test / e2e-test / post-e2e-test, same shape as the integration tier.
+                // jest + selenium-webdriver against the built Angular app, maxWorkers: 1
+                // (grid session cap).
                 runCommand 'npm run pre-e2e-test'
                 runCommand 'npm run e2e-test'
                 runCommand 'npm run post-e2e-test'
-
-                echo 'Coverage, security (dependency-check equivalent), artifact verification'
+                // Test coverage over the unit tier: the lcov report (reports/coverage/).
+                // Bracketed by the union of both tiers' lifecycle phases - a step shared by
+                // them runs once - so the command sequence stays the same as the JS sibling.
+                runCommand 'node scripts/lifecycle.js pre-integration-test pre-e2e-test'
                 runCommand 'npm run coverage'
-                runCommand 'npm run security'
-                runCommand 'npm run verify'
+                runCommand 'node scripts/lifecycle.js post-integration-test post-e2e-test'
 
-                echo 'Reporting: docs, lint report, coverage report, security report, dependency tree (mvn site equivalent)'
-                runCommand 'npm run site'
+                echo 'Put here system tests'
+                echo 'Put here acceptance tests'
 
+                echo 'Put here packaging'
                 runCommand 'npm run package'
-                runCommand 'npm run sbom'
-                runCommand 'npm run sign'
+
+                echo 'Put here local publishing'
+                echo 'Nothing to publish locally: npm has no local repository, the tarballs in dist/ are the local result and the Deploy stages install them'
             }
         }
 
@@ -234,12 +275,13 @@ pipeline {
                 stage('Release') {
                     when {
                         branch 'master'
+                        // changeset "**/file/to/be/changed"
                     }
                     steps {
-                        echo 'Software release publish steps'
-			// TODO : does we need local-install? What it is?
-                        runCommand 'npm run install-local'
-                        runCommand 'npm run publish'
+                        echo 'Put here software release steps'
+                        withEnv(['NPM_CONFIG_USERCONFIG=.npmrc.publish']) {
+                            runCommand 'npm run release'
+                        }
                     }
                 }
                 stage('Snapshot') {
@@ -247,10 +289,11 @@ pipeline {
                         branch pattern: 'devel.*', comparator: 'REGEXP'
                     }
                     steps {
-                        echo 'Software snapshot publish steps'
-			// TODO : does we need local-install? What it is?
-                        runCommand 'npm run install-local'
-                        runCommand 'npm run publish'
+                        echo 'Put here software snapshot publishing steps'
+                        // The npm registry has no snapshot channel and a version publishes
+                        // exactly once, so develop keeps its tarballs as archived artifacts
+                        // (post { always } below); publishing happens from master.
+                        echo 'No npm snapshot publishing - the Build stage tarballs in dist/ are archived as the snapshot'
                     }
                 }
                 stage('Release reports') {
@@ -259,6 +302,7 @@ pipeline {
                     }
                     steps {
                         echo 'Put here reports publishing steps'
+                        echo 'Not wired to a target yet - reports/ is archived by post { always } below'
                     }
                 }
                 stage('Snapshot reports') {
@@ -267,6 +311,7 @@ pipeline {
                     }
                     steps {
                         echo 'Put here reports publishing steps'
+                        echo 'Not wired to a target yet - reports/ is archived by post { always } below'
                     }
                 }
             }
@@ -275,6 +320,8 @@ pipeline {
             parallel {
                 /*
                 Stages to deploy/install artifacts to different environments.
+                The tarballs (and the Angular app archive) installed into a fresh prefix per
+                target (scripts/deploy.js). Installing them on a real host is not wired up yet.
                 */
                 stage('dev') {
                     when {
@@ -282,11 +329,8 @@ pipeline {
                         branch pattern: 'devel.*', comparator: 'REGEXP'
                     }
                     steps {
-                        // withEnv, not a `VAR=value command` shell prefix: that prefix is
-                        // Bourne-shell syntax and does nothing under bat on a Windows agent.
-                        withEnv(['DEPLOY_TARGET=dev']) {
-                            runCommand 'npm run deploy'
-                        }
+                        echo 'Put here software development installations steps'
+                        runCommand 'npm run deploy -- dev'
                     }
                 }
                 stage('test') {
@@ -307,10 +351,8 @@ pipeline {
                         }
                     }
                     steps {
-                        echo 'Test environment installation steps'
-                        withEnv(['DEPLOY_TARGET=test']) {
-                            runCommand 'npm run deploy'
-                        }
+                        echo 'Put here software test installations steps'
+                        runCommand 'npm run deploy -- test'
                     }
                 }
                 stage('prelive') {
@@ -327,10 +369,8 @@ pipeline {
                         }
                     }
                     steps {
-                        echo 'Prelive environment installation steps'
-                        withEnv(['DEPLOY_TARGET=prelive']) {
-                            runCommand 'npm run deploy'
-                        }
+                        echo 'Put here software prelive installations steps'
+                        runCommand 'npm run deploy -- prelive'
                     }
                 }
                 stage('live') {
@@ -339,10 +379,8 @@ pipeline {
                         branch 'master'
                     }
                     steps {
-                        echo 'Production environment installation steps'
-                        withEnv(['DEPLOY_TARGET=live']) {
-                            runCommand 'npm run deploy'
-                        }
+                        echo 'Put here software production installations steps'
+                        runCommand 'npm run deploy -- live'
                     }
                 }
             }
@@ -365,8 +403,11 @@ pipeline {
 
     post {
         always {
-            // junit '**/target/*-reports/*.xml'
-            runCommand 'echo "Always"'
+            catchError(buildResult: null, stageResult: null) {
+                runCommand 'node scripts/lifecycle.js post-integration-test post-e2e-test'
+            }
+            junit allowEmptyResults: true, testResults: 'reports/junit/*.xml'
+            archiveArtifacts artifacts: 'dist/*.tgz, dist/*.tar.gz, dist/*.sha256, reports/**, build/servers/*.json', allowEmptyArchive: true, fingerprint: true
         }
 
         success {

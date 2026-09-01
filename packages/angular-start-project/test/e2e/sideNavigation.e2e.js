@@ -96,12 +96,11 @@ describe('side navigation', () => {
         expect(dl).toContain('Keel:');
         expect(dl).toContain('Keskkond:');
         // The environment row shows whichever build profile the app under test
-        // was built with. The e2e tier runs against the BUILT app (Maven
-        // failsafe: test the artifact, not a dev server), and CI builds with
-        // the `ci` profile per ADR-0041 §4.4 - so this must follow the build,
-        // not hardcode one environment. BUILD_PROFILE is set by whoever built
-        // it; a plain local build defaults to `local`.
-        expect(dl).toContain(process.env.BUILD_PROFILE || 'local');
+        // was built with. The e2e tier runs against the BUILT app (test the
+        // artifact, not a dev server), and CI builds with the `ci` profile
+        // per ADR-0041 - so this must follow the build, not hardcode one
+        // environment. SMI_PROFILES is set from the artifact's build-info.
+        expect(dl).toContain(process.env.SMI_PROFILES || 'local');
     });
 
     test('settings page shows the location links from the allowed test geolocation', async () => {

@@ -11,6 +11,9 @@ describe('FooterPanelComponent', () => {
     let fixture: ComponentFixture<FooterPanelComponent>;
 
     beforeEach(async () => {
+        // Isolate from other specs that warm translationService's localStorage cache
+        // (same jsdom origin, module-level library singleton).
+        localStorage.clear();
         // LanguageService loads its translations asynchronously (see language.service.ts /
         // translationService.js) — stub fetch so `app.title` resolves to real text instead of
         // staying on the "no cache yet" fallback for the duration of this test.

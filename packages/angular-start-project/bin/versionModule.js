@@ -2,9 +2,8 @@
 // Regenerates src/app/config/version.ts from package.json's version — the new-solution
 // equivalent of the old app's bin/versionModule.sh + bin/version.js (the old console log
 // `App started: Object { version: "0.43.1" } ...` showed this stamp, not a git hash).
-// Run via `npm run ver -w angular-start-project`; also runs automatically before
-// `npm run build` (prebuild hook). The generated file is committed so plain `ng build`
-// works without running this first.
+// Run via `npm run ver -w angular-start-project` or root `npm run generate-sources`.
+// The generated file is committed so plain `ng build` works without running this first.
 const fs = require('fs');
 const path = require('path');
 

@@ -1,47 +1,49 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# Dependencies
+node_modules/
 
-# compiled output
-**/dist
-**/tmp
-**/out-tsc
-# Only exists if Bazel was run
-**/bazel-out
+# Packed tarballs (root dist/) and per-package build output
+/dist/
+**/dist/
+*.tgz
 
-# dependencies
-**/node_modules
+# Reports (junit, coverage, security, sbom, dependency tree, docs)
+reports/
+coverage/
 
-# profiling files
-application/chrome-profiler-events*.json
+# Running-instance state and Deploy stage installations
+build/
 
-# IDEs and editors
-**/.idea
-**/.project
-**/.classpath
-**/.c9/
-**/*.launch
-**/.settings/
-**/*.sublime-workspace
+# Angular CLI cache
+**/.angular/
 
-# IDE - VSCode
-**/.vscode/*
-**/!.vscode/settings.json
-**/!.vscode/tasks.json
-**/!.vscode/launch.json
-**/!.vscode/extensions.json
-**/.history/*
+# Bare leftover cache directory under packages/ (not a workspace)
+packages/application/
 
-# misc
-**/.angular/cache
-**/.sass-cache
-**/connect.lock
-**/coverage
-**/libpeerconnection.log
-**/npm-debug.log
-**/yarn-error.log
-**/testem.log
-**/typings
+# Leftover directories from the previous Maven-phase layout
+.artifacts/
+.deploy/
+.signatures/
+site/
+**/site/
 
-# System Files
+# Logs and caches
+*.log
+npm-debug.log*
+.npm
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+
+# Local only
+claude.session.sh
+claude.session.cmd
+cursor.session.sh
+cursor.session.cmd
+.claude/
 .DS_Store
 Thumbs.db
 
@@ -50,13 +52,4 @@ Thumbs.db
 **/TASKLIST.lisp
 **/TASKLIST.sexp
 **/TASKLIST.md
-
-.claude/
-claude.session.sh
-
-# Lifecycle tool output (packaged artifacts, deploy descriptors, signatures, site reports)
-.artifacts/
-.deploy/
-.signatures/
-**/site/
-coverage/
+**/TASKLIST.toonl

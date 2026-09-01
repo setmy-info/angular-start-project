@@ -1,19 +1,20 @@
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-// Lint phase (Maven `checkstyle:check`). There was no lint at all in this
-// repo before the lifecycle migration - this is the minimum honest gate:
-// correctness rules for JS and TypeScript, scoped by extension so the
-// framework-free library and the Angular app share one invocation.
-// Angular template linting (angular-eslint) is NOT wired yet - see report.md.
+// Lint gate: correctness rules for JS and TypeScript, scoped by extension so
+// the framework-free library, the build scripts and the Angular app share one
+// invocation. Angular template linting (angular-eslint) is not wired yet.
 export default [
     {
         ignores: [
             '**/dist/**',
             '**/site/**',
+            '**/reports/**',
+            '**/build/**',
             '**/.angular/**',
             'packages/angular-original/**',
             'packages/application.old/**',
+            'packages/application/**',
             '**/*.min.js',
         ],
     },
