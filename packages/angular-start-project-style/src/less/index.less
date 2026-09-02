@@ -3,8 +3,8 @@
 // (values + HTML resets + utilities + devices + flex + components), then extended (its own
 // utility classes only — extended's main.less imports base's values for tokens but not its CSS,
 // see setmy-info-less-extended/src/main/less/main.less "STANDALONE / DELTA" note).
-@import 'setmy-info-less/src/main/less/main.less';
-@import 'setmy-info-less-extended/src/main/less/main.less';
+@import url('setmy-info-less/src/main/less/main.less');
+@import url('setmy-info-less-extended/src/main/less/main.less');
 
 // ============================================================
 // MATERIAL SYMBOLS OUTLINED
@@ -22,7 +22,7 @@
 }
 
 .material-symbols-outlined {
-    font-family: "Material Symbols Outlined", sans-serif;
+    font-family: 'Material Symbols Outlined', sans-serif;
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -31,10 +31,10 @@
     text-transform: none;
     display: inline-block;
     white-space: nowrap;
-    word-wrap: normal;
+    overflow-wrap: normal;
     direction: ltr;
     vertical-align: middle;
-    font-feature-settings: "liga";
+    font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
     // The self-hosted woff2 is the real variable font (see @font-face "font-weight: 100 700"
     // range above), so it carries the FILL axis (0 = outlined, 1 = filled) even though the
@@ -59,11 +59,10 @@
     min-height: calc(100% - 70px);
     padding: 10px;
     margin: 0;
-    overflow-x: auto
+    overflow-x: auto;
 }
 
 .applicationContentMain article {
-    max-width: 100%;
     margin: auto;
     max-width: 1024px;
     width: auto;
@@ -83,7 +82,7 @@
 }
 
 .applicationContentMain article > div.articleSectionPanel > section > :first-child {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .applicationContentMain article > div.sectionHeaderPicture {

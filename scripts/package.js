@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 // Library and LESS packages: npm pack into dist/. The private Angular app is
 // never published to a registry, so its deployable is an archive of the built
-// browser output. SHA-256 checksums sit next to every artifact.
+// browser output, and a brand page's is its built site directory. SHA-256
+// checksums sit next to every artifact.
+//
+// Finally scripts/bundle.js collects the brand pages and applications into the
+// single build/<name>.tar.gz that gets copied to a web server and unpacked
+// there. Per-module artifacts in dist/ are what `npm run deploy` installs; the
+// bundle in build/ is what ships as one file.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,7 +21,11 @@ fs.mkdirSync(distDir, { recursive: true });
 
 for (const workspace of getWorkspaces()) {
     if (workspace.moduleType === 'angular-app') {
-        packAngularApp(workspace);
+        packModuleDirectory(workspace, path.join('dist', 'application', 'browser'));
+        continue;
+    }
+    if (workspace.moduleType === 'brand-page') {
+        packModuleDirectory(workspace, 'dist');
         continue;
     }
     const result = spawnSync(npmCommand, ['pack', `--pack-destination=${distDir}`], {
@@ -35,16 +45,22 @@ for (const name of fs.readdirSync(distDir).filter((entry) => /\.(tgz|tar\.gz)$/.
     fs.writeFileSync(path.join(distDir, `${name}.sha256`), `${digest}  ${name}\n`);
 }
 
-function packAngularApp(workspace) {
-    const browserDir = path.join(workspace.workspace, 'dist', 'application', 'browser');
-    if (!fs.existsSync(browserDir)) {
-        console.error(`Missing build output ${browserDir} — run \`npm run build\` first`);
+// Not published to a registry: what ships is the built output directory, archived as-is.
+function packModuleDirectory(workspace, relativeOutputDir) {
+    const outputDir = path.join(workspace.workspace, relativeOutputDir);
+    if (!fs.existsSync(outputDir)) {
+        console.error(`Missing build output ${outputDir} — run \`npm run build\` first`);
         process.exit(1);
     }
     const archive = path.join(
         distDir,
         `${workspace.packageName}-${workspace.packageJson.version}.tar.gz`,
     );
-    execSync(`tar -czf "${archive}" -C "${browserDir}" .`, { stdio: 'inherit' });
+    execSync(`tar -czf "${archive}" -C "${outputDir}" .`, { stdio: 'inherit' });
     console.log(`Created ${archive}`);
 }
+
+// The deployment bundle: every listed brand page and application in one archive.
+execSync(`"${process.execPath}" "${path.join(rootDir, 'scripts', 'bundle.js')}"`, {
+    stdio: 'inherit',
+});

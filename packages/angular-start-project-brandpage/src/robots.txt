@@ -1,0 +1,4 @@
+# Brand page starter — placeholder policy. Replace before a real deployment; the application's
+# own robots.txt (packages/angular-start-project/public/robots.txt) is the worked example.
+User-agent: *
+Allow: /

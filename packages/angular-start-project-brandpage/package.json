@@ -1,0 +1,33 @@
+{
+    "name": "angular-start-project-brandpage",
+    "version": "1.0.0-SNAPSHOT",
+    "description": "Brand page starter - old-school static HTML/CSS with a global-build Vue, no bundler",
+    "license": "MIT",
+    "author": "Imre Tabur",
+    "scripts": {
+        "format": "prettier --write .",
+        "lint": "stylelint \"**/*.less\"",
+        "lint:fix": "stylelint \"**/*.less\" --fix",
+        "build": "node ../../scripts/build.js",
+        "server": "node ../../scripts/http-server.js",
+        "stop-server": "node ../../scripts/http-server.js stop"
+    },
+    "devDependencies": {
+        "less": "^4.5.1",
+        "vue": "^3.5.42"
+    },
+    "dependencies": {
+        "angular-start-project-brand-style": "^1.0.0-SNAPSHOT"
+    },
+    "config": {
+        "moduleType": "brand-page",
+        "server": {
+            "port": 4600,
+            "directory": "dist"
+        }
+    },
+    "files": [
+        "src",
+        "README.md"
+    ]
+}

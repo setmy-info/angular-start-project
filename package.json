@@ -4,6 +4,7 @@
     "workspaces": [
         "packages/angular-start-project-style",
         "packages/angular-start-project-brand-style",
+        "packages/angular-start-project-brandpage",
         "packages/angular-start-project-library",
         "packages/angular-start-project"
     ],
@@ -18,7 +19,7 @@
         "clean": "node scripts/clean.js",
         "format": "node scripts/format.js",
         "format:check": "node scripts/format.js --check",
-        "lint": "eslint . && stylelint \"packages/angular-start-project-style/**/*.less\" \"packages/angular-start-project-brand-style/**/*.less\" \"packages/angular-start-project/src/**/*.less\"",
+        "lint": "eslint . && stylelint \"packages/angular-start-project-style/**/*.less\" \"packages/angular-start-project-brand-style/**/*.less\" \"packages/angular-start-project-brandpage/**/*.less\" \"packages/angular-start-project/src/**/*.less\"",
         "typecheck": "npm run typecheck --workspaces --if-present",
         "generate-sources": "node scripts/generate-sources.js",
         "resources": "node scripts/resources.js",
@@ -36,10 +37,23 @@
         "reports": "node scripts/reports.js",
         "docs": "node scripts/docs.js",
         "package": "node scripts/package.js",
+        "bundle": "node scripts/bundle.js",
         "deploy": "node scripts/deploy.js",
         "release": "node scripts/release.js",
         "server": "node scripts/http-server.js",
         "stop-server": "node scripts/http-server.js stop"
+    },
+    "config": {
+        "bundle": {
+            "archiveName": "angular-start-project",
+            "outputDir": "build",
+            "brands": [
+                "angular-start-project-brandpage"
+            ],
+            "apps": [
+                "angular-start-project"
+            ]
+        }
     },
     "devDependencies": {
         "@vitest/coverage-v8": "^4.1.11",

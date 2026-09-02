@@ -34,7 +34,7 @@ export function getWorkspaceInfo(workspace = process.cwd()) {
     };
 }
 
-// Three module types live side by side. A package declares which one it is
+// Four module types live side by side. A package declares which one it is
 // in package.json (`config.moduleType`) and the shared scripts dispatch on
 // it. Command NAMES stay identical across the org template family; only
 // what a command runs differs:
@@ -43,7 +43,13 @@ export function getWorkspaceInfo(workspace = process.cwd()) {
 //   js-library    - framework-independent plain JS (no transpile step)
 //   less-package  - LESS source shipped to consumers, compiled only to prove
 //                   it compiles
-export const MODULE_TYPES = ['angular-app', 'js-library', 'less-package'];
+//   brand-page    - a static brand site: HTML + compiled LESS + a global-build
+//                   Vue, no bundler. Builds to a servable dist/ directory.
+//
+// The last two of these are what the deployment bundle is made of:
+// angular-app workspaces land under apps/, brand-page workspaces under
+// brands/ - see scripts/bundle.js.
+export const MODULE_TYPES = ['angular-app', 'js-library', 'less-package', 'brand-page'];
 
 export function resolveModuleType(packageJson) {
     const declared = packageJson.config?.moduleType;
@@ -59,6 +65,7 @@ function resolveSrcEntry(workspace) {
     for (const candidate of [
         path.join(workspace, 'src', 'main.ts'),
         path.join(workspace, 'index.less'),
+        path.join(workspace, 'src', 'less', 'index.less'),
         path.join(workspace, 'index.js'),
     ]) {
         if (fs.existsSync(candidate)) {

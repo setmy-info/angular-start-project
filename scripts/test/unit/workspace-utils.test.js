@@ -12,6 +12,7 @@ test('workspace discovery uses root package.json workspaces, not every packages/
     assert.deepEqual(names, [
         'angular-start-project',
         'angular-start-project-brand-style',
+        'angular-start-project-brandpage',
         'angular-start-project-library',
         'angular-start-project-style',
     ]);
