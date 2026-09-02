@@ -6,10 +6,21 @@
         ></div>
         <div class="articleSectionPanel">
             <section>
+                <app-detail-level-panel viewKey="home" [defaultLevel]="1" />
+
                 <h1>{{ languageService.translate('view.home.welcome') }}</h1>
                 <p>{{ languageService.translate('view.home.description') }}</p>
                 <img src="images/placeholder.svg" alt="" width="240" height="160" />
                 <p>{{ languageService.translate('view.home.lorem') }}</p>
+
+                <div class="detailed" detailLevel="2">
+                    <!-- Caption naming the level this block belongs to, as the old app had it:
+                    <div class="asUppercase minifiedText">
+                        {{ languageService.translate('view.detailLevel.level2') }}
+                    </div>
+                    -->
+                    <p>{{ languageService.translate('view.home.lorem') }}</p>
+                </div>
             </section>
         </div>
     </article>

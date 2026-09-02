@@ -2,8 +2,24 @@
     <article class="articleBody">
         <div class="articleSectionPanel">
             <section>
+                <!-- Reading-depth slider. `viewKey` names this page view in DetailLevelService,
+                     `defaultLevel` is the level it opens at before the visitor touches the
+                     slider; their choice replaces it for the rest of the session. -->
+                <app-detail-level-panel viewKey="template" [defaultLevel]="1" />
+
                 <h1>{{ languageService.translate('view.template.title') }}</h1>
                 <p>{{ languageService.translate('view.home.lorem') }}</p>
+
+                <!-- Everything from level 2 upwards. `.detailed` is the green left border,
+                     `detailLevel` is what hides the block while the slider sits below 2. -->
+                <div class="detailed" detailLevel="2">
+                    <!-- Caption naming the level this block belongs to, as the old app had it:
+                    <div class="asUppercase minifiedText">
+                        {{ languageService.translate('view.detailLevel.level2') }}
+                    </div>
+                    -->
+                    <p>{{ languageService.translate('view.home.lorem') }}</p>
+                </div>
             </section>
         </div>
     </article>

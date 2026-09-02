@@ -1,0 +1,52 @@
+/* Angular custom element hosts default to display: inline. */
+:host {
+    display: block;
+}
+
+/*
+ * Sits at the top right of a view's section, where the old app's "kompaktne" / "detailne" button
+ * list was. Same construction as that list: a .floatRight wrapper around an inline-block <ul>,
+ * closed by a .floatClear sibling in the template — floats and inline-block only, no flex.
+ */
+ul.detailsLevelList {
+    height: 50px;
+    margin-left: 0;
+    list-style: none;
+}
+
+ul.detailsLevelList > li {
+    height: 50px;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 50px;
+    color: #696969;
+}
+
+/* Spacing between the items, in place of the old list's per-button margins. */
+ul.detailsLevelList > li + li {
+    margin-left: 10px;
+}
+
+/* Reserves room for the longest level name so the floated list does not shift as the slider
+   moves and the name below it changes length. */
+li.detailsLevelValueItem {
+    min-width: 90px;
+}
+
+.detailsLevelLabel {
+    font-size: 14px;
+}
+
+.detailsLevelSlider {
+    width: 120px;
+    vertical-align: middle;
+    cursor: pointer;
+
+    /* Same green as the left border `.detailed` content carries (setmy-info-less notes.less). */
+    accent-color: #73d073;
+}
+
+.detailsLevelValue {
+    font-size: 14px;
+    font-weight: bold;
+}

@@ -1,0 +1,26 @@
+<div class="floatRight">
+    <ul class="detailsLevelList">
+        <li class="detailsLevelLabelItem">
+            <label class="detailsLevelLabel" for="detailsLevelSlider">
+                {{ languageService.translate('view.detailLevel.label') }}
+            </label>
+        </li>
+        <li class="detailsLevelSliderItem">
+            <input
+                id="detailsLevelSlider"
+                class="detailsLevelSlider"
+                type="range"
+                step="1"
+                [min]="minLevel"
+                [max]="maxLevel"
+                [value]="level()"
+                [attr.aria-valuetext]="levelName()"
+                (input)="onLevelChange($event)"
+            />
+        </li>
+        <li class="detailsLevelValueItem">
+            <span class="detailsLevelValue firstAsUppercase">{{ levelName() }}</span>
+        </li>
+    </ul>
+</div>
+<div class="floatClear"></div>
