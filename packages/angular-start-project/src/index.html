@@ -1,19 +1,54 @@
 <!doctype html>
+<!-- lang is the default only; SeoService rewrites it when the visitor switches language. -->
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Application</title>
         <base href="/" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/x-icon" href="favicon.ico" />
-        <meta name="description" content="HTML description" />
-        <meta name="keywords" content="HTML keywords" />
-        <meta name="author" content="Imre Tabur" />
-        <meta name="application-name" content="HTML application-name" />
-        <meta name="generator" content="HTML generator" />
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="favicon.ico" />
 
+        <!--
+            Head defaults. These are what a crawler or a share-preview fetcher sees before the
+            app boots; SeoService replaces title, description, robots, canonical and the og:/
+            twitter: set per route once it has. Keep the two in step — a default that contradicts
+            the runtime value is worse than no default.
+        -->
+        <title>Angular Start Project</title>
+        <meta
+            name="description"
+            content="Angular start project — a generic Angular starter template with a thin Angular layer over framework-independent JavaScript."
+        />
+        <meta name="author" content="Imre Tabur" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://angular-start-project.setmy.info/" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Angular Start Project" />
+        <meta property="og:title" content="Angular Start Project" />
+        <meta
+            property="og:description"
+            content="Angular start project — a generic Angular starter template with a thin Angular layer over framework-independent JavaScript."
+        />
+        <meta property="og:url" content="https://angular-start-project.setmy.info/" />
+        <meta property="og:locale" content="en_US" />
+        <!-- TODO: replace with a purpose-made 1200x630 PNG/JPG. Most share-preview fetchers
+             ignore SVG, and a 512x512 icon is below the minimum several of them enforce. -->
+        <meta
+            property="og:image"
+            content="https://angular-start-project.setmy.info/icons/512x512/Information.png"
+        />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Angular Start Project" />
+        <meta
+            name="twitter:description"
+            content="Angular start project — a generic Angular starter template with a thin Angular layer over framework-independent JavaScript."
+        />
+        <meta
+            name="twitter:image"
+            content="https://angular-start-project.setmy.info/icons/512x512/Information.png"
+        />
+
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="shortcut icon" href="favicon.ico" />
         <link rel="icon" sizes="192x192" href="icons/128x128/Information.png" />
         <link rel="icon" sizes="64x64" href="icons/64x64/Information.png" />
         <link rel="apple-touch-icon" sizes="128x128" href="icons/128x128/Information.png" />
@@ -28,11 +63,38 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-        <!-- link rel="manifest" href="manifest.old.json" type="application/x-web-app-manifest+json" -->
-        <!--link rel="manifest" href="manifest.old.json"-->
-
         <link rel="manifest" href="manifest.webmanifest" />
         <meta name="theme-color" content="#1976d2" />
+
+        <!--
+            Structured data: who the site belongs to and what it is called. Search engines use it
+            for the knowledge panel and sitelinks; assistants use it to attribute an answer.
+            Replace the names, url and sameAs list per deployment.
+        -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@graph": [
+                    {
+                        "@type": "WebSite",
+                        "@id": "https://angular-start-project.setmy.info/#website",
+                        "url": "https://angular-start-project.setmy.info/",
+                        "name": "Angular Start Project",
+                        "inLanguage": ["en", "et"],
+                        "publisher": {
+                            "@id": "https://angular-start-project.setmy.info/#organization"
+                        }
+                    },
+                    {
+                        "@type": "Organization",
+                        "@id": "https://angular-start-project.setmy.info/#organization",
+                        "name": "Angular Start Project",
+                        "url": "https://angular-start-project.setmy.info/",
+                        "logo": "https://angular-start-project.setmy.info/icons/512x512/Information.png"
+                    }
+                ]
+            }
+        </script>
     </head>
 
     <body>

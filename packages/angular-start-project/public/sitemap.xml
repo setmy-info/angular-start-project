@@ -1,17 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Public routes of the application, mirroring app.routes.ts. Routes whose `data.seo` there sets
+    noindex (settings, profile, auth/callback, template, the 404 fallback) are deliberately
+    absent: a sitemap must not advertise a page whose own head asks not to be indexed.
+
+    Two things to change per deployment:
+      - the host below, which is the live host from src/environments/live.environment.ts;
+      - the page list, once the template's placeholder pages are replaced by real ones. Listing
+        a thin lorem-ipsum page is worse than not listing it.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
-        <loc>http://10.0.0.101:4200/</loc>
-        <lastmod>2017-07-24</lastmod>
+        <loc>https://angular-start-project.setmy.info/</loc>
+        <lastmod>2026-09-02</lastmod>
         <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/about</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>http://10.0.0.101:4200/</loc>
-        <lastmod>2017-07-24</lastmod>
-        <changefreq>daily</changefreq>
+        <loc>https://angular-start-project.setmy.info/articles</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
         <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/contact</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/productsServices</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/news</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/help</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/tools</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/commercials</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/ads</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/sponsors</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/terms</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://angular-start-project.setmy.info/privacy</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
     </url>
 </urlset>

@@ -15,6 +15,7 @@ import { authInterceptor } from './auth/auth.interceptor';
 import { environment } from '../environments/environment';
 import { LocationService } from './services/location.service';
 import { PageTitleService } from './services/page-title.service';
+import { SeoService } from './services/seo.service';
 import { PwaInstallService } from './services/pwa-install.service';
 import { PwaUpdateService } from './services/pwa-update.service';
 import { version } from './config/version';
@@ -119,9 +120,11 @@ export const appConfig: ApplicationConfig = {
         provideAppInitializer(logAppStarted),
         provideAppInitializer(logAppOpenedTimeAndTimezone),
         provideAppInitializer(logAppOpenedLocationOnce), // comment out to disable the $geo example
-        // Eagerly instantiate the page-title owner (document.title sync + page-visit statistics) —
-        // nothing injects it lazily on the critical path, so it must be created at bootstrap.
+        // Eagerly instantiate the page owner (page-visit statistics) and the head owner (title,
+        // description, robots, canonical, Open Graph) — no template injects either, so without
+        // this the head would never be written and no page visit would be recorded.
         provideAppInitializer(() => void inject(PageTitleService)),
+        provideAppInitializer(() => void inject(SeoService)),
         provideServiceWorker('ngsw-worker.js', {
             enabled: environment.production,
             registrationStrategy: 'registerWhenStable:30000',

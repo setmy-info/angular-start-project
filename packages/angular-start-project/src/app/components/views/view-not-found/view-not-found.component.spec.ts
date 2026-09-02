@@ -18,10 +18,10 @@ describe('ViewNotFoundComponent', () => {
         expect(fixture.componentInstance).toBeTruthy();
     });
 
-    it('should render not-found heading', () => {
+    it('should render the not-found heading as the page h1', () => {
         const el = fixture.nativeElement as HTMLElement;
-        const h2 = el.querySelector('h2');
-        expect(h2?.textContent?.trim().length).toBeGreaterThan(0);
+        const h1 = el.querySelector('h1');
+        expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
     });
 
     it('should render a link back home', () => {

@@ -3,18 +3,19 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 import angularStartProjectLibrary from 'angular-start-project-library';
-import { LanguageService } from './language.service';
 import { MenuService } from './menu.service';
 
 // Single owner of "what page are we on": maps the current URL to a translation key (shown in the
-// header panel), keeps the browser tab title (document.title) in sync with it in the current
-// language, and records a page-visit statistics event per navigation — the Angular equivalent of
-// the old Vue app's global created-hook mixin (src/plugins/index.js) that wrote a statistics
+// header panel) and records a page-visit statistics event per navigation — the Angular equivalent
+// of the old Vue app's global created-hook mixin (src/plugins/index.js) that wrote a statistics
 // event for every *Page component.
+//
+// It answers *which* page; SeoService turns that answer into the document <head> — the tab title,
+// the meta description, robots, canonical and the Open Graph set all live there, so there is one
+// writer per tag.
 @Injectable({ providedIn: 'root' })
 export class PageTitleService {
     private readonly router = inject(Router);
-    private readonly languageService = inject(LanguageService);
     private readonly menuService = inject(MenuService);
 
     private readonly currentUrl = toSignal(
@@ -51,12 +52,6 @@ export class PageTitleService {
     });
 
     constructor() {
-        // Browser tab title, translated, re-set when either the page or the language changes.
-        effect(() => {
-            const title = this.languageService.translate(this.pageTitleKey());
-            const appTitle = this.languageService.translate('app.title');
-            document.title = title === appTitle ? appTitle : `${title} — ${appTitle}`;
-        });
         // Page-visit statistics (event batch is flushed by the service; sending stays disabled
         // until config.features.statistics is on — see the library's statisticsResource.js).
         effect(() => {

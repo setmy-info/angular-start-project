@@ -19,32 +19,105 @@ import { AuthCallbackComponent } from './components/views/auth-callback/auth-cal
 import { ProfileComponent } from './components/views/profile/profile.component';
 import { authGuard } from './auth/auth.guard';
 
+// Every route carries its own `data.seo`: the translation key for its meta description, and
+// whether it belongs in a search index at all. SeoService reads the deepest activated route and
+// writes the head from it — a page added without a `descriptionKey` silently falls back to the
+// site-wide description, which is exactly the duplicate-description problem to avoid.
 export const routes: Routes = [
-    { path: '', component: HomeComponent },
-    { path: 'about', component: AboutComponent },
-    { path: 'articles', component: ArticlesComponent },
-    { path: 'contact', component: ContactComponent },
-    { path: 'privacy', component: PrivacyComponent },
-    { path: 'settings', component: SettingsComponent },
-    { path: 'terms', component: TermsComponent },
+    {
+        path: '',
+        component: HomeComponent,
+        data: { seo: { descriptionKey: 'seo.home.description' } },
+    },
+    {
+        path: 'about',
+        component: AboutComponent,
+        data: { seo: { descriptionKey: 'seo.about.description' } },
+    },
+    {
+        path: 'articles',
+        component: ArticlesComponent,
+        data: { seo: { descriptionKey: 'seo.articles.description' } },
+    },
+    {
+        path: 'contact',
+        component: ContactComponent,
+        data: { seo: { descriptionKey: 'seo.contact.description' } },
+    },
+    {
+        path: 'privacy',
+        component: PrivacyComponent,
+        data: { seo: { descriptionKey: 'seo.privacy.description' } },
+    },
+    {
+        path: 'settings',
+        component: SettingsComponent,
+        data: { seo: { descriptionKey: 'seo.settings.description', noindex: true } },
+    },
+    {
+        path: 'terms',
+        component: TermsComponent,
+        data: { seo: { descriptionKey: 'seo.terms.description' } },
+    },
     // The old app's full page set (URL-only, not in any menu — same as the old app, where these
     // were commented out of the menu sets; path names match the old routes 1:1):
-    { path: 'productsServices', component: ProductsServicesComponent },
-    { path: 'news', component: NewsComponent },
-    { path: 'help', component: HelpComponent },
-    { path: 'tools', component: ToolsComponent },
-    { path: 'commercials', component: CommercialsComponent },
-    { path: 'ads', component: AdsComponent },
-    { path: 'sponsors', component: SponsorsComponent },
-    { path: 'template', component: TemplatePageComponent },
+    {
+        path: 'productsServices',
+        component: ProductsServicesComponent,
+        data: { seo: { descriptionKey: 'seo.productsServices.description' } },
+    },
+    {
+        path: 'news',
+        component: NewsComponent,
+        data: { seo: { descriptionKey: 'seo.news.description' } },
+    },
+    {
+        path: 'help',
+        component: HelpComponent,
+        data: { seo: { descriptionKey: 'seo.help.description' } },
+    },
+    {
+        path: 'tools',
+        component: ToolsComponent,
+        data: { seo: { descriptionKey: 'seo.tools.description' } },
+    },
+    {
+        path: 'commercials',
+        component: CommercialsComponent,
+        data: { seo: { descriptionKey: 'seo.commercials.description' } },
+    },
+    {
+        path: 'ads',
+        component: AdsComponent,
+        data: { seo: { descriptionKey: 'seo.ads.description' } },
+    },
+    {
+        path: 'sponsors',
+        component: SponsorsComponent,
+        data: { seo: { descriptionKey: 'seo.sponsors.description' } },
+    },
+    {
+        path: 'template',
+        component: TemplatePageComponent,
+        data: { seo: { descriptionKey: 'seo.template.description', noindex: true } },
+    },
     // Keycloak OIDC redirect target. Its path must match environment.keycloak.redirectUri, and
     // it must NOT be guarded — this route is how a session is created in the first place.
-    { path: 'auth/callback', component: AuthCallbackComponent },
+    { path: 'auth/callback', component: AuthCallbackComponent, data: { seo: { noindex: true } } },
     // EXAMPLE of a protected route. authGuard renews an expired access token silently, and sends
     // the browser to Keycloak when there is no usable session; with the feature flag off it lets
     // everything through. Lazy-loaded feature routes take the same guard:
     //     { path: 'admin', canActivate: [authGuard],
     //       loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes) }
-    { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-    { path: '**', component: ViewNotFoundComponent },
+    {
+        path: 'profile',
+        component: ProfileComponent,
+        canActivate: [authGuard],
+        data: { seo: { noindex: true } },
+    },
+    {
+        path: '**',
+        component: ViewNotFoundComponent,
+        data: { seo: { descriptionKey: 'seo.notfound.description', noindex: true } },
+    },
 ];

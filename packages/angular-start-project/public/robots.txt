@@ -1,26 +1,113 @@
+# robots.txt — angular-start-project
+#
+# Policy: the site is CLOSED by default (see the "User-agent: *" group at the bottom) and each
+# crawler that is welcome is named here. Two kinds are welcome:
+#
+#   1. Search engines, so people can find the site.
+#   2. AI assistants that READ the site to answer a question and cite it — the ChatGPT /
+#      Claude / Perplexity search indexes, and the fetchers that run when a person pastes one
+#      of our links into an assistant.
+#
+# What stays out is the third kind: crawlers that collect pages as MODEL TRAINING DATA. The
+# content is here to be read and cited, not to be absorbed into a model's weights.
+#
+# Two caveats worth knowing:
+#   - robots.txt is advisory. It is a published request, not an access control; anything that
+#     must not be fetched needs a real authorization check on the server.
+#   - The split only works where the vendor ships separate tokens for reading and training.
+#     Where one token does both, it is denied.
+#
+# Group syntax: several "User-agent:" lines may share one set of rules (RFC 9309 §2.2.1), and a
+# crawler obeys the most specific group matching its token — so a bot named below never falls
+# through to "User-agent: *", whatever order the groups appear in.
+
+# ---------------------------------------------------------------------------
+# Search engines — full access.
+# ---------------------------------------------------------------------------
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Googlebot-News
+User-agent: Bingbot
+User-agent: Slurp
+User-agent: DuckDuckBot
+User-agent: YandexBot
+User-agent: Baiduspider
+User-agent: Applebot
+User-agent: SeznamBot
+User-agent: MojeekBot
+User-agent: Yeti
+Allow: /
+
+# ---------------------------------------------------------------------------
+# AI assistants — reading to answer, not to train. Full access.
+#
+# Each vendor below publishes a separate token for its answer/search crawler and for its
+# training crawler; the training half is denied in the next group. The "-User" tokens are not
+# crawlers at all — they fire when a person asks the assistant to open one of our links, which
+# is exactly the traffic this site wants.
+# ---------------------------------------------------------------------------
+# OpenAI: search index for ChatGPT, and user-triggered page fetches.
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+# Anthropic: search index for Claude, and user-triggered page fetches.
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+# Perplexity: answer index, and user-triggered page fetches.
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+# DuckDuckGo's assistant.
+User-agent: DuckAssistBot
+# Meta AI, user-triggered fetch only (meta-externalagent, which trains, is denied below).
+User-agent: meta-externalfetcher
+Allow: /
+
+# ---------------------------------------------------------------------------
+# Model training and dataset collection — denied.
+#
+# Strictly redundant while the default group below is "Disallow: /", but named anyway: it makes
+# the intent legible to whoever reads this file next, and it keeps the denial standing if the
+# default is ever opened up.
+# ---------------------------------------------------------------------------
+# OpenAI / Anthropic training crawlers, including Anthropic's two retired tokens.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+# Control tokens, not crawlers: these opt the site out of Gemini and Apple foundation-model
+# training WITHOUT affecting Googlebot or Applebot above, so ordinary search (and Google's
+# AI Overviews, which are fed by Googlebot) keeps working.
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+# Corpora and scrapers that exist to feed model training.
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: meta-externalagent
+User-agent: FacebookBot
+User-agent: Diffbot
+User-agent: Omgilibot
+User-agent: Omgili
+User-agent: Webzio-Extended
+User-agent: ImagesiftBot
+User-agent: AI2Bot
+User-agent: cohere-ai
+Disallow: /
+
+# ---------------------------------------------------------------------------
+# Web archives — full access, carried over from the previous version of this file.
+# ia_archiver is the retired Alexa/Internet Archive token; archive.org_bot is the current one.
+# ---------------------------------------------------------------------------
+User-agent: ia_archiver
+User-agent: archive.org_bot
+Allow: /
+
+# ---------------------------------------------------------------------------
+# Everything not named above, including any AI crawler that appears after this file was last
+# reviewed. Closed by default: a new token has to be judged and added deliberately.
+# ---------------------------------------------------------------------------
 User-agent: *
 Disallow: /
 
-User-agent: ia_archiver
-Allow: /
-
-User-agent: ia_archiver
-Allow: /index.html
-
-User-agent: DuckDuckBot
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /index.html
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Googlebot
-Allow: /index.html
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Bingbot
-Allow: /index.html
+# Absolute URL, per the sitemap protocol — change the host to match the deployment (the live
+# host comes from src/environments/live.environment.ts). NOTE: public/sitemap.xml is still the
+# 2017 placeholder, listing http://10.0.0.101:4200/ twice; fix that before announcing this line.
+Sitemap: https://angular-start-project.setmy.info/sitemap.xml
