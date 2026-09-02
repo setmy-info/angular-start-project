@@ -1,0 +1,30 @@
+/* Icon / label / value line style, shared with the contact view. */
+@import url('../shared/detail-rows.less');
+
+/*
+ * The tenant switch is the one row that carries controls instead of a plain value, so it
+ * opts out of the fixed 40px line and lets its value column wrap.
+ */
+.applicationContentMain > article > div.articleSectionPanel > section > div.controlRow {
+    height: auto;
+    min-height: 40px;
+}
+
+.applicationContentMain
+    > article
+    > div.articleSectionPanel
+    > section
+    > div.controlRow
+    > div.textPanel {
+    height: auto;
+    max-width: 60%;
+    overflow: visible;
+    white-space: normal;
+}
+
+.settingsHint {
+    margin: 0 0 10px;
+    color: #696969;
+    font-size: 12px;
+    line-height: 16px;
+}

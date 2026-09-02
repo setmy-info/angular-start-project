@@ -1,129 +1,243 @@
-<section class="settingsPage applicationContentMain">
+<div class="settingsPage applicationContentMain">
     <article class="articleBody">
         <div class="articleSectionPanel">
-            <h1>{{ languageService.translate('view.settings.title') }}</h1>
-            <dl>
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.version') }}
-                </dt>
-                <dd class="definitionDesc">
-                    {{ version.version }}
-                    @if (versionState.isNewVersion) {
-                        ({{ languageService.translate('view.settings.versionNew') }})
-                    }
-                </dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.language') }}
-                </dt>
-                <dd class="definitionDesc">{{ languageService.currentLanguageCode() }}</dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.environment') }}
-                </dt>
-                <dd class="definitionDesc">
-                    {{ environment.envName }} ({{ environment.apiBaseUrl }})
-                </dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.subSystem') }}
-                </dt>
-                <dd class="definitionDesc">{{ subSystem() || '-' }}</dd>
-
-                @if (devTenantSwitchEnabled) {
-                    <dt class="definitionTerm">
-                        {{ languageService.translate('view.settings.tenant') }}
-                    </dt>
-                    <dd class="definitionDesc">
-                        <select [value]="activeTenant" (change)="onTenantOverrideChange($event)">
-                            @for (tenant of knownTenants; track tenant) {
-                                <option [value]="tenant">{{ tenant }}</option>
-                            }
-                        </select>
-                        @if (tenantOverride) {
-                            <button type="button" (click)="clearTenantOverride()">
-                                {{ languageService.translate('view.settings.tenantClear') }}
-                            </button>
+            <section>
+                <h1>{{ languageService.translate('view.settings.title') }}</h1>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">tag</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.version')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">
+                        {{ version.version }}
+                        @if (versionState.isNewVersion) {
+                            ({{ languageService.translate('view.settings.versionNew') }})
                         }
-                        <p class="settingsHint">
-                            {{ languageService.translate('view.settings.tenantHint') }}
-                        </p>
-                    </dd>
+                    </div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">shield</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.angularVersion')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">{{ angularVersion }}</div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">language</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.language')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">{{ languageService.currentLanguageCode() }}</div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">dns</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.environment')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel" [title]="environment.apiBaseUrl">
+                        {{ environment.envName }} ({{ environment.apiBaseUrl }})
+                    </div>
+                </div>
+                <div>
+                    <div class="iconPanel">
+                        <i class="material-symbols-outlined">account_tree</i>
+                    </div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.subSystem')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">{{ subSystem() || '-' }}</div>
+                </div>
+                @if (devTenantSwitchEnabled) {
+                    <div class="controlRow">
+                        <div class="iconPanel">
+                            <i class="material-symbols-outlined">apartment</i>
+                        </div>
+                        <div class="labelPanel">
+                            <small
+                                ><span>{{
+                                    languageService.translate('view.settings.tenant')
+                                }}</span></small
+                            >
+                        </div>
+                        <div class="textPanel">
+                            <select
+                                [value]="activeTenant"
+                                (change)="onTenantOverrideChange($event)"
+                            >
+                                @for (tenant of knownTenants; track tenant) {
+                                    <option [value]="tenant">{{ tenant }}</option>
+                                }
+                            </select>
+                            @if (tenantOverride) {
+                                <button type="button" (click)="clearTenantOverride()">
+                                    {{ languageService.translate('view.settings.tenantClear') }}
+                                </button>
+                            }
+                            <p class="settingsHint">
+                                {{ languageService.translate('view.settings.tenantHint') }}
+                            </p>
+                        </div>
+                    </div>
                 }
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.browser') }}
-                </dt>
-                <dd class="definitionDesc">{{ browserInfo }}</dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.serviceWorker') }}
-                </dt>
-                <dd class="definitionDesc">{{ hasServiceWorkerSupport }}</dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.serviceWorkerState') }}
-                </dt>
-                <dd class="definitionDesc">{{ pwaUpdateService.controllerState() }}</dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.updateAvailable') }}
-                </dt>
-                <dd class="definitionDesc">
-                    @if (pwaUpdateService.updateAvailable()) {
-                        {{ languageService.translate('pwa.yes') }}
-                    } @else {
-                        {{ languageService.translate('pwa.no') }}
-                    }
-                    @if (pwaUpdateService.lastError(); as pwaError) {
-                        ({{ pwaError }})
-                    }
-                </dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.lastUpdateCheck') }}
-                </dt>
-                <dd class="definitionDesc">
-                    {{ lastUpdateCheck() || languageService.translate('pwa.never') }}
-                </dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.installState') }}
-                </dt>
-                <dd class="definitionDesc">
-                    @if (pwaInstallService.standalone()) {
-                        {{ languageService.translate('pwa.install.installButton') }} &check;
-                    } @else if (pwaInstallService.canInstall()) {
-                        {{ languageService.translate('pwa.yes') }}
-                    } @else {
-                        {{ languageService.translate('pwa.no') }}
-                    }
-                </dd>
-
-                <dt class="definitionTerm">
-                    {{ languageService.translate('view.settings.referrer') }}
-                </dt>
-                <dd class="definitionDesc">{{ referrer || '-' }}</dd>
-
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">web</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.browser')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel" [title]="browserInfo">{{ browserInfo }}</div>
+                </div>
+                <div>
+                    <div class="iconPanel">
+                        <i class="material-symbols-outlined">settings_applications</i>
+                    </div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.serviceWorker')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">{{ hasServiceWorkerSupport }}</div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">sync</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.serviceWorkerState')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">{{ pwaUpdateService.controllerState() }}</div>
+                </div>
+                <div>
+                    <div class="iconPanel">
+                        <i class="material-symbols-outlined">system_update_alt</i>
+                    </div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.updateAvailable')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">
+                        @if (pwaUpdateService.updateAvailable()) {
+                            {{ languageService.translate('pwa.yes') }}
+                        } @else {
+                            {{ languageService.translate('pwa.no') }}
+                        }
+                        @if (pwaUpdateService.lastError(); as pwaError) {
+                            ({{ pwaError }})
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div class="iconPanel"><i class="material-symbols-outlined">schedule</i></div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.lastUpdateCheck')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">
+                        {{ lastUpdateCheck() || languageService.translate('pwa.never') }}
+                    </div>
+                </div>
+                <div>
+                    <div class="iconPanel">
+                        <i class="material-symbols-outlined">install_mobile</i>
+                    </div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.installState')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel">
+                        @if (pwaInstallService.standalone()) {
+                            {{ languageService.translate('pwa.install.installButton') }} &check;
+                        } @else if (pwaInstallService.canInstall()) {
+                            {{ languageService.translate('pwa.yes') }}
+                        } @else {
+                            {{ languageService.translate('pwa.no') }}
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div class="iconPanel">
+                        <i class="material-symbols-outlined">arrow_outward</i>
+                    </div>
+                    <div class="labelPanel">
+                        <small
+                            ><span>{{
+                                languageService.translate('view.settings.referrer')
+                            }}</span></small
+                        >
+                    </div>
+                    <div class="textPanel" [title]="referrer">{{ referrer || '-' }}</div>
+                </div>
                 @if (googleMapsUrl(); as googleUrl) {
-                    <dt class="definitionTerm">
-                        {{ languageService.translate('view.settings.location') }}
-                    </dt>
-                    <dd class="definitionDesc">
-                        <a [href]="googleUrl" target="_blank" rel="noopener noreferrer"
-                            >Google Maps</a
-                        >
-                        <a [href]="openStreetMapUrl()" target="_blank" rel="noopener noreferrer"
-                            >OpenStreetMap</a
-                        >
-                    </dd>
+                    <div>
+                        <div class="iconPanel"><i class="material-symbols-outlined">place</i></div>
+                        <div class="labelPanel">
+                            <small
+                                ><span>{{
+                                    languageService.translate('view.settings.location')
+                                }}</span></small
+                            >
+                        </div>
+                        <div class="textPanel">
+                            <a [href]="googleUrl" target="_blank" rel="noopener noreferrer"
+                                >Google Maps</a
+                            >
+                            <a [href]="openStreetMapUrl()" target="_blank" rel="noopener noreferrer"
+                                >OpenStreetMap</a
+                            >
+                        </div>
+                    </div>
                 } @else if (locationService.lastError(); as error) {
-                    <dt class="definitionTerm">
-                        {{ languageService.translate('view.settings.location') }}
-                    </dt>
-                    <dd class="definitionDesc">{{ error }}</dd>
+                    <div>
+                        <div class="iconPanel">
+                            <i class="material-symbols-outlined">location_off</i>
+                        </div>
+                        <div class="labelPanel">
+                            <small
+                                ><span>{{
+                                    languageService.translate('view.settings.location')
+                                }}</span></small
+                            >
+                        </div>
+                        <div class="textPanel" [title]="error">{{ error }}</div>
+                    </div>
                 }
-            </dl>
+            </section>
         </div>
     </article>
-</section>
+</div>

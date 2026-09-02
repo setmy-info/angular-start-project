@@ -1,3 +1,4 @@
+import { VERSION } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SettingsComponent } from './settings.component';
 import { LocationService } from '../../../services/location.service';
@@ -23,10 +24,24 @@ describe('SettingsComponent', () => {
         expect(h1?.textContent?.trim().length).toBeGreaterThan(0);
     });
 
-    it('should render settings fields as a definition list', () => {
+    it('should render settings fields as icon/label/text rows, like the contact view', () => {
         const el = fixture.nativeElement as HTMLElement;
-        expect(el.querySelectorAll('.definitionTerm').length).toBeGreaterThan(0);
-        expect(el.querySelectorAll('.definitionDesc').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.iconPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.labelPanel').length).toBeGreaterThan(0);
+        expect(el.querySelectorAll('.textPanel').length).toBeGreaterThan(0);
+    });
+
+    it('should render a material icon in every settings row', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        const iconPanels = el.querySelectorAll('.iconPanel');
+        iconPanels.forEach((panel) =>
+            expect(panel.querySelector('.material-symbols-outlined')).toBeTruthy(),
+        );
+    });
+
+    it('should report the Angular version the bundle was built against', () => {
+        const el = fixture.nativeElement as HTMLElement;
+        expect(el.textContent).toContain(VERSION.full);
     });
 
     it('should render no location links or error before a position is known', () => {

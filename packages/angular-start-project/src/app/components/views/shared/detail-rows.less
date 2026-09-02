@@ -1,0 +1,84 @@
+/*
+ * Icon / label / value rows shared by the contact and the settings views.
+ *
+ * One fact per 40px line: a material icon and its label floated left, the value floated
+ * right on the same baseline. Both views import this partial so the two pages stay in
+ * step — Angular scopes component styles per component, so the rules cannot simply be
+ * inherited from one of them.
+ */
+
+.applicationContentMain > article > div.articleSectionPanel > section > div {
+    width: 100%;
+    height: 40px;
+    display: table;
+}
+
+.applicationContentMain > article > div.articleSectionPanel > section > div > div.iconPanel {
+    float: left;
+    width: 24px;
+    height: 40px;
+    color: #696969;
+    line-height: 40px;
+    margin-right: 10px;
+}
+
+.applicationContentMain > article > div.articleSectionPanel > section > div > div.labelPanel {
+    float: left;
+    height: 40px;
+    color: #696969;
+    line-height: 40px;
+    margin-right: 10px;
+}
+
+/*
+.applicationContentMain > article > div.articleSectionPanel > section > div > div.iconPanel > i {
+    font-size: 24px;
+    color: #696969;
+    height: 40px;
+    line-height: 40px;
+    vertical-align: middle;
+    display: table-cell !important;
+}
+*/
+
+.applicationContentMain > article > div.articleSectionPanel > section > div > div.textPanel {
+    float: right;
+    height: 40px;
+    color: #696969;
+    line-height: 40px;
+    // Added on refactoring
+    max-width: 60%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.applicationContentMain article a {
+    text-decoration: none;
+}
+
+.applicationContentMain article a:link {
+    color: #696969;
+}
+
+.applicationContentMain article a:visited {
+    color: #696969;
+}
+
+.applicationContentMain > article > div.articleSectionPanel > section > div > div.textPanel > a {
+    font-family: 'DejaVu Serif', Roboto, Arial, 'Noto Sans', Noto, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+// Added on refactoring
+.applicationContentMain
+    > article
+    > div.articleSectionPanel
+    > section
+    > div
+    > div.textPanel
+    > a
+    + a {
+    margin-left: 10px;
+}

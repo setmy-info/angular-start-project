@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, VERSION, computed, inject } from '@angular/core';
 import angularStartProjectLibrary from 'angular-start-project-library';
 import { LanguageService } from '../../../services/language.service';
 import { LocationService } from '../../../services/location.service';
@@ -20,6 +20,9 @@ export class SettingsComponent {
     private readonly contentService = inject(ContentService);
     protected readonly environment = environment;
     protected readonly version = version;
+    // Angular's own version, read from the framework at runtime rather than from package.json,
+    // so the page reports what actually shipped in this bundle.
+    protected readonly angularVersion = VERSION.full;
     // Whether this build's version differs from the one stored on the previous visit
     // (check() is idempotent — cached after the first call at startup, see versionService.js).
     protected readonly versionState = angularStartProjectLibrary.versionService.check(

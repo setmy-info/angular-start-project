@@ -154,6 +154,7 @@
                 "serve": {
                     "builder": "@angular/build:dev-server",
                     "options": {
+                        "allowedHosts": ["tenant1.test", "tenant2.test"],
                         "host": "0.0.0.0",
                         "prebundle": {
                             "exclude": ["angular-start-project-library"]
