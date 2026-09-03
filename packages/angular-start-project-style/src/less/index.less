@@ -1,10 +1,21 @@
-// Source imports (not the package "main", which points at pre-built dist CSS) so LESS
-// variables/tokens from setmy-info-less are in scope here. Load order matters: base first
-// (values + HTML resets + utilities + devices + flex + components), then extended (its own
-// utility classes only — extended's main.less imports base's values for tokens but not its CSS,
-// see setmy-info-less-extended/src/main/less/main.less "STANDALONE / DELTA" note).
+// Load order matters — base, then extended, then this project's own delta:
+//
+//     setmy-info-less  ->  setmy-info-less-extended  ->  setmy-info-less-angular-start-project
+//
+// The first two are SOURCE imports (not the package "main", which points at pre-built dist CSS)
+// so LESS variables/tokens from setmy-info-less are in scope for the rules further down this
+// file (@tertiaryColor, @defaultBorderRadius, @doubleDefaultPadding).
+//
+// setmy-info-less-angular-start-project is inlined from its BUILT css instead: as of 5.x these
+// modules publish only `dist/` (their package.json `files` is
+// ["dist/main.css", "dist/main.min.css", "README.md", "LICENSE"]), so `<pkg>/src/...` does not
+// exist in the installed tree and a source import of it fails outright. It contributes no
+// tokens — only rules — so inlining the compiled delta loses nothing. NOTE the same is true of
+// the two above once they are bumped past the versions currently pinned here (base 4.1.0 and
+// extended 5.0.0 are the last releases that still shipped src/).
 @import url('setmy-info-less/src/main/less/main.less');
 @import url('setmy-info-less-extended/src/main/less/main.less');
+@import (inline) url('setmy-info-less-angular-start-project/dist/main.css');
 
 // ============================================================
 // MATERIAL SYMBOLS OUTLINED
