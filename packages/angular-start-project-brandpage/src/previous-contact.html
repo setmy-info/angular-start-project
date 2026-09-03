@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#1976d2" />
+
+        <!--
+            SECOND BRAND PAGE EXAMPLE. index/about/contact.html are the first one, built on the
+            SMI brand page design system; this set is a plainer take that links only the
+            setmy-info-less BASE stylesheet plus its own css/previous-brand.css. Two brand pages
+            in one package, sharing nothing but their base.
+
+            SEO is written out in full here, as in the other example: nothing generates it, so
+            what you read is what a crawler reads.
+        -->
+        <title>Contact — Lorem Ipsum (second example)</title>
+        <meta
+            name="description"
+            content="Contact details for the Lorem Ipsum brand, on the second brand page example. Placeholder content."
+        />
+        <meta name="author" content="Lorem Ipsum OÜ" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://lorem-ipsum.example.com/previous-contact.html" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Lorem Ipsum" />
+        <meta property="og:title" content="Contact — Lorem Ipsum (second example)" />
+        <meta
+            property="og:description"
+            content="Contact details for the Lorem Ipsum brand, on the second brand page example. Placeholder content."
+        />
+        <meta property="og:url" content="https://lorem-ipsum.example.com/previous-contact.html" />
+        <meta property="og:locale" content="en_US" />
+        <meta
+            property="og:image"
+            content="https://lorem-ipsum.example.com/images/social-card.svg"
+        />
+        <meta property="og:image:alt" content="Lorem Ipsum" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@loremipsum" />
+        <meta name="twitter:title" content="Contact — Lorem Ipsum (second example)" />
+        <meta
+            name="twitter:description"
+            content="Contact details for the Lorem Ipsum brand, on the second brand page example. Placeholder content."
+        />
+        <meta
+            name="twitter:image"
+            content="https://lorem-ipsum.example.com/images/social-card.svg"
+        />
+
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+        <!--
+            Base only. This example does not use setmy-info-less-fancy or
+            setmy-info-less-brandpage - it is the deliberately plainer of the two.
+        -->
+        <link rel="stylesheet" href="css/setmy-info-less.min.css" />
+        <link rel="stylesheet" href="css/previous-brand.min.css" />
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "name": "Contact — Lorem Ipsum (second example)",
+                "description": "Contact details for the Lorem Ipsum brand, on the second brand page example. Placeholder content.",
+                "url": "https://lorem-ipsum.example.com/previous-contact.html",
+                "inLanguage": "en",
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "name": "Lorem Ipsum",
+                    "url": "https://lorem-ipsum.example.com/"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Lorem Ipsum OÜ",
+                    "url": "https://lorem-ipsum.example.com/",
+                    "logo": "https://lorem-ipsum.example.com/images/social-card.svg"
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="brandApp" class="brandPage" v-cloak>
+            <div class="brandMasthead">
+                <p class="brandMastheadName"><a href="previous-index.html">Lorem Ipsum</a></p>
+                <ul class="brandNavigation">
+                    <li>
+                        <a href="previous-index.html">Home</a>
+                    </li>
+                    <li>
+                        <a href="previous-about.html">About</a>
+                    </li>
+                    <li>
+                        <a href="previous-contact.html" class="brandNavigationCurrent">Contact</a>
+                    </li>
+                </ul>
+                <div class="brandClear"></div>
+            </div>
+
+            <div class="brandBanner">
+                <h1>Contact</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+
+            <div class="brandRow">
+                <div class="brandContactRow">
+                    <span class="brandContactLabel">Organisation</span>
+                    <span class="brandContactValue">Lorem Ipsum OÜ</span>
+                    <div class="brandClear"></div>
+                </div>
+                <div class="brandContactRow">
+                    <span class="brandContactLabel">Address</span>
+                    <span class="brandContactValue">Lorem street 1, Tallinn</span>
+                    <div class="brandClear"></div>
+                </div>
+                <div class="brandContactRow">
+                    <span class="brandContactLabel">Phone</span>
+                    <span class="brandContactValue">+372 0000 0000</span>
+                    <div class="brandClear"></div>
+                </div>
+                <div class="brandContactRow">
+                    <span class="brandContactLabel">Email</span>
+                    <span class="brandContactValue">lorem@example.com</span>
+                    <div class="brandClear"></div>
+                </div>
+            </div>
+
+            <div class="brandFooter">
+                <span class="brandFooterCopyright">&copy; {{ year }} Lorem Ipsum</span>
+                <span class="brandFooterNote">
+                    Second example —
+                    <a href="index.html">see the first one</a>
+                </span>
+                <div class="brandClear"></div>
+            </div>
+        </div>
+
+        <script src="js/vue.global.prod.js"></script>
+        <script src="js/previous-main.min.js"></script>
+    </body>
+</html>

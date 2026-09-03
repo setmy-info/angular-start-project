@@ -3,74 +3,280 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Home — Brand Page Starter</title>
+        <meta name="theme-color" content="#1976d2" />
+
+        <!--
+            SEO for this page, written out in full. Nothing generates it: this file is served
+            exactly as committed, so what you read here is what a crawler reads. A second brand
+            page is a copy of this directory with these values changed - its own title,
+            description, canonical, social card and sitemap.
+        -->
+        <title>Lorem Ipsum — Lorem ipsum dolor sit amet</title>
         <meta
             name="description"
-            content="Brand page starter — old-school static HTML and CSS with a global-build Vue. Placeholder content."
+            content="Brand page starter on the SMI brand page design system. Placeholder campaign content, ready to be replaced."
         />
+        <meta name="author" content="Lorem Ipsum OÜ" />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://lorem-ipsum.example.com/" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Lorem Ipsum" />
+        <meta property="og:title" content="Lorem Ipsum — Lorem ipsum dolor sit amet" />
+        <meta
+            property="og:description"
+            content="Brand page starter on the SMI brand page design system. Placeholder campaign content, ready to be replaced."
+        />
+        <meta property="og:url" content="https://lorem-ipsum.example.com/" />
+        <meta property="og:locale" content="en_US" />
+        <meta
+            property="og:image"
+            content="https://lorem-ipsum.example.com/images/social-card.svg"
+        />
+        <meta property="og:image:alt" content="Lorem Ipsum" />
+
+        <!-- summary_large_image: a brand page is shared to be looked at, not skimmed. -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@loremipsum" />
+        <meta name="twitter:title" content="Lorem Ipsum — Lorem ipsum dolor sit amet" />
+        <meta
+            name="twitter:description"
+            content="Brand page starter on the SMI brand page design system. Placeholder campaign content, ready to be replaced."
+        />
+        <meta
+            name="twitter:image"
+            content="https://lorem-ipsum.example.com/images/social-card.svg"
+        />
+
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="stylesheet" href="css/index.css" />
+
+        <!--
+            The four SMI stylesheets, copied out of node_modules into css/ by
+            `npm run build` and committed, linked in the order the design system requires.
+            brand.min.css is this page's own CSS, minified beside its readable source.
+        -->
+        <link rel="stylesheet" href="css/setmy-info-less.min.css" />
+        <link rel="stylesheet" href="css/setmy-info-less-extended.min.css" />
+        <link rel="stylesheet" href="css/setmy-info-less-fancy.min.css" />
+        <link rel="stylesheet" href="css/setmy-info-less-brandpage.min.css" />
+        <link rel="stylesheet" href="css/brand.min.css" />
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "name": "Lorem Ipsum — Lorem ipsum dolor sit amet",
+                "description": "Brand page starter on the SMI brand page design system. Placeholder campaign content, ready to be replaced.",
+                "url": "https://lorem-ipsum.example.com/",
+                "inLanguage": "en",
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "name": "Lorem Ipsum",
+                    "url": "https://lorem-ipsum.example.com/"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Lorem Ipsum OÜ",
+                    "url": "https://lorem-ipsum.example.com/",
+                    "logo": "https://lorem-ipsum.example.com/images/social-card.svg"
+                }
+            }
+        </script>
     </head>
-    <body>
-        <div id="brandApp" class="brandPage" v-cloak>
-            <div class="brandMasthead">
-                <p class="brandMastheadName"><a href="index.html">Lorem Ipsum</a></p>
-                <ul class="brandNavigation">
-                    <li>
-                        <a href="index.html" class="brandNavigationCurrent">Home</a>
-                    </li>
-                    <li>
-                        <a href="about.html">About</a>
-                    </li>
-                    <li>
-                        <a href="contact.html">Contact</a>
-                    </li>
-                </ul>
-                <div class="brandClear"></div>
-            </div>
 
-            <div class="brandBanner">
-                <h1>Lorem Ipsum Dolor</h1>
-                <p>
-                    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                    minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
-                </p>
-            </div>
-
-            <div class="brandRow">
-                <!-- Rendered by Vue from the placeholder list in js/main.js. -->
-                <ul class="brandCards">
-                    <li v-for="card in cards" :key="card.title">
-                        <h3>{{ card.title }}</h3>
-                        <p>{{ card.text }}</p>
-                    </li>
-                </ul>
-                <div class="brandClear"></div>
-            </div>
-
-            <div class="brandRow">
-                <div class="brandColumn">
-                    <img src="images/placeholder.svg" alt="" width="240" height="160" />
+    <body id="body" class="brandIndexPage">
+        <div id="brandApp" v-cloak>
+            <header id="hdr">
+                <span id="bm" class="bm">Lorem<b>Ipsum</b></span>
+                <div class="lsw floatRight">
+                    <button
+                        type="button"
+                        class="lb"
+                        :class="{ on: language === 'en' }"
+                        @click="language = 'en'"
+                    >
+                        EN
+                    </button>
+                    <button
+                        type="button"
+                        class="lb"
+                        :class="{ on: language === 'et' }"
+                        @click="language = 'et'"
+                    >
+                        ET
+                    </button>
                 </div>
-                <div class="brandColumn">
-                    <h2>Excepteur sint occaecat</h2>
-                    <p>
-                        Cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-                        est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    </p>
-                </div>
-                <div class="brandClear"></div>
+            </header>
+
+            <nav id="brandNav" class="floatRight">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div class="brandClear"></div>
+            <div id="dots">
+                <button
+                    v-for="panel in panels"
+                    :key="panel.id"
+                    type="button"
+                    class="dot"
+                    :class="{ on: currentPanel === panel.id }"
+                    :aria-label="panel.label"
+                    @click="showPanel(panel.id)"
+                ></button>
             </div>
 
-            <div class="brandFooter">
-                <span class="brandFooterCopyright">&copy; {{ year }} Lorem Ipsum</span>
-                <span class="brandFooterNote">Brand page starter — placeholder content</span>
-                <div class="brandClear"></div>
+            <div id="stage">
+                <div id="p1" class="panel">
+                    <div id="p1Body" class="pb">
+                        <div id="p1Content" class="pc">
+                            <div id="btop" class="btop">
+                                <h1 id="bt" class="bt">Lorem ipsum dolor sit amet</h1>
+                                <p class="bs">
+                                    Consectetur adipiscing elit, sed do eiusmod tempor.
+                                </p>
+                            </div>
+                            <div
+                                v-for="(slogan, index) in slogans"
+                                :key="slogan.number"
+                                class="srow"
+                                :class="{ rev: index % 2 === 1 }"
+                            >
+                                <div class="simg">
+                                    <img
+                                        src="images/placeholder.svg"
+                                        alt=""
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                </div>
+                                <div class="stx">
+                                    <span class="sn" aria-hidden="true">{{ slogan.number }}</span>
+                                    <h2 class="st">{{ slogan.title }}</h2>
+                                    <p class="sd">{{ slogan.text }}</p>
+                                </div>
+                            </div>
+                            <p id="hint" class="hint" aria-hidden="true">Lorem ipsum — scroll on</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="p2" class="panel">
+                    <div id="p2Body" class="pb">
+                        <div id="p2Content" class="pc">
+                            <h2 id="ph" class="ph">Lorem ipsum dolor</h2>
+                            <p class="plead">
+                                Consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+                            </p>
+
+                            <!-- The campaign slot: one offer, one call to action, and the share
+                                 row that puts it on social media. share() is in js/main.js and
+                                 builds each network URL from this page's own canonical. -->
+                            <div class="brandPromotion">
+                                <span class="brandPromotionLabel">Campaign</span>
+                                <h2 class="brandPromotionTitle">Lorem ipsum dolor sit amet</h2>
+                                <p class="brandPromotionText">
+                                    Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                                    labore et dolore magna aliqua.
+                                </p>
+                                <a
+                                    class="brandPromotionAction"
+                                    href="https://angular-start-project.setmy.info"
+                                    >Lorem ipsum</a
+                                >
+                                <ul class="brandShare">
+                                    <li v-for="network in shareNetworks" :key="network.name">
+                                        <a
+                                            class="sa"
+                                            :href="share(network)"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            >{{ network.name }}</a
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="brandAdvertisement">
+                                <p class="brandAdvertisementNote">Advertisement slot</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="p3" class="panel">
+                    <div id="p3Body" class="pb">
+                        <div id="p3Content" class="pc">
+                            <div id="cw" class="cw">
+                                <div class="cr">
+                                    <div class="cl">Lorem</div>
+                                    <div class="cv">Lorem Ipsum OÜ</div>
+                                </div>
+                                <div class="cr">
+                                    <div class="cl">Ipsum</div>
+                                    <div class="cv">
+                                        <a href="mailto:lorem@example.com">lorem@example.com</a>
+                                    </div>
+                                </div>
+                                <div id="so" class="so">
+                                    <a
+                                        v-for="network in shareNetworks"
+                                        :key="network.name"
+                                        class="sa"
+                                        :href="share(network)"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        >{{ network.name }}</a
+                                    >
+                                </div>
+                            </div>
+                            <p id="cf" class="cf">
+                                Lorem ipsum dolor —
+                                <button type="button" class="pl" @click="previewOpen = true">
+                                    sit amet
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy overlay, opened by the .pl button in the footnote. -->
+            <div id="prv" :class="{ open: previewOpen }">
+                <div class="pvh">
+                    <span class="pvt">Lorem ipsum</span>
+                    <button type="button" class="pvx floatRight" @click="previewOpen = false">
+                        Close
+                    </button>
+                </div>
+                <div class="pvb">
+                    <div class="pvc">
+                        <div class="pvs">
+                            <p><strong>Lorem ipsum</strong></p>
+                            <p>
+                                Dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                incididunt ut labore.
+                            </p>
+                        </div>
+                        <div class="pvs">
+                            <p><strong>Ipsum dolor</strong></p>
+                            <p>
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                                nisi ut aliquip.
+                            </p>
+                        </div>
+                        <p class="pvn">Lorem Ipsum, {{ year }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gb" v-if="!consentAccepted">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <button type="button" class="ga" @click="acceptConsent()">Accept</button>
             </div>
         </div>
 
         <script src="js/vue.global.prod.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/main.min.js"></script>
     </body>
 </html>

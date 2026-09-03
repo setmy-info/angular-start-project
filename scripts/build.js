@@ -19,7 +19,7 @@ switch (workspace.moduleType) {
         buildLessPackage();
         break;
     case 'brand-page':
-        buildBrandPage();
+        await buildBrandPage();
         break;
     default:
         buildJsLibrary();
@@ -82,75 +82,32 @@ function buildLessPackage() {
     }
 }
 
-// A brand page has no bundler by design: the build compiles its LESS, copies the static files
-// across verbatim, and drops Vue's global production build in beside them. What lands in dist/
-// is a complete site directory - exactly what the deployment bundle ships under brands/.
-function buildBrandPage() {
-    const distDir = path.join(workspace.workspace, 'dist');
-    const srcDir = path.join(workspace.workspace, 'src');
+// A brand page has no bundler and no build output: src/ IS the served folder, everything in it
+// is committed, and any static server pointed at it serves the finished site. So "building" a
+// brand page only fills in the two kinds of file nobody hand-writes — third-party assets copied
+// out of node_modules, and the minified twin of each hand-written source — and writes both back
+// into src/ to be committed.
+//
+// robots.txt and sitemap.xml are NOT generated: they are ordinary committed files in src/, so
+// what a developer reads locally is byte-for-byte what gets served.
+async function buildBrandPage() {
+    const { copyDependencies } = await import('./dependencies.js');
+    const { minifyPackage } = await import('./minify.js');
 
-    fs.rmSync(distDir, { recursive: true, force: true });
-    ensureDirectory(path.join(distDir, 'css'));
-    ensureDirectory(path.join(distDir, 'js'));
+    const copied = await copyDependencies(workspace);
+    const minified = await minifyPackage(workspace);
+    const problems = [...copied.problems, ...minified.problems];
 
-    for (const [output, minify] of [
-        ['index.css', false],
-        ['index.min.css', true],
-    ]) {
-        const outputPath = path.join(distDir, 'css', output);
-        const args = [path.relative(workspace.workspace, workspace.srcEntry), outputPath];
-
-        if (minify) {
-            args.push('--clean-css');
-        }
-
-        execFileSync(resolveLocalBin('lessc'), args, {
-            cwd: workspace.workspace,
-            stdio: 'inherit',
-        });
-        console.log(`Created ${outputPath}`);
+    for (const problem of problems) {
+        console.error(`${workspace.packageName}: ${problem}`);
     }
-
-    // Everything in src/ except the LESS sources, which the step above has already compiled.
-    for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
-        if (entry.name === 'less') {
-            continue;
-        }
-        fs.cpSync(path.join(srcDir, entry.name), path.join(distDir, entry.name), {
-            recursive: true,
-        });
-    }
-
-    // Vue is a declared devDependency rather than a committed 160 kB blob, but it still ships as
-    // a plain <script> the page loads directly - the version is tracked, the page stays bundler-free.
-    const vueBuild = path.join(
-        rootDir,
-        'node_modules',
-        'vue',
-        'dist',
-        'vue.global.prod.js',
-    );
-
-    if (!fs.existsSync(vueBuild)) {
-        console.error(`Missing ${vueBuild} - run \`npm install\` first`);
+    if (problems.length > 0) {
         process.exit(1);
     }
 
-    fs.copyFileSync(vueBuild, path.join(distDir, 'js', 'vue.global.prod.js'));
-
-    const buildInfo = {
-        packageName: workspace.packageName,
-        version: workspace.packageJson.version,
-        moduleType: workspace.moduleType,
-        builtAt: new Date().toISOString(),
-    };
-
-    fs.writeFileSync(
-        path.join(distDir, 'build-info.json'),
-        `${JSON.stringify(buildInfo, null, 2)}\n`,
+    console.log(
+        `Built ${workspace.packageName}: ${copied.copied} copied, ${minified.minified} minified, into ${path.join(workspace.workspace, 'src')}`,
     );
-
-    console.log(`Built ${workspace.packageName} into ${distDir}`);
 }
 
 function buildJsLibrary() {

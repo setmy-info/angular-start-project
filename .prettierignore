@@ -15,3 +15,12 @@ packages/application
 # output is not the format gate's business - the generator owns its own
 # formatting.
 **/src/app/config/version.ts
+
+# Copied third-party assets (scripts/dependencies.js) and minified twins (scripts/minify.js).
+# Both are machine-written into the source tree and committed there; reformatting them would
+# make every copy show a spurious diff, and would rewrite minified code.
+**/*.min.css
+**/*.min.js
+**/src/js/vue.global.prod.js
+**/src/css/setmy-info-less*.css
+**/src/dependencies.json

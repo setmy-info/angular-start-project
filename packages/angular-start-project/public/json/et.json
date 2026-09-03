@@ -26,7 +26,7 @@
     "seo.settings.description": "Rakenduse seaded ja diagnostika: versioon, keel, keskkond ja progressiivse veebirakenduse olek.",
     "seo.template.description": "Tühi lehemall, mis on Angular stardiprojektis uute vaadete lähtepunkt.",
     "seo.notfound.description": "Soovitud lehte Angular stardiprojektis ei ole.",
-    "view.contact.title": "Kontakt",
+    "view.contact.title": "Kontaktid",
     "view.detailLevel.label": "Detailsuse tase:",
     "view.detailLevel.level1": "kompaktne",
     "view.detailLevel.level2": "detailne",

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Lorem Ipsum">
+    <rect width="1200" height="630" fill="#ffffff"/>
+    <rect x="0" y="0" width="18" height="630" fill="#73d073"/>
+    <text x="80" y="300" font-family="DejaVu Serif, Georgia, serif" font-size="86" fill="#141412">Lorem Ipsum</text>
+    <text x="80" y="370" font-family="DejaVu Sans, Arial, sans-serif" font-size="34" fill="#696969">Lorem ipsum dolor sit amet</text>
+</svg>

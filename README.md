@@ -13,7 +13,7 @@ Run from the repository root, in order:
 ```shell
 npm install
 npm run audit
-npm run audit --fix
+npm run audit fix
 npm ci
 npm ls --all
 npm run clean
@@ -34,12 +34,14 @@ npm run post-e2e-test
 npm run coverage                       # unit tier only (Selenium stays out of coverage)
 #npm run lint
 npm run audit
-npm run audit --fix
+npm run audit fix
 npm run reports
 npm run docs
 npm run package                        # app -> dist/*.tar.gz; libraries -> dist/*.tgz
 npm run deploy -- <dev|test|prelive|live>
 npm run release                        # master only
+
+npm pkg fix --workspaces
 
 rm -rf node_modules packages/*/node_modules
 npm install

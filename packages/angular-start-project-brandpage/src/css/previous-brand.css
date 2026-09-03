@@ -1,0 +1,211 @@
+/*
+ * Brand page styles — SECOND EXAMPLE ("previous-*.html").
+ *
+ * A deliberately plainer take than the index/about/contact set: a masthead with tab-style
+ * navigation, a centred banner, inline-block cards, a two-column row and a footer. It does not
+ * use the SMI brand page design system at all — the previous-* pages link only the
+ * setmy-info-less BASE stylesheet (resets, utility classes, device breakpoints) and this file.
+ * That is the point of keeping both: the same package shows two brand pages that share nothing
+ * but their base.
+ *
+ * Plain CSS, no preprocessor. This started as LESS against angular-start-project-brand-style, so
+ * the values that were tokens are written out here: @secondaryColor #fff, @tertiaryColor #ccc,
+ * @primaryColor #000, @navigationInactiveTextColor midnightblue, @defaultPadding 10px,
+ * @doubleDefaultPadding 20px, @quadrupleDefaultPadding 40px, and the .centerBox() mixin inlined
+ * on .brandPage.
+ *
+ * Layout is old-school throughout: floats, inline-block and a clearfix. No flexbox, no grid.
+ */
+
+/* --------------------------------------------------------------------------
+   Page frame
+   -------------------------------------------------------------------------- */
+body {
+    background: #fff;
+}
+
+/* .centerBox() from the base module, written out. */
+.brandPage {
+    width: auto;
+    max-width: 1024px;
+    margin: auto;
+    padding: 0 10px;
+}
+
+/* Old-school clearfix, used after every floated row. */
+.brandClear {
+    clear: both;
+}
+
+/* --------------------------------------------------------------------------
+   Masthead: brand name floated left, tab navigation floated right.
+   -------------------------------------------------------------------------- */
+.brandMasthead {
+    height: 100px;
+    border-bottom: 1px solid #ccc;
+}
+
+.brandMastheadName {
+    float: left;
+    height: 100px;
+    margin: 0;
+    font-size: 1.6em;
+    letter-spacing: 0.2em;
+    line-height: 100px;
+}
+
+.brandMastheadName a {
+    color: #000;
+    text-decoration: none;
+}
+
+ul.brandNavigation {
+    float: right;
+    height: 100px;
+    margin: 0;
+    list-style: none;
+}
+
+ul.brandNavigation > li {
+    display: inline-block;
+    height: 100px;
+    line-height: 100px;
+}
+
+ul.brandNavigation > li + li {
+    margin-left: 20px;
+}
+
+ul.brandNavigation > li > a {
+    color: midnightblue;
+    font-size: 0.85em;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+/* The tab: the current page keeps a rule under it. */
+ul.brandNavigation > li > a.brandNavigationCurrent {
+    border-bottom: 3px solid #000;
+}
+
+/* --------------------------------------------------------------------------
+   Banner
+   -------------------------------------------------------------------------- */
+.brandBanner {
+    padding: 40px 10px;
+    text-align: center;
+}
+
+.brandBanner h1 {
+    margin: 0 0 20px;
+    font-size: 2.6em;
+    letter-spacing: 0.15em;
+}
+
+.brandBanner p {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Content rows: a two-column split at pad width, stacked below it.
+   -------------------------------------------------------------------------- */
+.brandRow {
+    padding: 20px 0;
+    border-top: 1px solid #ccc;
+}
+
+.brandColumn {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 10px 20px 0;
+}
+
+.brandColumn img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+@media only screen and (min-width: 1024px) {
+    .brandColumn {
+        float: left;
+        width: 50%;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Cards rendered by Vue (v-for), laid out with inline-block rather than a grid.
+   -------------------------------------------------------------------------- */
+ul.brandCards {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.brandCards > li {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-left: 6px solid #000;
+    vertical-align: top;
+}
+
+ul.brandCards > li > h3 {
+    margin-top: 0;
+}
+
+@media only screen and (min-width: 1024px) {
+    ul.brandCards > li {
+        width: 32%;
+        margin-right: 1%;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Contact rows: label floated left, value floated right on one line.
+   -------------------------------------------------------------------------- */
+.brandContactRow {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #ccc;
+}
+
+.brandContactLabel {
+    float: left;
+}
+
+.brandContactValue {
+    float: right;
+    font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.brandFooter {
+    padding: 20px 0;
+    border-top: 1px solid #ccc;
+    font-size: 0.85em;
+}
+
+.brandFooterCopyright {
+    float: left;
+}
+
+.brandFooterNote {
+    float: right;
+}
+
+/* Hides the mustache placeholders until Vue has mounted. Only the parts Vue renders sit inside a
+   [v-cloak] element; the headings, prose and contact rows are static HTML, so a crawler that does
+   not run JavaScript still gets the substance of the page. */
+[v-cloak] .brandCards,
+[v-cloak] .brandFooterCopyright {
+    visibility: hidden;
+}

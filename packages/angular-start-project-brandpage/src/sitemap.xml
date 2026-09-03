@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Brand page sitemap. An ordinary committed file — nothing generates it.
+    Change the host to match the deployment, and keep the list in step with the pages that exist.
+
+    The package ships TWO brand page examples and both are listed here so either can be checked
+    locally. A real deployment keeps one of them and deletes the other set from this file — two
+    designs over the same placeholder content are near-duplicates, and advertising both to a
+    search engine is not what you want in production.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://lorem-ipsum.example.com/</loc>
+        <lastmod>2026-09-03</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://lorem-ipsum.example.com/about.html</loc>
+        <lastmod>2026-09-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://lorem-ipsum.example.com/contact.html</loc>
+        <lastmod>2026-09-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://lorem-ipsum.example.com/previous-index.html</loc>
+        <lastmod>2026-09-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://lorem-ipsum.example.com/previous-about.html</loc>
+        <lastmod>2026-09-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://lorem-ipsum.example.com/previous-contact.html</loc>
+        <lastmod>2026-09-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.3</priority>
+    </url>
+</urlset>

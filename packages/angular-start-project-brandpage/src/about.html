@@ -3,64 +3,175 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>About — Brand Page Starter</title>
+        <meta name="theme-color" content="#1976d2" />
+
+        <!--
+            SEO for this page, written out in full. Nothing generates it: this file is served
+            exactly as committed, so what you read here is what a crawler reads. A second brand
+            page is a copy of this directory with these values changed - its own title,
+            description, canonical, social card and sitemap.
+        -->
+        <title>About — Lorem Ipsum</title>
         <meta
             name="description"
-            content="About the Lorem Ipsum brand — placeholder content for the brand page starter."
+            content="About the Lorem Ipsum brand. Placeholder content for the brand page starter."
         />
+        <meta name="author" content="Lorem Ipsum OÜ" />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://lorem-ipsum.example.com/about.html" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Lorem Ipsum" />
+        <meta property="og:title" content="About — Lorem Ipsum" />
+        <meta
+            property="og:description"
+            content="About the Lorem Ipsum brand. Placeholder content for the brand page starter."
+        />
+        <meta property="og:url" content="https://lorem-ipsum.example.com/about.html" />
+        <meta property="og:locale" content="en_US" />
+        <meta
+            property="og:image"
+            content="https://lorem-ipsum.example.com/images/social-card.svg"
+        />
+        <meta property="og:image:alt" content="Lorem Ipsum" />
+
+        <!-- summary_large_image: a brand page is shared to be looked at, not skimmed. -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@loremipsum" />
+        <meta name="twitter:title" content="About — Lorem Ipsum" />
+        <meta
+            name="twitter:description"
+            content="About the Lorem Ipsum brand. Placeholder content for the brand page starter."
+        />
+        <meta
+            name="twitter:image"
+            content="https://lorem-ipsum.example.com/images/social-card.svg"
+        />
+
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="stylesheet" href="css/index.css" />
+
+        <!--
+            The four SMI stylesheets, copied out of node_modules into css/ by
+            `npm run build` and committed, linked in the order the design system requires.
+            brand.min.css is this page's own CSS, minified beside its readable source.
+        -->
+        <link rel="stylesheet" href="css/setmy-info-less.min.css" />
+        <link rel="stylesheet" href="css/setmy-info-less-extended.min.css" />
+        <link rel="stylesheet" href="css/setmy-info-less-fancy.min.css" />
+        <link rel="stylesheet" href="css/setmy-info-less-brandpage.min.css" />
+        <link rel="stylesheet" href="css/brand.min.css" />
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "name": "About — Lorem Ipsum",
+                "description": "About the Lorem Ipsum brand. Placeholder content for the brand page starter.",
+                "url": "https://lorem-ipsum.example.com/about.html",
+                "inLanguage": "en",
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "name": "Lorem Ipsum",
+                    "url": "https://lorem-ipsum.example.com/"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Lorem Ipsum OÜ",
+                    "url": "https://lorem-ipsum.example.com/",
+                    "logo": "https://lorem-ipsum.example.com/images/social-card.svg"
+                }
+            }
+        </script>
     </head>
-    <body>
-        <div id="brandApp" class="brandPage" v-cloak>
-            <div class="brandMasthead">
-                <p class="brandMastheadName"><a href="index.html">Lorem Ipsum</a></p>
-                <ul class="brandNavigation">
-                    <li>
-                        <a href="index.html">Home</a>
-                    </li>
-                    <li>
-                        <a href="about.html" class="brandNavigationCurrent">About</a>
-                    </li>
-                    <li>
-                        <a href="contact.html">Contact</a>
-                    </li>
-                </ul>
-                <div class="brandClear"></div>
+
+    <body id="body" class="brandAboutPage">
+        <div id="brandApp" v-cloak>
+            <header id="hdr">
+                <span id="bm" class="bm">Lorem<b>Ipsum</b></span>
+                <div class="lsw floatRight">
+                    <button
+                        type="button"
+                        class="lb"
+                        :class="{ on: language === 'en' }"
+                        @click="language = 'en'"
+                    >
+                        EN
+                    </button>
+                    <button
+                        type="button"
+                        class="lb"
+                        :class="{ on: language === 'et' }"
+                        @click="language = 'et'"
+                    >
+                        ET
+                    </button>
+                </div>
+            </header>
+
+            <nav id="brandNav" class="floatRight">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div class="brandClear"></div>
+            <div id="stage">
+                <div id="p1" class="panel">
+                    <div id="p1Body" class="pb">
+                        <div id="p1Content" class="pc">
+                            <h1 id="ph" class="ph">About</h1>
+                            <p class="plead">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </p>
+                            <p>
+                                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                                nisi ut aliquip ex ea commodo consequat.
+                            </p>
+                            <p>
+                                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                cillum dolore eu fugiat nulla pariatur.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="brandBanner">
-                <h1>About</h1>
+            <!-- Privacy overlay, opened by the .pl button in the footnote. -->
+            <div id="prv" :class="{ open: previewOpen }">
+                <div class="pvh">
+                    <span class="pvt">Lorem ipsum</span>
+                    <button type="button" class="pvx floatRight" @click="previewOpen = false">
+                        Close
+                    </button>
+                </div>
+                <div class="pvb">
+                    <div class="pvc">
+                        <div class="pvs">
+                            <p><strong>Lorem ipsum</strong></p>
+                            <p>
+                                Dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                incididunt ut labore.
+                            </p>
+                        </div>
+                        <div class="pvs">
+                            <p><strong>Ipsum dolor</strong></p>
+                            <p>
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                                nisi ut aliquip.
+                            </p>
+                        </div>
+                        <p class="pvn">Lorem Ipsum, {{ year }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gb" v-if="!consentAccepted">
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            </div>
-
-            <div class="brandRow">
-                <div class="brandColumn">
-                    <h2>Duis aute irure</h2>
-                    <p>
-                        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-                        ad minim veniam, quis nostrud exercitation ullamco laboris.
-                    </p>
-                    <p>
-                        Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla.
-                    </p>
-                </div>
-                <div class="brandColumn">
-                    <img src="images/placeholder.svg" alt="" width="240" height="160" />
-                </div>
-                <div class="brandClear"></div>
-            </div>
-
-            <div class="brandFooter">
-                <span class="brandFooterCopyright">&copy; {{ year }} Lorem Ipsum</span>
-                <span class="brandFooterNote">Brand page starter — placeholder content</span>
-                <div class="brandClear"></div>
+                <button type="button" class="ga" @click="acceptConsent()">Accept</button>
             </div>
         </div>
 
         <script src="js/vue.global.prod.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/main.min.js"></script>
     </body>
 </html>

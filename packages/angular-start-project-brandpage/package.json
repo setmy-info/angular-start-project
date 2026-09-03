@@ -1,33 +1,36 @@
 {
     "name": "angular-start-project-brandpage",
     "version": "1.0.0-SNAPSHOT",
-    "description": "Brand page starter - old-school static HTML/CSS with a global-build Vue, no bundler",
+    "description": "Brand page starter - plain old-school HTML, CSS and JS served straight out of src/, no bundler and no build output",
     "license": "MIT",
+    "type": "module",
     "author": "Imre Tabur",
     "scripts": {
         "format": "prettier --write .",
-        "lint": "stylelint \"**/*.less\"",
-        "lint:fix": "stylelint \"**/*.less\" --fix",
+        "lint": "stylelint \"src/css/*.css\"",
+        "lint:fix": "stylelint \"src/css/*.css\" --fix",
+        "copy-dependencies": "node ../../scripts/dependencies.js",
+        "minify": "node ../../scripts/minify.js",
         "build": "node ../../scripts/build.js",
+        "start": "node ../../scripts/http-server.js serve",
         "server": "node ../../scripts/http-server.js",
         "stop-server": "node ../../scripts/http-server.js stop"
     },
     "devDependencies": {
-        "less": "^4.5.1",
+        "esbuild": "^0.28.1",
+        "setmy-info-less-brandpage": "^5.1.0",
         "vue": "^3.5.42"
-    },
-    "dependencies": {
-        "angular-start-project-brand-style": "^1.0.0-SNAPSHOT"
     },
     "config": {
         "moduleType": "brand-page",
         "server": {
-            "port": 4600,
-            "directory": "dist"
+            "port": 8110,
+            "directory": "src"
         }
     },
     "files": [
         "src",
+        "dependencies.js",
         "README.md"
     ]
 }

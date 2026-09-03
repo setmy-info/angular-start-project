@@ -39,7 +39,13 @@ const deployDir = path.join(rootDir, 'build', 'deploy', environment);
 fs.rmSync(deployDir, { recursive: true, force: true });
 fs.mkdirSync(deployDir, { recursive: true });
 
-const npmWorkspaces = workspaces.filter((workspace) => workspace.moduleType !== 'angular-app');
+// Two shapes of deployable: npm tarballs (the library and the LESS packages, installed with
+// npm) and directory archives (applications and brand pages, extracted side by side). The
+// second group is everything that is served rather than depended on.
+const ARCHIVE_MODULE_TYPES = ['angular-app', 'brand-page'];
+const npmWorkspaces = workspaces.filter(
+    (workspace) => !ARCHIVE_MODULE_TYPES.includes(workspace.moduleType),
+);
 const specs = {};
 for (const workspace of npmWorkspaces) {
     const name = artifactFor(workspace.packageName, '.tgz');
@@ -88,14 +94,18 @@ if (Object.keys(specs).length > 0) {
     }
 }
 
-for (const workspace of workspaces.filter((item) => item.moduleType === 'angular-app')) {
+for (const workspace of workspaces.filter((item) =>
+    ARCHIVE_MODULE_TYPES.includes(item.moduleType),
+)) {
     const name = artifactFor(workspace.packageName, '.tar.gz');
     if (!name) {
         console.error(
-            `No app archive for ${workspace.packageName} in dist/ - run \`npm run package\` first`,
+            `No archive for ${workspace.packageName} in dist/ - run \`npm run package\` first`,
         );
         process.exit(1);
     }
+    // One directory for everything that is served: each archive brings its own package-named
+    // folder, so applications and brand pages land beside each other without colliding.
     const appDir = path.join(deployDir, 'application');
     fs.mkdirSync(appDir, { recursive: true });
     const extract = spawnSync('tar', ['-xzf', path.join(distDir, name), '-C', appDir], {
@@ -104,11 +114,16 @@ for (const workspace of workspaces.filter((item) => item.moduleType === 'angular
     if (extract.status !== 0) {
         process.exit(extract.status ?? 1);
     }
-    if (!fs.existsSync(path.join(appDir, 'index.html'))) {
-        console.error(`${workspace.packageName}: packed archive is missing index.html`);
+    // Every module archive carries one top-level directory named after the package, so that any
+    // number of them can be unpacked into the same place without colliding.
+    const extractedDir = path.join(appDir, workspace.packageName);
+    if (!fs.existsSync(path.join(extractedDir, 'index.html'))) {
+        console.error(
+            `${workspace.packageName}: packed archive is missing ${workspace.packageName}/index.html`,
+        );
         process.exit(1);
     }
-    console.log(`${workspace.packageName} extracted to ${path.relative(rootDir, appDir)}`);
+    console.log(`${workspace.packageName} extracted to ${path.relative(rootDir, extractedDir)}`);
 }
 
 console.log(`Installed into ${path.relative(rootDir, deployDir)} for ${environment}`);

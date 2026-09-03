@@ -1,4 +1,35 @@
-# Brand page starter — placeholder policy. Replace before a real deployment; the application's
-# own robots.txt (packages/angular-start-project/public/robots.txt) is the worked example.
+# Brand page robots policy. An ordinary committed file — nothing generates it, so what you read
+# here is byte-for-byte what the server sends.
+#
+# A brand page is marketing: it wants search engines, AI answer engines and every social preview
+# fetcher. What it does not want is to become model training data, so those crawlers are named
+# and denied. This is the opposite default to the application's own robots.txt
+# (packages/angular-start-project/public/robots.txt), which is closed by default and carries the
+# full reasoning for the split.
+#
+# Change the Sitemap host below to match the deployment.
+
 User-agent: *
 Allow: /
+
+# Model training and dataset collection.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: meta-externalagent
+User-agent: FacebookBot
+User-agent: Diffbot
+User-agent: Omgilibot
+User-agent: Omgili
+User-agent: Webzio-Extended
+User-agent: ImagesiftBot
+User-agent: AI2Bot
+User-agent: cohere-ai
+Disallow: /
+
+Sitemap: https://lorem-ipsum.example.com/sitemap.xml

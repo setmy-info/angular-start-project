@@ -1,0 +1,124 @@
+/*
+ * Brand page styles — this page's own additions, on top of the four SMI stylesheets linked
+ * before it. Plain CSS on purpose: no LESS, no preprocessor, nothing to compile. `npm run build`
+ * only writes brand.min.css next to this file; edit this one.
+ *
+ * The design system already styles #hdr, #dots, #stage, .panel/.pb/.pc, .btop, .srow, .ph,
+ * .cw/.cr/.cl/.cv, .so/.sa, .cf/.pl, #prv and #gb. What is added here is the promotion band,
+ * the advertisement slot and the share row — this starter's own ideas, not part of the system.
+ *
+ * Layout stays old-school: floats and inline-block, no flexbox and no grid.
+ */
+
+/* --------------------------------------------------------------------------
+   Navigation between the pages of this brand page.
+   -------------------------------------------------------------------------- */
+#brandNav {
+    padding: 10px 0;
+}
+
+#brandNav a {
+    display: inline-block;
+    margin-left: 20px;
+    color: inherit;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+#brandNav a:hover {
+    border-bottom: 2px solid #73d073;
+}
+
+/* --------------------------------------------------------------------------
+   Promotion band — the campaign slot a brand page exists for. One offer, one
+   call to action, and the share row that puts it on social media.
+   -------------------------------------------------------------------------- */
+.brandPromotion {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-left: 6px solid #73d073;
+}
+
+.brandPromotionLabel {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 2px 8px;
+    background: #73d073;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.brandPromotionTitle {
+    margin: 0 0 10px;
+}
+
+.brandPromotionText {
+    margin: 0 0 20px;
+}
+
+.brandPromotionAction {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 2px solid #73d073;
+    color: inherit;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Advertisement slot. Reserves its height so nothing reflows when a creative
+   loads into it later.
+   -------------------------------------------------------------------------- */
+.brandAdvertisement {
+    min-height: 120px;
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px dashed #ccc;
+    text-align: center;
+}
+
+.brandAdvertisementNote {
+    margin: 0;
+    color: #999;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Share row — inline-block chips.
+   -------------------------------------------------------------------------- */
+ul.brandShare {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.brandShare > li {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+ul.brandShare > li + li {
+    margin-left: 10px;
+}
+
+.brandClear {
+    clear: both;
+}
+
+/* Hides the mustache placeholders until Vue has mounted. Only Vue-rendered parts sit inside a
+   [v-cloak] element; the headings, prose and contact rows are static HTML, so a crawler that
+   does not run JavaScript still gets the substance of the page. */
+[v-cloak] .brandShare,
+[v-cloak] .srow,
+[v-cloak] .so {
+    visibility: hidden;
+}

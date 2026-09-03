@@ -24,7 +24,8 @@ import { getWorkspaces, readJson, rootDir } from './workspace-utils.js';
 // Where a module of each type leaves its built output, relative to its workspace.
 const OUTPUT_DIRECTORIES = {
     'angular-app': path.join('dist', 'application', 'browser'),
-    'brand-page': 'dist',
+    // A brand page has no build output: src/ is the served folder, committed as-is.
+    'brand-page': 'src',
 };
 
 export function bundleConfiguration() {
@@ -41,8 +42,13 @@ export function bundleConfiguration() {
 
 // Resolves the list into {packageName, moduleType, sourceDir, targetDir} entries, failing loudly
 // on a name that is not a workspace, is the wrong module type, or has not been built.
-export function collectModules({ requireBuilt = true } = {}) {
-    const configuration = bundleConfiguration();
+//
+// `configuration` is injectable so a test can try a bad list without rewriting the root
+// package.json out from under every other test file running beside it.
+export function collectModules({
+    requireBuilt = true,
+    configuration = bundleConfiguration(),
+} = {}) {
     const workspaces = new Map(
         getWorkspaces().map((workspace) => [workspace.packageName, workspace]),
     );

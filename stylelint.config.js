@@ -20,6 +20,11 @@ export default {
     ignoreFiles: [
         '**/node_modules/**',
         '**/dist/**',
+        // Copied third-party CSS (scripts/dependencies.js) and minified output
+        // (scripts/minify.js) — machine-written into the source tree, so the upstream
+        // project's lint gate applies to them, not this one's.
+        '**/src/css/setmy-info-less*.css',
+        '**/*.min.css',
         'packages/angular-original/**',
         'packages/application.old/**',
         'packages/application/**',

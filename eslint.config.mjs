@@ -8,6 +8,10 @@ export default [
     {
         ignores: [
             '**/dist/**',
+            // Copied third-party JS (scripts/dependencies.js) and minified twins
+            // (scripts/minify.js): machine-written into the source tree and committed there.
+            '**/*.min.js',
+            '**/src/js/vue.global.prod.js',
             '**/site/**',
             '**/reports/**',
             '**/build/**',

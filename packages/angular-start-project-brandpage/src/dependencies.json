@@ -1,0 +1,30 @@
+{
+    "copiedAt": "2026-09-03T13:23:06.550Z",
+    "files": {
+        "css/setmy-info-less.min.css": {
+            "package": "setmy-info-less",
+            "version": "4.1.0",
+            "from": "setmy-info-less/dist/main.min.css"
+        },
+        "css/setmy-info-less-extended.min.css": {
+            "package": "setmy-info-less-extended",
+            "version": "5.0.0",
+            "from": "setmy-info-less-extended/dist/main.min.css"
+        },
+        "css/setmy-info-less-fancy.min.css": {
+            "package": "setmy-info-less-fancy",
+            "version": "5.1.0",
+            "from": "setmy-info-less-fancy/dist/main.min.css"
+        },
+        "css/setmy-info-less-brandpage.min.css": {
+            "package": "setmy-info-less-brandpage",
+            "version": "5.1.0",
+            "from": "setmy-info-less-brandpage/dist/main.min.css"
+        },
+        "js/vue.global.prod.js": {
+            "package": "vue",
+            "version": "3.5.42",
+            "from": "vue/dist/vue.global.prod.js"
+        }
+    }
+}

@@ -25,7 +25,8 @@ for (const workspace of getWorkspaces()) {
         continue;
     }
     if (workspace.moduleType === 'brand-page') {
-        packModuleDirectory(workspace, 'dist');
+        // src/ is the served folder — a brand page has no build output.
+        packModuleDirectory(workspace, 'src');
         continue;
     }
     const result = spawnSync(npmCommand, ['pack', `--pack-destination=${distDir}`], {
@@ -45,7 +46,12 @@ for (const name of fs.readdirSync(distDir).filter((entry) => /\.(tgz|tar\.gz)$/.
     fs.writeFileSync(path.join(distDir, `${name}.sha256`), `${digest}  ${name}\n`);
 }
 
-// Not published to a registry: what ships is the built output directory, archived as-is.
+// Not published to a registry: what ships is the built output directory.
+//
+// The archive holds ONE top-level directory named after the package, never loose files, so any
+// number of brand pages and applications can be unpacked side by side on a target host without
+// colliding — `tar -xzf angular-start-project-brandpage-*.tar.gz` yields
+// angular-start-project-brandpage/, not an index.html landing on top of somebody else's.
 function packModuleDirectory(workspace, relativeOutputDir) {
     const outputDir = path.join(workspace.workspace, relativeOutputDir);
     if (!fs.existsSync(outputDir)) {
@@ -56,8 +62,18 @@ function packModuleDirectory(workspace, relativeOutputDir) {
         distDir,
         `${workspace.packageName}-${workspace.packageJson.version}.tar.gz`,
     );
-    execSync(`tar -czf "${archive}" -C "${outputDir}" .`, { stdio: 'inherit' });
-    console.log(`Created ${archive}`);
+    // Staged rather than archived in place: the top-level name has to be the package name, and
+    // the output directory is called dist/ or src/.
+    const stageDir = path.join(distDir, `.stage-${workspace.packageName}`);
+    fs.rmSync(stageDir, { recursive: true, force: true });
+    fs.mkdirSync(stageDir, { recursive: true });
+    fs.cpSync(outputDir, path.join(stageDir, workspace.packageName), { recursive: true });
+
+    execSync(`tar -czf "${archive}" -C "${stageDir}" "${workspace.packageName}"`, {
+        stdio: 'inherit',
+    });
+    fs.rmSync(stageDir, { recursive: true, force: true });
+    console.log(`Created ${archive} (${workspace.packageName}/)`);
 }
 
 // The deployment bundle: every listed brand page and application in one archive.

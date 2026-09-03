@@ -16,7 +16,7 @@ describe('main navigation', () => {
         expect(await helper.countOf('nav a')).toBe(3);
         expect(await helper.getText('nav li:nth-child(1) a')).toBe('AVALEHT'); // CSS text-transform: uppercase
         expect(await helper.getText('nav li:nth-child(2) a')).toBe('ARTIKLID');
-        expect(await helper.getText('nav li:nth-child(3) a')).toBe('KONTAKT');
+        expect(await helper.getText('nav li:nth-child(3) a')).toBe('KONTAKTID');
     });
 
     test('home menu item is marked active on the home page', async () => {
@@ -35,7 +35,7 @@ describe('main navigation', () => {
         await helper.click('nav li:nth-child(3) a');
         await helper.waitForText('.contactsPage .textPanel', 'Tenant One Organisation');
         expect(await helper.currentPath()).toBe('/contact');
-        expect(await helper.getTitle()).toBe('Kontakt — Lorem Ipsum Rakendus');
+        expect(await helper.getTitle()).toBe('Kontaktid — Lorem Ipsum Rakendus');
         // 4 detail rows + 3 feature-gated bank rows + 4 social link rows
         expect(await helper.countOf('.contactsPage section > div')).toBe(11);
         // bank rows stay hidden while the bankAccounts feature flag is off
