@@ -1,14 +1,14 @@
 {
-    "copiedAt": "2026-09-03T13:23:06.550Z",
+    "copiedAt": "2026-09-03T14:37:11.484Z",
     "files": {
         "css/setmy-info-less.min.css": {
             "package": "setmy-info-less",
-            "version": "4.1.0",
+            "version": "5.1.0",
             "from": "setmy-info-less/dist/main.min.css"
         },
         "css/setmy-info-less-extended.min.css": {
             "package": "setmy-info-less-extended",
-            "version": "5.0.0",
+            "version": "5.1.0",
             "from": "setmy-info-less-extended/dist/main.min.css"
         },
         "css/setmy-info-less-fancy.min.css": {
