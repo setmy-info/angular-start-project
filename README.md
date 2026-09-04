@@ -75,6 +75,9 @@ npm test -w angular-start-project
 npm start -w angular-start-project
 #    → http://localhost:4200/
 
+npm start --workspace=angular-start-project-brandpage
+#    → http://localhost:8110/
+
 smi-selenium-hub
 smi-selenium-node
 
