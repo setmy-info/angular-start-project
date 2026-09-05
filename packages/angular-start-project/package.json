@@ -11,6 +11,7 @@
         "ng": "ng",
         "ver": "node bin/versionModule.js",
         "start": "ng serve",
+        "serve": "node ../../scripts/http-server.js serve",
         "watch": "ng build --watch --configuration local",
         "test:watch": "ng test --watch",
         "e2e:one": "jest --config=jest.e2e.config.js --testNamePattern",

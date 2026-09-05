@@ -4,13 +4,20 @@
 // values (margin, padding, font, size, position, colors) read from getComputedStyle +
 // getBoundingClientRect — not mere element existence. Differences from the LESS original: the
 // app under test is the already-running Angular dev server (APP_BASE_URL), so there is no
-// embedded express server, navigation is by SPA route, and SPA helpers (click/waitFor/getText)
-// are added because content renders asynchronously (translations load from JSON).
+// embedded express server, navigation is by SPA route, SPA helpers (click/waitFor/getText) are
+// added because content renders asynchronously (translations load from JSON), and the browser
+// runs headless by default (SELENIUM_HEADLESS=false to watch it).
 const { Builder, By, until } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
+const chrome = require('selenium-webdriver/chrome');
 
 const SELENIUM_HUB_URL = process.env.SELENIUM_HUB_URL || 'http://localhost:4444/wd/hub';
 const BROWSER = process.env.SELENIUM_BROWSER || 'firefox';
+// Headless by default: the suite is unattended (CI, and a `npm run e2e-test` that should not
+// steal focus or need a display), and every assertion reads computed styles and
+// getBoundingClientRect through the driver, none of which needs a visible window. Set
+// SELENIUM_HEADLESS=false to watch a run while debugging a failing spec.
+const HEADLESS = !/^(false|0|no)$/i.test(process.env.SELENIUM_HEADLESS || 'true');
 const APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:4200';
 const WINDOW_WIDTH = 2000;
 const WINDOW_HEIGHT = 1200;
@@ -71,19 +78,40 @@ async function setViewport(width, height) {
     }
 }
 
-// One browser session per spec file (beforeAll) — a fresh Firefox profile, so localStorage/
-// sessionStorage start clean and the app boots with its defaults (language `et`, consent unset).
-async function startSession() {
-    await close();
+// Firefox is the default browser, but SELENIUM_BROWSER can pick another slot on the grid, so the
+// headless flag has to be set per browser — the spelling differs and each driver ignores the
+// other's options object.
+function firefoxOptions() {
     const options = new firefox.Options();
     // Allow geolocation without a prompt and pin it to the fixed test position (see GEO_* above).
     options.setPreference('geo.enabled', true);
     options.setPreference('geo.provider.network.url', GEO_PROVIDER_URL);
     options.setPreference('permissions.default.geo', 1); // 1 = allow, 2 = deny
+    if (HEADLESS) {
+        options.addArguments('-headless');
+    }
+    return options;
+}
+
+function chromeOptions() {
+    const options = new chrome.Options();
+    // 1 = allow. Chromium takes geolocation permission as a content setting, not a preference.
+    options.setUserPreferences({ 'profile.default_content_setting_values.geolocation': 1 });
+    if (HEADLESS) {
+        options.addArguments('--headless=new');
+    }
+    return options;
+}
+
+// One browser session per spec file (beforeAll) — a fresh browser profile, so localStorage/
+// sessionStorage start clean and the app boots with its defaults (language `et`, consent unset).
+async function startSession() {
+    await close();
     data.driver = await new Builder()
         .usingServer(SELENIUM_HUB_URL)
         .forBrowser(BROWSER)
-        .setFirefoxOptions(options)
+        .setFirefoxOptions(firefoxOptions())
+        .setChromeOptions(chromeOptions())
         .build();
     await data.driver.manage().setTimeouts({ pageLoad: 30000, implicit: 0 });
     await data.driver.get('about:blank');

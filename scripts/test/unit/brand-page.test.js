@@ -79,6 +79,33 @@ test('robots.txt and sitemap.xml are committed files, not build output', () => {
     }
 });
 
+test('every package the copier reads is declared with a version in the package.json', async () => {
+    // npm owns versions end to end: `npm install` / `npm ci` resolves them and puts the files in
+    // node_modules, whose paths carry no version. That only holds if every package copied from is
+    // actually declared here — relying on npm hoisting it in as somebody else's transitive
+    // dependency works until that somebody changes their own dependencies.
+    for (const brandPage of brandPages) {
+        const list = await dependencyList(brandPage);
+        const declared = {
+            ...brandPage.packageJson.dependencies,
+            ...brandPage.packageJson.devDependencies,
+        };
+        const packageNames = new Set(list.copy.map((entry) => entry.from.split('/')[0]));
+
+        for (const packageName of packageNames) {
+            assert.ok(
+                declared[packageName],
+                `${brandPage.packageName}: ${packageName} is copied from but not declared`,
+            );
+            assert.match(
+                declared[packageName],
+                /\d+\.\d+\.\d+/,
+                `${brandPage.packageName}: ${packageName} declares a concrete version`,
+            );
+        }
+    }
+});
+
 test('every copied dependency is installed and lands inside src/', async () => {
     for (const brandPage of brandPages) {
         const list = await dependencyList(brandPage);

@@ -4,6 +4,8 @@
 // pre-e2e-test, or `npm run server` on 4210) and a Selenium Grid on
 // http://localhost:4444/wd/hub (smi-selenium-hub + smi-selenium-node).
 // For a live-reload loop, `npm start` on 4200 plus APP_BASE_URL also works.
+// The browser runs HEADLESS by default — no display needed, nothing steals focus.
+// Set SELENIUM_HEADLESS=false to watch a run while debugging a spec.
 module.exports = {
     roots: ['<rootDir>/test/e2e'],
     testMatch: ['**/*.e2e.js'],

@@ -18,9 +18,9 @@
         "less": "^4.5.1"
     },
     "dependencies": {
-        "setmy-info-less": "^5.1.0",
-        "setmy-info-less-extended": "^5.1.0",
-        "setmy-info-less-angular-start-project": "^5.1.0"
+        "setmy-info-less": "^5.1.1",
+        "setmy-info-less-extended": "^5.1.1",
+        "setmy-info-less-angular-start-project": "^5.1.1"
     },
     "config": {
         "moduleType": "less-package",

@@ -83,6 +83,19 @@ smi-selenium-node
 
 # Terminal 3 (app from step 5 must still be running)
 npm run e2e -w angular-start-project
+
+# Release
+npm ci
+npm run clean
+npm run generate-sources          # version.ts from package.json
+export SMI_PROFILES=live
+npm run build
+npm run package                   # dist/*.tgz + dist/*.tar.gz + build/angular-start-project.tar.gz
+#npm start -w angular-start-project # Does not run as live/prod
+npm run serve  -w angular-start-project    # foreground, Ctrl-C to stop
+npm run server -w angular-start-project    # detached
+npm run stop-server -w angular-start-project
+
 ```
 
 > **⚠ LICENSING — not uniformly MIT.** This repository mixes the MIT-licensed template with
@@ -302,8 +315,10 @@ Resolution order in `systemsService.js`:
 **Option B — DevTools console:**
 
 ```javascript
-localStorage.setItem('SMI_TENANT', 'tenant2'); location.reload();
-localStorage.removeItem('SMI_TENANT'); location.reload(); // back to hostname default
+localStorage.setItem('SMI_TENANT', 'tenant2');
+location.reload();
+localStorage.removeItem('SMI_TENANT');
+location.reload(); // back to hostname default
 ```
 
 **Option C — `/etc/hosts` aliases** (`.test` is reserved for documentation/testing per RFC 6761):
@@ -844,7 +859,7 @@ The six suites: `application` (shell + strict computed metrics + footer + terms 
 `languageChange` (ET/EN through BOTH menus + persistence across reload), `consent` (accept, stored, revoke via the privacy view checkbox, persistence),
 `hoverAndSelection` (hover colors by emulated mouse move; active/selected element colors incl. the sunken language button).
 
-**Prerequisites:** a Selenium Grid on `localhost:4444/wd/hub` (override via `SELENIUM_HUB_URL`). The lifecycle e2e tier (`npm run pre-e2e-test` / `npm run e2e-test`) serves the **built** app on
+**Prerequisites:** a Selenium Grid on `localhost:4444/wd/hub` (override via `SELENIUM_HUB_URL`). The browser runs **headless** by default, so no display is needed and no window steals focus; set `SELENIUM_HEADLESS=false` to watch a run while debugging a spec. `SELENIUM_BROWSER` picks the grid slot (`firefox` by default, `chrome` also supported) — the headless flag is set for whichever is chosen. The lifecycle e2e tier (`npm run pre-e2e-test` / `npm run e2e-test`) serves the **built** app on
 `http://127.0.0.1:4211`. For a live-reload loop, `npm start` on `localhost:4200` plus
 `APP_BASE_URL` also works.
 

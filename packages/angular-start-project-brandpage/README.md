@@ -40,7 +40,6 @@ one set and deletes the other, including from `sitemap.xml`.
         previous-main.js  previous-main.min.js   second example
         vue.global.prod.js                       copied out of node_modules
       images/  favicon.ico
-      dependencies.json           which package version each copied file came from
 
 ## What the build does
 
