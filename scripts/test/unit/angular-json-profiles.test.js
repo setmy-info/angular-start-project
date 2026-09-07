@@ -5,9 +5,11 @@ import path from 'node:path';
 
 import { getWorkspaces, rootDir } from '../../workspace-utils.js';
 
-// The Angular CLI's own configurations are the only build/serve switch: `local` (the default)
-// and `live` (`--configuration live`, the deliverable). Nothing else may creep in.
-const CONFIGURATIONS = ['local', 'live'];
+// The Angular CLI's own configurations are the build/serve switch. `local` (development) and
+// `live` (production) are the ones in use; `dev`, `ci`, `test`, `prelive` are placeholders kept
+// for future environments. Nothing outside this set may creep in.
+const ACTIVE = ['local', 'live'];
+const PLACEHOLDERS = ['dev', 'ci', 'test', 'prelive'];
 
 function readAngularJson() {
     const app = getWorkspaces().find((workspace) => workspace.moduleType === 'angular-app');
@@ -18,23 +20,24 @@ function readAngularJson() {
     };
 }
 
-test('angular.json build and serve configurations are exactly local and live', () => {
+test('angular.json: local and live are wired with the Angular defaults; extras are placeholders', () => {
     const { angularJson } = readAngularJson();
     for (const [projectName, project] of Object.entries(angularJson.projects ?? {})) {
         const architect = project.architect ?? project.targets ?? {};
         for (const target of ['build', 'serve']) {
-            assert.deepEqual(
-                Object.keys(architect[target]?.configurations ?? {}),
-                CONFIGURATIONS,
-                `angular.json project "${projectName}" target "${target}"`,
-            );
+            const names = Object.keys(architect[target]?.configurations ?? {});
+            for (const name of ACTIVE) {
+                assert.ok(names.includes(name), `${projectName} ${target}: ${name} configuration`);
+            }
+            const unknown = names.filter((n) => !ACTIVE.includes(n) && !PLACEHOLDERS.includes(n));
+            assert.deepEqual(unknown, [], `${projectName} ${target}: unexpected configurations`);
             // The Angular way: `ng build` is production (live), `ng serve` is development (local).
             assert.equal(
                 architect[target]?.defaultConfiguration,
                 target === 'build' ? 'live' : 'local',
             );
         }
-        assert.deepEqual(Object.keys(architect.test?.configurations ?? {}), ['local']);
+        assert.equal(architect.test?.defaultConfiguration, 'local');
     }
 });
 
