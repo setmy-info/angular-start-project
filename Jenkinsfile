@@ -24,7 +24,7 @@ pipeline {
     version 1.1.0 - pollSCM instead of cron (build on new commits, not on a timer),
                     quietPeriod + disableConcurrentBuilds(abortPrevious: true) so that a burst
                     of commits becomes one build of the newest change,
-                    elease* added to Publish/Snapshot: develop, release* and hotfix* all publish
+                    release* added to Publish/Snapshot: develop, release* and hotfix* all publish
                     a candidate of unknown quality
                     TEST environment renamed to the ADR-0041 canonical name
     version 1.0.1 - fileExists precondition check now actually gates (was a discarded boolean)
@@ -196,7 +196,7 @@ pipeline {
         }
 
         /*
-        Stage to build code with with executing all needed steps to measure different type of code quality.
+        Stage to build code with executing all needed steps to measure different type of code quality.
         */
         stage('Build') {
             steps {

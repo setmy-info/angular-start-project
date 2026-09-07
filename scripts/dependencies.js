@@ -2,8 +2,8 @@
 // Copies a package's third-party assets out of node_modules INTO its source tree, where they are
 // committed alongside the hand-written files.
 //
-//     npm run dependencies              (root: every package that declares them)
-//     npm run dependencies --workspace=angular-start-project-brandpage
+//     npm run copy-dependencies         (root: every package that declares them)
+//     npm run copy-dependencies --workspace=angular-start-project-brandpage
 //
 // The list lives in the package's own dependencies.js (`copy`) — the single place that says what
 // gets copied, so a brand page copied to a new directory brings its own list with it. `from`

@@ -7,13 +7,13 @@
 
 ### Lifecycle
 
-This repo follows the org template family (JS, Python, Elixir, LESS, jenkinsfile-starter)
+This repo follows the org template family (JS, Python, Elixir, LESS, jenkinsfile-starter).
 Run from the repository root, in order. The first part is local development (`npm start`), the second is going live: `npm run build` is the production build, as `ng build` is. Foreground servers (`npm start`) stop with Ctrl-C; the e2e tier needs a Selenium Grid on localhost:4444.
 
 ```shell
 npm install
 npm run audit
-npm run audit fix
+npm audit fix
 
 npm ci
 npm ls --all
@@ -22,13 +22,16 @@ npm run generate-sources
 npm run build
 npm run verify
 npm test
+# Development: npm start uses the local configuration.
 npm start -w angular-start-project
 npm start -w angular-start-project-brandpage
+
 npm run clean
 #npm run format:check # prettier LESS, stylelint, then prettier on the rest (CI)
 #npm run format                           # same list, write
 npm run generate-sources
 npm run typecheck
+# Production build: the live configuration.
 npm run build
 npm run verify
 npm test
@@ -43,6 +46,7 @@ npm run e2e-test
 npm run post-e2e-test
 npm run coverage
 #npm run lint
+# Packages the build above.
 npm run package
 npm run server -w angular-start-project
 npm run stop-server -w angular-start-project
@@ -59,28 +63,28 @@ npm run release
 
 An Angular 22 **template monorepo**: a starting point future setmy.info applications and websites are cloned/scaffolded from. It is written for both human developers and AI agents that need to build, test, and upgrade this project day to day, and to understand how it consumes the shared
 [`setmy-info-less`](https://github.com/setmy-info/setmy-info-less) design system. See
-[review.md](review.md) for the current plan, findings, and open work; see [AGENTS.md](AGENTS.md)
-for hard constraints (Angular 21 style, no `node_modules` exploration, no destructive git commands); see [unused.md](unused.md) for the LESS/CSS dead-code and cleanup plan.
+[missing-functionality.md](missing-functionality.md) for the old-solution → new-solution gap list.
 
-This is an npm workspace monorepo. It does **not** mirror `setmy-info-less`'s internal package layering (`base`/`extended`/`fancy`/`enterprise`/...) as a folder structure — that project's own layering is _its_ concern. This repo is one _consumer_ of those packages, structured as its own three npm workspaces.
+This is an npm workspace monorepo. It does **not** mirror `setmy-info-less`'s internal package layering (`base`/`extended`/`fancy`/`enterprise`/...) as a folder structure — that project's own layering is _its_ concern. This repo is one _consumer_ of those packages, structured as its own five npm workspaces.
 
 ## Workspace modules
 
-- **[`angular-start-project`](packages/angular-start-project)** — the Angular application. Routing, components, services, build config. Depends on the other two.
+- **[`angular-start-project`](packages/angular-start-project)** — the Angular application. Routing, components, services, build config. Depends on `angular-start-project-library` and `angular-start-project-style`.
 - **[`angular-start-project-library`](packages/angular-start-project-library)** — pure JavaScript, framework-agnostic. Signals-friendly singleton services (`localStorageService`,
   `sessionStorageService`, `tenantService`, `translationService`, `consentService`,
   `contentService`, `sessionService`, `uuidService`, `statisticsService`, `versionService`, plus
   `dbService` and
   `loadingService` provided for later usage), the fetch-based `resourceFactory`, shared `config`
   (feature flags + resource URLs), `constants`, and shared models (`menuModel`). Must **not**
-  import Angular — see `AGENTS.md`. Also pulls in the old setmy.info site's legacy `jsdi` service layer as real npm dependencies — see "Legacy `jsdi` service layer" below.
+  import Angular — the build enforces it (see "Framework independence is enforced by the build" below). Also pulls in the old setmy.info site's legacy `jsdi` service layer as real npm dependencies — see "Legacy `jsdi` service layer" below.
 - **[`angular-start-project-style`](packages/angular-start-project-style)** — LESS for the **webapp**. Composes `setmy-info-less` (base) and `setmy-info-less-extended` into this project's global stylesheet (`src/less/index.less`), plus anything genuinely new that doesn't belong upstream yet.
 - **[`angular-start-project-brand-style`](packages/angular-start-project-brand-style)** — LESS for **brand pages**. A brand page usually looks nothing like the webapp, so its design system is a separate module: composes `setmy-info-less` base only (no `extended`, no app-shell chrome), holds the brand classes (`.brandHero`, `.brandSection`, …), and hosts the buildable
   `brand-example/` page. Apps depend on `angular-start-project-style`; brand pages depend on this — neither imports the other. See "Brand example" below.
+- **[`angular-start-project-brandpage`](packages/angular-start-project-brandpage)** — a static **brand page**: plain HTML, CSS and JavaScript served straight out of `src/`, built on the published SMI brand page stylesheets and a global-build Vue. No bundler — its `npm run build` only copies the vendor CSS/JS into `src/` and minifies its own files. See the package README.
 
 Three non-workspace directories also live under `packages/`, kept for reference/history, not part of the npm workspace and not depended on by anything above:
 
-- `packages/application.old` — a superseded Angular 13 scaffold (the project's pre-migration starting point, commit `c00c3ff` "Old components copied to new"). Historical reference only — do not build on it (see `review.md` section 6).
+- `packages/application.old` — a superseded Angular 13 scaffold (the project's pre-migration starting point, commit `c00c3ff` "Old components copied to new"). Historical reference only — do not build on it.
 - `packages/application` — a bare, non-git-tracked build-artifact directory (`.angular/`, `dist/`
   cache only, no source). Safe to ignore or clean; not a real package.
 - `packages/angular-original` — a disposable, un-customized `ng new` baseline, its own nested git repository (own history, not a registered git submodule of this repo yet). Regenerated from scratch on every Angular CLI upgrade — wipe its content and re-run
@@ -91,8 +95,8 @@ Three non-workspace directories also live under `packages/`, kept for reference/
 
 ```
 angular-start-project-library      (pure JS, no dependencies of its own)
-angular-start-project-style        (LESS, webapp; depends on setmy-info-less + setmy-info-less-extended,
-                                     from the sibling setmy-info-less submodule)
+angular-start-project-style        (LESS, webapp; imports the setmy-info-less + setmy-info-less-extended
+                                     sources and inlines setmy-info-less-angular-start-project's built CSS)
         │
         └── angular-start-project  (the Angular app; depends on both packages above)
 
@@ -100,6 +104,9 @@ angular-start-project-brand-style  (LESS, brand pages; depends on setmy-info-les
                                      a separate tree on purpose, no edge to/from the webapp packages)
         │
         └── brand-example/         (static brand page inside the same package)
+
+angular-start-project-brandpage    (static brand page; vendors the published setmy-info-less, -extended,
+                                     -fancy and -brandpage CSS plus Vue into its own src/)
 ```
 
 Every package's `package.json` declares its dependency, but there is no cumulative bundling model here the way `setmy-info-less` has one for its own tree — `angular-start-project` simply imports both sibling workspace packages directly (`angularStartProjectLibrary` for JS, the LESS source tree for styles).
@@ -117,10 +124,10 @@ The old setmy.info site (`has-web-app-new-ng`) had its own hand-rolled dependenc
 | `servedjs`                | `servicejs`     | `$log`, `$browser`, `$localStorage`, `$sessionStorage`, `$placeholders`, `$timer`, `$router` |
 | `servedjs-geo`            | `servedjs`      | `$geo`                                                                                       |
 
-`angular-start-project-library` depends on all four as ordinary npm dependencies (published on the public registry — **not** consumed as local/workspace packages, unlike this repo's own three/four internal workspaces). `packages/angular-start-project/angular.json` lists all four in
+`angular-start-project-library` depends on all four as ordinary npm dependencies (published on the public registry — **not** consumed as local/workspace packages, unlike this repo's own five internal workspaces). `packages/angular-start-project/angular.json` lists all four in
 `allowedCommonJsDependencies` (same reason as `angular-start-project-library` itself — they're CommonJS, not ESM).
 
-**Bootstrapping happens from `main.ts`, not from inside the library**, as plain side-effect imports (`import 'js-api-extend'; import 'servicejs'; import 'servedjs'; import 'servedjs-geo';`), each attaching its services to the global `jsdi` registry. This is a deliberate, non-obvious choice: `angular-start-project-library` is excluded from the dev-server's dependency pre-bundling (`angular.json` `serve.options.prebundle.exclude`, for hot-reload on that workspace package — see the "Firewall"/dev-server notes above); a file _inside_ an excluded package doing
+**Bootstrapping happens from `main.ts`, not from inside the library**, as plain side-effect imports (`import 'js-api-extend'; import 'servicejs'; import 'servedjs'; import 'servedjs-geo';`), each attaching its services to the global `jsdi` registry. This is a deliberate, non-obvious choice: `angular-start-project-library` is excluded from the dev-server's dependency pre-bundling (`angular.json` `serve.options.prebundle.exclude`, for hot-reload on that workspace package — see the "Firewall" notes below); a file _inside_ an excluded package doing
 `require('servedjs-geo')` breaks esbuild's bundling of that real npm dependency and surfaces in the browser as `Uncaught Error: Dynamic require of "servedjs-geo" is not supported`. Loading the chain from Angular app source instead sidesteps that entirely.
 `angular-start-project-library/src/legacyServiceLayer.js` is therefore only a **live accessor** — a `get jsdi()` getter that reads `window.jsdi` at call time — never a `require()` of the vendor chain itself, so it works regardless of when those side-effect imports actually ran.
 
@@ -196,11 +203,12 @@ The actual import tree of `angular-start-project-style/src/less/index.less`:
     index.less
       setmy-info-less/src/main/less/main.less        (base resets, tokens, utilities, devices, flex, components)
       setmy-info-less-extended/src/main/less/main.less (extended's own delta rules: section/modal/card/article)
+      setmy-info-less-angular-start-project/dist/main.css (this app's chrome and view rules, inlined built CSS)
       @font-face (Material Symbols Outlined, self-hosted)
       .material-symbols-outlined                       (FILL 1 — see "Design principles" below)
       .articleBody img, .applicationContentMain, .articleSectionPanel, .sectionHeaderPicture
 
-Every component's own `*.component.less` is compiled separately by Angular and is **not** part of this tree — see point 2 above.
+Every component's own `*.component.less` is compiled separately by Angular and is **not** part of this tree — see point 2 above. Those files now hold only their imports; the rules themselves live in `setmy-info-less-angular-start-project`.
 
 ## Translations
 
@@ -231,7 +239,7 @@ package, and the even older Vue.js app. The gap analysis and per-item work order
 At bootstrap the app logs the same line both old apps did:
 `App started: {version: 1.0.0-SNAPSHOT} , for: <uuid>` (`logAppStarted` in `app.config.ts`, via the legacy `$log`). The version is **not** a git hash — it is a build stamp:
 `bin/versionModule.js` writes the `package.json` version into `src/app/config/version.ts`
-(npm script `ver`; also runs automatically as `prebuild`, and the generated file is committed so plain `ng build` works too). The UUID is a per-browser-session id: `uuidService.js`
+(npm script `ver`, or `npm run generate-sources` at the root; the generated file is committed so plain `ng build` works too). The UUID is a per-browser-session id: `uuidService.js`
 (`crypto.randomUUID`) + `sessionService.js` in the library, persisted in sessionStorage under
 `sessionId`; creating it also records the session-`create` and external-`referrer` statistics events. The version is also shown on the Settings page.
 
@@ -329,16 +337,16 @@ Both are configured from `src/config/index.js` → `config.pwa` (`updateCheckInt
 - **Self-hosted Material Symbols, no CDN.** The `Material Symbols Outlined` icon font is self-hosted from `packages/angular-start-project/public/fonts/material-symbols-outlined.woff2`, fetched once via `npm pack material-symbols` into a scratch directory and copied in — it is **not** an npm dependency of this project, so it will not appear in `package.json`/`node_modules`
   on a fresh `npm install`. If the font file is ever missing (e.g. a clean checkout without it committed), re-fetch it with `npm pack material-symbols`, unpack the tarball and copy `package/material-symbols-outlined.woff2` into `packages/angular-start-project/public/fonts/`.
 
-    Do not add a Google Fonts/Icons `<link>` back to `index.html` — see `review.md` section 4.
+    Do not add a Google Fonts/Icons `<link>` back to `index.html`.
 
 - **Icons render filled, not outlined.** `.material-symbols-outlined` sets
   `font-variation-settings: 'FILL' 1;`. No second font file is needed for this — the self-hosted
   `.woff2` is the real variable font (proven by the `@font-face` `font-weight: 100 700` range), so it already carries the `FILL` axis even though the class/family name only names the glyph-shape family (Outlined vs Rounded vs Sharp), not the fill state. This matches the old app's Material Icons look, which was filled-only by design.
 
-- **Brand vs. web-page/app styling are two separate artifacts.** This project is a **webapp**, not a brand/marketing site — see `review.md` section 2 for why those are two separate deployable artifacts in the SMI/HASS ecosystem, not one themeable app. Don't add a runtime theme-switcher here; a brand deliverable is a separate build with its own LESS module (see
+- **Brand vs. web-page/app styling are two separate artifacts.** This project is a **webapp**, not a brand/marketing site — those are two separate deployable artifacts in the SMI/HASS ecosystem, not one themeable app. Don't add a runtime theme-switcher here; a brand deliverable is a separate build with its own LESS module (see
   `angular-start-project-brand-style` and "Brand example" below for how to build/view it).
 
-- **Angular 21 conventions are enforced, not optional** — see `AGENTS.md`: no `standalone: true`
+- **Angular 22 conventions are enforced, not optional**: no `standalone: true`
   (default since v20), signals/`input()`/`output()`/`computed()`/`inject()`,
   `ChangeDetectionStrategy.OnPush`, native control flow (`@if`/`@for`/`@switch`, never
   `*ngIf`/`*ngFor`), no `ngClass`/`ngStyle` (use `[class.x]`/`[style.x]` bindings instead — this also sidesteps a real CSS-specificity bug: `.sideNavigationPanel { display: flex }` beats
@@ -474,24 +482,13 @@ On a `401` it refreshes once and retries the request **exactly once**. The retry
 
 ```text
 // app.routes.ts — protecting a route
-{
-    path: 'profile', component
-:
-    ProfileComponent, canActivate
-:
-    [authGuard]
-}
-,
+{ path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
 // lazy feature routes take the same guard
 {
-    path: 'admin', canActivate
-:
-    [authGuard],
-        loadChildren
-:
-    () => import('./admin/admin.routes').then((m) => m.adminRoutes)
-}
-,
+    path: 'admin',
+    canActivate: [authGuard],
+    loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes),
+},
 ```
 
 ```ts
@@ -565,7 +562,7 @@ Fixed with the standard Angular PWA pieces:
 - `packages/angular-start-project/angular.json` build options: `"serviceWorker": "ngsw-config.json"`
   — this makes every build configuration emit `ngsw-worker.js`/`ngsw.json`, unconditionally.
 - `src/app/app.config.ts`: `provideServiceWorker('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:30000' })`
-  — **registration** (not generation) is gated on the existing `environment.production` flag from the table above, so it's active for `ci`/`test`/`prelive`/`live` and inactive for `local`/`dev`
+  — **registration** (not generation) is gated on the existing `environment.production` flag from the table above, so it's active for `live` and inactive for `local`
   (avoids a stale cached bundle fighting `ng serve` hot-reload during development).
 
 ### Update flow (`PwaUpdateService` + `pwaUpdateService.js`)
@@ -622,12 +619,12 @@ To see the **update** banner: with that tab open, rebuild (`npm run build`) and 
 
 ## Brand example
 
-`packages/angular-start-project-brand-style/brand-example/` is a **standalone demonstration**, not part of the Angular app, its router, or its build — see `review.md` section 2 ("Brand vs. web-page/app — the split already exists in production") and `design.md` §1. In this ecosystem, brand/marketing pages and the webapp/SPA are two separate deployable artifacts on purpose: there is no CSS-custom-property brand-override API and no runtime theme switcher inside the Angular app, and there shouldn't be one — a different brand identity is shipped as a different static artifact, not a parameterized mode of this app.
+`packages/angular-start-project-brand-style/brand-example/` is a **standalone demonstration**, not part of the Angular app, its router, or its build. In this ecosystem, brand/marketing pages and the webapp/SPA are two separate deployable artifacts on purpose: there is no CSS-custom-property brand-override API and no runtime theme switcher inside the Angular app, and there shouldn't be one — a different brand identity is shipped as a different static artifact, not a parameterized mode of this app.
 
 The split is mirrored in the LESS modules: the webapp styles live in `angular-start-project-style`, brand styles live in their own module **`angular-start-project-brand-style`** (composes
 `setmy-info-less` **base only** — no `setmy-info-less-extended`, none of the app's shell chrome — and holds the brand classes like `.brandHero`/`.brandSection`). A brand page is a zero-Angular static HTML page whose entry LESS (`brand-example/brand.less`) just imports the brand-style module and adds its own by-case rules; `brand-example/` is the template's one concrete, buildable example of that pattern.
 
-**Current state is deliberately MVP/manual**: the brand artifact is built by hand with `npm run build:brand-example -w angular-start-project-brand-style` (compiles `brand-example/brand.less` to `brand-example/dist/brand.css`, plain lessc, no Angular involved), separately from the app builds — no templating, no generation, no Nginx/Spring Boot setup yet. `design.md` describes where automation goes later if needed; until then the guides here are the build system.
+**Current state is deliberately MVP/manual**: the brand artifact is built by hand with `npm run build:brand-example -w angular-start-project-brand-style` (compiles `brand-example/brand.less` to `brand-example/dist/brand.css`, plain lessc, no Angular involved), separately from the app builds — no templating, no generation, no Nginx/Spring Boot setup yet. Until automation is needed, the guides here are the build system.
 
 `brand-example/dist/` is untracked (matched by the root `.gitignore`'s `**/dist`), so this needs to be (re-)run after a fresh checkout, and again any time the brand LESS changes — nothing watches or rebuilds it automatically. To view the result, open `packages/angular-start-project-brand-style/brand-example/index.html` directly in a browser (a plain static page, no dev server needed).
 
@@ -635,9 +632,9 @@ If `dist/brand.css` hasn't been built yet, the page still loads but renders unst
 symptom for this page, and the fix is just to run the build command above.
 
 **Adding a real brand page** (manual, MVP): copy `brand-example/` to a new directory (or package)
-per brand, keep the entry-LESS pattern (`@import` the brand-style module, add page rules below), add a matching `build:<brand-name>` lessc script, and run it as one more step in the build list below. The deployable artifact is simply that directory's `index.html` + `dist/` + assets.
+per brand, keep the entry-LESS pattern (`@import` the brand-style module, add page rules below), add a matching `build:<brand-name>` lessc script, and run it as one more step in the lifecycle block at the top. The deployable artifact is simply that directory's `index.html` + `dist/` + assets.
 
-## Development
+## Developer machine setup
 
 ### Setup
 
@@ -645,13 +642,11 @@ per brand, keep the entry-LESS pattern (`@import` the brand-style module, add pa
 
 ### Firewall (remote access to the dev server)
 
-`ng serve`/`npm start` binds to `localhost:4200` by default and is unreachable from other machines until the port is opened on the host firewall (`firewalld`):
-
-Open it with `firewall-cmd --permanent --add-port=4200/tcp`, then `firewall-cmd --reload`.
+`ng serve`/`npm start` binds to `localhost:4200` by default and is unreachable from other machines until the port is opened on the host firewall (`firewalld`): `firewall-cmd --permanent --add-port=4200/tcp`, then `firewall-cmd --reload`.
 
 ## Running the application locally (development)
 
-The lifecycle below is the _build_. For day-to-day development you want the Angular dev server, not a lifecycle phase:
+The lifecycle block at the top is the _build_. For day-to-day development you want the Angular dev server, not a lifecycle phase:
 
 `npm start -w angular-start-project` serves http://localhost:4200/ with the `local` configuration and live reload on save.
 
@@ -688,7 +683,7 @@ dispatch on it. The command names are identical everywhere — only what a comma
 
 | Package                             | moduleType     | build                          | test               |
 | ----------------------------------- | -------------- | ------------------------------ | ------------------ |
-| `angular-start-project`             | `angular-app`  | `ng build --configuration <p>` | `ng test` (Vitest) |
+| `angular-start-project`             | `angular-app`  | `ng build` (`live` by default) | `ng test` (Vitest) |
 | `angular-start-project-library`     | `js-library`   | load check (no transpile)      | `node --test`      |
 | `angular-start-project-style`       | `less-package` | `lessc` → dist/index[.min].css | —                  |
 | `angular-start-project-brand-style` | `less-package` | `lessc` → dist/index[.min].css | —                  |
@@ -699,7 +694,7 @@ field, never every directory under `packages/`.
 
 ### Framework independence is enforced by the build
 
-`angular-start-project-library` must not depend on Angular (`AGENTS.md`). That is checked, not just documented:
+`angular-start-project-library` must not depend on Angular. That is checked, not just documented:
 **verify** fails on any `@angular/*` or `rxjs` import in the library's source, and **build** loads the whole library in a plain Node process with only a minimal DOM present — no framework, no bundler. Keep new logic in the library and the Angular layer thin, and the build keeps proving it.
 
 Note: the library is framework-free but _browser-targeted_ — several services touch `localStorage` at module scope, so it needs a DOM to load.
@@ -734,7 +729,7 @@ Both the app and the library use [Vitest](https://vitest.dev/); spec/test files 
 `npm test -w angular-start-project` runs the Angular app suite (@angular/build:unit-test + Vitest); `npm test` at the root runs every unit tier.
 
 - `angular-start-project` — `*.spec.ts` next to each component/service, e.g.
-  `src/app/services/language.service.spec.ts` next to `language.service.ts`. The suite is kept GREEN (85 tests, all passing as of 2026-07-12 — the specs were rewritten to match the current templates after a period of drift). The navigation-critical components are covered content-deep: the header panel asserts one nav link per `menuModel` header item and one language button per supported language (current one disabled), the side navigation panel asserts one item per menu entry plus the language `<select>` below the `hr` separator, and closing behavior on item click / overlay click is unit-tested against `ModalService`.
+  `src/app/services/language.service.spec.ts` next to `language.service.ts`. The suite is kept GREEN (183 tests, all passing as of 2026-09-07). The navigation-critical components are covered content-deep: the header panel asserts one nav link per `menuModel` header item and one language button per supported language (current one disabled), the side navigation panel asserts one item per menu entry plus the language `<select>` below the `hr` separator, and closing behavior on item click / overlay click is unit-tested against `ModalService`.
 - `angular-start-project-library` — plain JS, framework-agnostic; unit tests run with
   `node --test` under `test/unit/` and integration tests under `test/integration/`
   (against Build's `dist/build-info.json`). Coverage for browser-coupled services also comes from the Angular-side specs and the e2e suites.
@@ -773,7 +768,7 @@ The migrated library candidates (pending the authors' per-file decision), the SM
 
 ## Project history
 
-This project's Angular app was migrated from `packages/application.old`, an Angular 13 scaffold still built on the stock "Tour of Heroes" tutorial structure (`app.module.ts`, `NgModule`-based routing, `karma.conf.js`). The migration replaced it with Angular 21 standalone/signals components, native control flow, and this monorepo's three-workspace split. `packages/application.old` is kept only as historical reference (see "Workspace modules" above) — do not build on it.
+This project's Angular app was migrated from `packages/application.old`, an Angular 13 scaffold still built on the stock "Tour of Heroes" tutorial structure (`app.module.ts`, `NgModule`-based routing, `karma.conf.js`). The migration replaced it with Angular 22 standalone/signals components, native control flow, and this monorepo's five-workspace split. `packages/application.old` is kept only as historical reference (see "Workspace modules" above) — do not build on it.
 
 ## TypeScript config note
 
@@ -787,8 +782,6 @@ This project's Angular app was migrated from `packages/application.old`, an Angu
 
 ## Notes for AI agents
 
-- Read `review.md` first; it tracks what is already decided vs. still open, though it is a point-in-time planning/execution log — verify any claim about current file layout or bug status against the actual code before acting on it, since later passes (including this document) may have already resolved items it lists as open.
-- Read `unused.md` for the LESS/CSS dead-code inventory and the ordered cleanup plan — it is kept in sync with the current codebase (updated 2026-07-05).
 - Read `missing-functionality.md` for the old-solution → new-solution functionality gap list — every numbered item is a self-contained work order with a status tag (IMPLEMENTED / PARTIALLY IMPLEMENTED / NOT IMPLEMENTED); the implemented ones are documented in "Migrated functionality"
   above.
 - Before assuming a `setmy-info-less`/`setmy-info-less-extended` class or variable exists, check the actual package source (`packages/setmy-info-less*/src/main/less` in the `setmy-info-less`

@@ -8,6 +8,7 @@ export default [
     {
         ignores: [
             '**/dist/**',
+            '**/coverage/**',
             // Copied third-party JS (scripts/dependencies.js) and minified twins
             // (scripts/minify.js): machine-written into the source tree and committed there.
             '**/*.min.js',

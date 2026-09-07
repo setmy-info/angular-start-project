@@ -90,9 +90,7 @@ const systemsService = {
 
     setTenantOverride: function (tenant) {
         if (!isKnownTenant(tenant)) {
-            throw new Error(
-                `Invalid tenant "${tenant}". Allowed: ${KNOWN_TENANTS.join(', ')}.`,
-            );
+            throw new Error(`Invalid tenant "${tenant}". Allowed: ${KNOWN_TENANTS.join(', ')}.`);
         }
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(TENANT_STORAGE_KEY, tenant);

@@ -8,6 +8,11 @@ export default {
     customSyntax: 'postcss-less',
     extends: ['stylelint-config-standard'],
     rules: {
+        // The app's component LESS files are intentionally empty apart from their imports —
+        // the rules live in setmy-info-less-angular-start-project — and that must not be an error.
+        'no-empty-source': null,
+        // Old-school CSS on purpose: `(min-width: …)`, not the range syntax.
+        'media-feature-range-notation': 'prefix',
         'selector-class-pattern': classAndIdPattern,
         'selector-id-pattern': classAndIdPattern,
         'selector-type-no-unknown': [
@@ -17,6 +22,17 @@ export default {
             },
         ],
     },
+    overrides: [
+        {
+            // Two rules that only know plain CSS: LESS import options (`@import (inline) …`) and
+            // LESS variables inside composite values (`1px solid @tertiaryColor`) are valid LESS.
+            files: ['**/*.less'],
+            rules: {
+                'at-rule-prelude-no-invalid': null,
+                'declaration-property-value-no-unknown': null,
+            },
+        },
+    ],
     ignoreFiles: [
         '**/node_modules/**',
         '**/dist/**',
