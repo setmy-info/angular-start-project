@@ -5,9 +5,14 @@
 //     npm run dependencies              (root: every package that declares them)
 //     npm run dependencies --workspace=angular-start-project-brandpage
 //
-// The list lives in the package's own dependencies.js (`copy`), so a brand page copied to a new
-// directory brings its own list with it. `from` resolves against the repo's node_modules, `to`
-// against the package's src/.
+// The list lives in the package's own dependencies.js (`copy`) — the single place that says what
+// gets copied, so a brand page copied to a new directory brings its own list with it. `from`
+// resolves against the repo's node_modules, `to` against the package's src/.
+//
+// Versions are npm's job, start to finish: `npm install` / `npm ci` resolves them from the
+// package's package.json and the lockfile and puts the files in node_modules, where the paths
+// carry no version number. This script only copies from there to the right place, and writes
+// nothing back describing what it did — src/ holds only the files the server serves.
 //
 // Why copy rather than import at build time: these packages publish compiled artifacts only, and
 // a brand page has to be servable straight out of src/ with no build step and no install — start
@@ -16,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { getWorkspaces, readJson, rootDir } from './workspace-utils.js';
+import { getWorkspaces, rootDir } from './workspace-utils.js';
 
 export async function loadDependencyList(workspace) {
     const listPath = path.join(workspace.workspace, 'dependencies.js');
@@ -39,7 +44,6 @@ export async function copyDependencies(workspace) {
     }
 
     const problems = [];
-    const manifest = {};
     let copied = 0;
 
     for (const entry of entries) {
@@ -51,25 +55,12 @@ export async function copyDependencies(workspace) {
             continue;
         }
 
-        const packageName = entry.from.split('/')[0];
-        const { version } = readJson(
-            path.join(rootDir, 'node_modules', packageName, 'package.json'),
-        );
-
         fs.mkdirSync(path.dirname(target), { recursive: true });
         fs.copyFileSync(source, target);
 
-        manifest[entry.to] = { package: packageName, version, from: entry.from };
-        console.log(`${workspace.packageName}: ${entry.from} v${version} -> src/${entry.to}`);
+        console.log(`${workspace.packageName}: ${entry.from} -> src/${entry.to}`);
         copied += 1;
     }
-
-    // Committed next to the files it describes, so the version each copy came from is readable
-    // without diffing minified CSS.
-    fs.writeFileSync(
-        path.join(workspace.workspace, 'src', 'dependencies.json'),
-        `${JSON.stringify({ copiedAt: new Date().toISOString(), files: manifest }, null, 4)}\n`,
-    );
 
     return { copied, problems };
 }

@@ -4,13 +4,19 @@
 // values (margin, padding, font, size, position, colors) read from getComputedStyle +
 // getBoundingClientRect — not mere element existence. Differences from the LESS original: the
 // app under test is the already-running Angular dev server (APP_BASE_URL), so there is no
-// embedded express server, navigation is by SPA route, and SPA helpers (click/waitFor/getText)
-// are added because content renders asynchronously (translations load from JSON).
+// embedded express server, navigation is by SPA route, SPA helpers (click/waitFor/getText) are
+// added because content renders asynchronously (translations load from JSON), and the browser
+// runs headless by default (SELENIUM_HEADLESS=false to watch it).
 const { Builder, By, until } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 const SELENIUM_HUB_URL = process.env.SELENIUM_HUB_URL || 'http://localhost:4444/wd/hub';
 const BROWSER = process.env.SELENIUM_BROWSER || 'firefox';
+// Headless by default: the suite is unattended (CI, and a `npm run e2e-test` that should not
+// steal focus or need a display), and every assertion reads computed styles and
+// getBoundingClientRect through the driver, none of which needs a visible window. Set
+// SELENIUM_HEADLESS=false to watch a run while debugging a failing spec.
+const HEADLESS = !/^(false|0|no)$/i.test(process.env.SELENIUM_HEADLESS || 'true');
 const APP_BASE_URL = process.env.APP_BASE_URL || 'http://localhost:4200';
 const WINDOW_WIDTH = 2000;
 const WINDOW_HEIGHT = 1200;
@@ -80,6 +86,9 @@ async function startSession() {
     options.setPreference('geo.enabled', true);
     options.setPreference('geo.provider.network.url', GEO_PROVIDER_URL);
     options.setPreference('permissions.default.geo', 1); // 1 = allow, 2 = deny
+    if (HEADLESS) {
+        options.addArguments('-headless');
+    }
     data.driver = await new Builder()
         .usingServer(SELENIUM_HUB_URL)
         .forBrowser(BROWSER)

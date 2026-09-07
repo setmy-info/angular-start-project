@@ -23,4 +23,3 @@ packages/application
 **/*.min.js
 **/src/js/vue.global.prod.js
 **/src/css/setmy-info-less*.css
-**/src/dependencies.json

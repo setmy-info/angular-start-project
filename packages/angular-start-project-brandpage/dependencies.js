@@ -17,7 +17,7 @@
  */
 export default {
     copy: [
-        { from: 'setmy-info-less/dist/main.min.css', to: 'css/setmy-info-less.min.css' },
+        {from: 'setmy-info-less/dist/main.min.css', to: 'css/setmy-info-less.min.css'},
         {
             from: 'setmy-info-less-extended/dist/main.min.css',
             to: 'css/setmy-info-less-extended.min.css',
@@ -31,14 +31,14 @@ export default {
             to: 'css/setmy-info-less-brandpage.min.css',
         },
         // Vue's global production build is already minified upstream.
-        { from: 'vue/dist/vue.global.prod.js', to: 'js/vue.global.prod.js' },
+        {from: 'vue/dist/vue.global.prod.js', to: 'js/vue.global.prod.js'},
     ],
     minify: [
         // First example (index/about/contact.html), on the SMI brand page design system.
-        { from: 'css/brand.css', to: 'css/brand.min.css' },
-        { from: 'js/main.js', to: 'js/main.min.js' },
+        {from: 'css/brand.css', to: 'css/brand.min.css'},
+        {from: 'js/main.js', to: 'js/main.min.js'},
         // Second example (previous-*.html), on the setmy-info-less base only.
-        { from: 'css/previous-brand.css', to: 'css/previous-brand.min.css' },
-        { from: 'js/previous-main.js', to: 'js/previous-main.min.js' },
+        {from: 'css/previous-brand.css', to: 'css/previous-brand.min.css'},
+        {from: 'js/previous-main.js', to: 'js/previous-main.min.js'},
     ],
 };
