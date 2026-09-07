@@ -176,15 +176,7 @@ if (tier === 'e2e') {
     }
     const port = app.packageJson.config?.server?.port;
     const baseUrl = process.env.APP_BASE_URL ?? (port ? `http://127.0.0.1:${port + 1}` : undefined);
-    const buildInfoPath = path.join(app.workspace, 'dist', 'build-info.json');
-    const builtProfile = fs.existsSync(buildInfoPath)
-        ? JSON.parse(fs.readFileSync(buildInfoPath, 'utf8')).profile
-        : undefined;
-    const profile = process.env.SMI_PROFILES ?? builtProfile;
-    console.log(
-        `Running e2e tests for ${app.packageName} against ${baseUrl}` +
-            (profile ? ` (built with profile "${profile}")` : ''),
-    );
+    console.log(`Running e2e tests for ${app.packageName} against ${baseUrl}`);
     const jestBin = resolveLocalBin('jest');
     status = run(
         jestBin,
@@ -197,7 +189,6 @@ if (tier === 'e2e') {
         ],
         {
             ...(baseUrl ? { APP_BASE_URL: baseUrl } : {}),
-            ...(profile ? { SMI_PROFILES: profile } : {}),
             JEST_JUNIT_OUTPUT_DIR: path.join(reportsDir, 'junit'),
             JEST_JUNIT_OUTPUT_NAME: 'e2e.xml',
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true',

@@ -149,7 +149,7 @@
                             ]
                         }
                     },
-                    "defaultConfiguration": "local"
+                    "defaultConfiguration": "live"
                 },
                 "serve": {
                     "builder": "@angular/build:dev-server",

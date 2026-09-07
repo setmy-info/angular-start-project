@@ -8,94 +8,46 @@
 ### Lifecycle
 
 This repo follows the org template family (JS, Python, Elixir, LESS, jenkinsfile-starter)
-Run from the repository root, in order:
+Run from the repository root, in order. The first part is local development (`npm start`), the second is going live: `npm run build` is the production build, as `ng build` is. Foreground servers (`npm start`) stop with Ctrl-C; the e2e tier needs a Selenium Grid on localhost:4444.
 
 ```shell
 npm install
 npm run audit
 npm run audit fix
+
 npm ci
 npm ls --all
 npm run clean
+npm run generate-sources
+npm run build
+npm run verify
+npm test
+npm start -w angular-start-project
+npm start -w angular-start-project-brandpage
+npm run clean
 #npm run format:check # prettier LESS, stylelint, then prettier on the rest (CI)
 #npm run format                           # same list, write
+npm run generate-sources
 npm run typecheck
-npm run generate-sources               # version stamp -> src/app/config/version.ts
-npm run resources                      # profile "local" by default; override with --profile or SMI_PROFILES
-npm run build                          # ng build / lessc / library load check (same profile resolution)
-npm run verify                         # CSS artifacts, ng dist, library Angular/RxJS ban
-npm test                               # unit tier
+npm run build
+npm run verify
+npm test
 npm run pre-integration-test
 npm run integration-test
 npm run post-integration-test
-npm run pre-e2e-test                   # serves the BUILT app; needs Java + Selenium Grid
-npm run e2e-test
-npm run post-e2e-test
-npm run coverage                       # unit tier only (Selenium stays out of coverage)
-#npm run lint
 npm run audit
-npm run audit fix
 npm run reports
 npm run docs
-npm run package                        # app -> dist/*.tar.gz; libraries -> dist/*.tgz
-npm run deploy -- <dev|test|prelive|live>
-npm run release                        # master only
-
-npm pkg fix --workspaces
-
-rm -rf node_modules packages/*/node_modules
-npm install
-
-# 2. Build the app — angular-start-project-library and angular-start-project-style are
-#    pure source (plain JS / LESS); Angular's own build step below compiles and bundles
-#    them together, they have no separate build script of their own.
-npm run build -w angular-start-project              # "local" environment
-# or explicitly, per environment:
-npm run build:dev -w angular-start-project
-npm run build:ci -w angular-start-project
-npm run build:test -w angular-start-project
-npm run build:prelive -w angular-start-project
-npm run build:live -w angular-start-project
-#    → app artifact: packages/angular-start-project/dist/application/
-
-# 3. Build the brand page(s) — separate artifact, separate LESS module, manual/MVP
-#    (see "Brand example"; one lessc step per brand page, add more as brands are added)
-npm run build:brand-example -w angular-start-project-brand-style
-#    → brand artifact: packages/angular-start-project-brand-style/brand-example/
-#      (index.html + dist/brand.css + assets)
-
-# 4. Unit tests (Vitest, via the Angular builder)
-npm test -w angular-start-project
-#    angular-start-project-library and the two style packages have no real test
-#    runner wired up yet — their own "test" script is a placeholder that exits 1
-#    ("Error: no test specified"); don't run `npm test --workspaces` at the root,
-#    it will fail on those for that reason.
-
-# 5. Start the dev server
-npm start -w angular-start-project
-#    → http://localhost:4200/
-
-npm start --workspace=angular-start-project-brandpage
-#    → http://localhost:8110/
-
-smi-selenium-hub
-smi-selenium-node
-
-# Terminal 3 (app from step 5 must still be running)
-npm run e2e -w angular-start-project
-
-# Release
-npm ci
-npm run clean
-npm run generate-sources          # version.ts from package.json
-export SMI_PROFILES=live
-npm run build
-npm run package                   # dist/*.tgz + dist/*.tar.gz + build/angular-start-project.tar.gz
-#npm start -w angular-start-project # Does not run as live/prod
-npm run serve  -w angular-start-project    # foreground, Ctrl-C to stop
-npm run server -w angular-start-project    # detached
+npm run pre-e2e-test
+npm run e2e-test
+npm run post-e2e-test
+npm run coverage
+#npm run lint
+npm run package
+npm run server -w angular-start-project
 npm run stop-server -w angular-start-project
-
+npm run deploy -- live
+npm run release
 ```
 
 > **⚠ LICENSING — not uniformly MIT.** This repository mixes the MIT-licensed template with
@@ -375,13 +327,7 @@ Both are configured from `src/config/index.js` → `config.pwa` (`updateCheckInt
 ## Design principles
 
 - **Self-hosted Material Symbols, no CDN.** The `Material Symbols Outlined` icon font is self-hosted from `packages/angular-start-project/public/fonts/material-symbols-outlined.woff2`, fetched once via `npm pack material-symbols` into a scratch directory and copied in — it is **not** an npm dependency of this project, so it will not appear in `package.json`/`node_modules`
-  on a fresh `npm install`. If the font file is ever missing (e.g. a clean checkout without it committed), re-fetch it:
-
-    ```shell
-    npm pack material-symbols --pack-destination /tmp
-    tar xzf /tmp/material-symbols-*.tgz -C /tmp
-    cp /tmp/package/material-symbols-outlined.woff2 packages/angular-start-project/public/fonts/
-    ```
+  on a fresh `npm install`. If the font file is ever missing (e.g. a clean checkout without it committed), re-fetch it with `npm pack material-symbols`, unpack the tarball and copy `package/material-symbols-outlined.woff2` into `packages/angular-start-project/public/fonts/`.
 
     Do not add a Google Fonts/Icons `<link>` back to `index.html` — see `review.md` section 4.
 
@@ -400,25 +346,17 @@ Both are configured from `src/config/index.js` → `config.pwa` (`updateCheckInt
 
 ## Environments
 
-Per ADR-0041/ADR-0042, this project uses only the canonical setmy.info environment names as Angular build/serve configuration names — there is no `production`/`development` configuration in
-`angular.json`:
+Two Angular configurations with Angular's defaults: `ng build` / `npm run build` is the production build (`live`); `ng serve` / `npm start` and `ng test` are development (`local`). `npm run build -- --configuration local` makes a development build.
 
-| Configuration | `envName` | `production` | `apiBaseUrl`                                       |
-| ------------- | --------- | ------------ | -------------------------------------------------- |
-| `local`       | `local`   | `false`      | `http://localhost:4200`                            |
-| `dev`         | `dev`     | `false`      | `https://dev.angular-start-project.setmy.info`     |
-| `ci`          | `ci`      | `true`       | `https://ci.angular-start-project.setmy.info`      |
-| `test`        | `test`    | `true`       | `https://test.angular-start-project.setmy.info`    |
-| `prelive`     | `prelive` | `true`       | `https://prelive.angular-start-project.setmy.info` |
-| `live`        | `live`    | `true`       | `https://angular-start-project.setmy.info`         |
+| Configuration | `envName` | `production` | `apiBaseUrl`                               |
+| ------------- | --------- | ------------ | ------------------------------------------ |
+| `local`       | `local`   | `false`      | `http://localhost:4200`                    |
+| `live`        | `live`    | `true`       | `https://angular-start-project.setmy.info` |
 
 Each configuration swaps in `src/environments/<name>.environment.ts` via `fileReplacements` (see
 `src/environments/environment.model.ts` for the shape — it also carries the `keycloak` block described in "Keycloak authentication" below). Files are named `<name>.environment.ts`, **not** `environment.<name>.ts` — Vitest's default test-file glob matches `*.test.ts`, which would otherwise swallow `environment.test.ts`.
 
-```shell
-npx ng serve --configuration dev      # any configuration also works with serve
-npm run build:dev -w angular-start-project   # or build:ci / build:test / build:prelive / build:live
-```
+`npm start -w angular-start-project -- --configuration live` serves the live configuration with the dev server; `npm run build` builds it (`live` is the build default).
 
 ## Keycloak authentication (OIDC Authorization Code + PKCE)
 
@@ -534,7 +472,7 @@ On a `401` it refreshes once and retries the request **exactly once**. The retry
 
 `authGuard` covers four cases: flag off → allow; live session → allow (renewing an expired access token silently, so the user never sees a login screen); dead Keycloak session → clear and redirect to Keycloak, remembering `state.url` so the user lands on the page they asked for; Keycloak unreachable → **allow**, because a network blip is not a reason to throw someone out of the app.
 
-```ts
+```text
 // app.routes.ts — protecting a route
 {
     path: 'profile', component
@@ -671,32 +609,15 @@ Everything above is conditional on the `angular.json` declaration, so a copy of 
 ### Icons
 
 `public/manifest.webmanifest` declares the 14 existing sizes as `purpose: "any"` and two dedicated
-`purpose: "maskable"` icons (`icons/{192x192,512x512}/Information-maskable.png`). They are separate files on purpose: a maskable icon is cropped to a circle/squircle by Android, so its artwork must sit inside the central 80% safe zone on an opaque background. Regenerate them from the 512px master with:
-
-```shell
-cd packages/angular-start-project
-for size in 192 512; do
-  magick public/icons/512x512/Information.png -resize $((size * 80 / 100))x \
-    -background '#fafafa' -alpha remove -alpha off -gravity center -extent ${size}x${size} \
-    public/icons/${size}x${size}/Information-maskable.png
-done
-```
+`purpose: "maskable"` icons (`icons/{192x192,512x512}/Information-maskable.png`). They are separate files on purpose: a maskable icon is cropped to a circle/squircle by Android, so its artwork must sit inside the central 80% safe zone on an opaque background. Regenerate them from the 512px master with ImageMagick: resize `public/icons/512x512/Information.png` to 80 % of the target size, remove the alpha channel on a `#fafafa` background and `-extent` it centred to `192x192` and `512x512` as `public/icons/<size>x<size>/Information-maskable.png`.
 
 `shortcuts`, `screenshots` and `categories` are present as empty arrays — valid, ignored by browsers, and the place to add app shortcuts or store screenshots later without touching anything else.
 
 ### Trying it out
 
-A plain `ng serve` (`local`, SW disabled by the flag above) is not enough — build and serve one of the SW-enabled configurations instead:
+A plain `ng serve` (`local`, SW disabled by the flag above) is not enough — build the SW-enabled configuration with `npm run build` (`live` by default), serve it with `npm run server -w angular-start-project` (http://127.0.0.1:4200, correct `.webmanifest` MIME type), wait for the SW to finish installing (~30s, `registerWhenStable`), then use DevTools > Application > Service Workers > "Offline" (or actually disconnect) and reload; `npm run stop-server -w angular-start-project` when done.
 
-```shell
-npm run build -- --profile live
-npm run server -w angular-start-project   # http://127.0.0.1:4210, correct .webmanifest MIME type
-# open it, wait for the SW to finish installing (~30s, registerWhenStable), then use
-# DevTools > Application > Service Workers > "Offline" (or actually disconnect) and reload
-npm run stop-server -w angular-start-project
-```
-
-To see the **update** banner: with that tab open, rebuild (`npm run build -- --profile live`) and either wait for the next periodic check or run `checkForUpdate()` — the banner appears as soon as the new version reports `VERSION_READY`. To see the **install** banner, open the app over HTTPS or
+To see the **update** banner: with that tab open, rebuild (`npm run build`) and either wait for the next periodic check or run `checkForUpdate()` — the banner appears as soon as the new version reports `VERSION_READY`. To see the **install** banner, open the app over HTTPS or
 `localhost` in Chromium; `beforeinstallprompt` never fires on a plain `http://<lan-ip>` origin.
 
 ## Brand example
@@ -706,19 +627,9 @@ To see the **update** banner: with that tab open, rebuild (`npm run build -- --p
 The split is mirrored in the LESS modules: the webapp styles live in `angular-start-project-style`, brand styles live in their own module **`angular-start-project-brand-style`** (composes
 `setmy-info-less` **base only** — no `setmy-info-less-extended`, none of the app's shell chrome — and holds the brand classes like `.brandHero`/`.brandSection`). A brand page is a zero-Angular static HTML page whose entry LESS (`brand-example/brand.less`) just imports the brand-style module and adds its own by-case rules; `brand-example/` is the template's one concrete, buildable example of that pattern.
 
-**Current state is deliberately MVP/manual**: the brand artifact is built by hand with the step below, separately from the app builds — no templating, no generation, no Nginx/Spring Boot setup yet. `design.md` describes where automation goes later if needed; until then the guides here are the build system.
+**Current state is deliberately MVP/manual**: the brand artifact is built by hand with `npm run build:brand-example -w angular-start-project-brand-style` (compiles `brand-example/brand.less` to `brand-example/dist/brand.css`, plain lessc, no Angular involved), separately from the app builds — no templating, no generation, no Nginx/Spring Boot setup yet. `design.md` describes where automation goes later if needed; until then the guides here are the build system.
 
-```shell
-npm run build:brand-example -w angular-start-project-brand-style
-# compiles brand-example/brand.less -> brand-example/dist/brand.css (plain lessc, no Angular involved)
-```
-
-`brand-example/dist/` is untracked (matched by the root `.gitignore`'s `**/dist`), so this needs to be (re-)run after a fresh checkout, and again any time the brand LESS changes — nothing watches or rebuilds it automatically. To view the result, just open the HTML file directly in a browser (it's a plain static page, no dev server needed):
-
-```shell
-open packages/angular-start-project-brand-style/brand-example/index.html   # macOS
-xdg-open packages/angular-start-project-brand-style/brand-example/index.html  # Linux
-```
+`brand-example/dist/` is untracked (matched by the root `.gitignore`'s `**/dist`), so this needs to be (re-)run after a fresh checkout, and again any time the brand LESS changes — nothing watches or rebuilds it automatically. To view the result, open `packages/angular-start-project-brand-style/brand-example/index.html` directly in a browser (a plain static page, no dev server needed).
 
 If `dist/brand.css` hasn't been built yet, the page still loads but renders unstyled (plain black text on white) since the stylesheet link 404s — that's the most common "something looks wrong here"
 symptom for this page, and the fix is just to run the build command above.
@@ -730,56 +641,47 @@ per brand, keep the entry-LESS pattern (`@import` the brand-style module, add pa
 
 ### Setup
 
-```shell
-npm install     # installs all four workspaces at once (run from the repository root)
-```
+`npm install` from the repository root installs every workspace at once.
 
 ### Firewall (remote access to the dev server)
 
 `ng serve`/`npm start` binds to `localhost:4200` by default and is unreachable from other machines until the port is opened on the host firewall (`firewalld`):
 
-```shell
-sudo firewall-cmd --permanent --add-port=4200/tcp && sudo firewall-cmd --reload && sudo firewall-cmd --list-ports
-```
+Open it with `firewall-cmd --permanent --add-port=4200/tcp`, then `firewall-cmd --reload`.
 
 ## Running the application locally (development)
 
 The lifecycle below is the _build_. For day-to-day development you want the Angular dev server, not a lifecycle phase:
 
-```shell
-npm start -w angular-start-project
-# → http://localhost:4200/ , "local" environment, live reload on save
-```
+`npm start -w angular-start-project` serves http://localhost:4200/ with the `local` configuration and live reload on save.
 
 That is `ng serve` with the `local` configuration (`angular.json` `defaultConfiguration: local`), so
 `src/environments/local.environment.ts` is the active environment. Nothing needs to be built first — the dev server compiles in memory.
 
 Other loops:
 
-```shell
-npm run test:watch -w angular-start-project   # unit tests in Vitest's interactive watcher
-npm run watch -w angular-start-project        # incremental `ng build` to dist/ on every change
-npm run ver -w angular-start-project          # re-stamp the version into src/app/config/version.ts
-```
+- `npm run test:watch -w angular-start-project` — unit tests in Vitest's interactive watcher
+- `npm run watch -w angular-start-project` — incremental `ng build` to dist/ on every change
+- `npm run ver -w angular-start-project` — re-stamp the version into src/app/config/version.ts
 
 If you edit `angular-start-project-library` or `angular-start-project-style` while the dev server runs, the change is picked up like any other source file — they are consumed as source (plain JS / LESS), not as built packages.
 
-**`npm start` is not the same as `npm run server`.** They serve different things on different ports, on purpose:
+**`npm start` is not the same as `npm run server`.** Both use port 4200; what you get depends on what you built:
 
 | Command                     | Serves                         | Port | Use it for                                 |
 | --------------------------- | ------------------------------ | ---- | ------------------------------------------ |
 | `npm start`                 | `ng serve`, compiled in memory | 4200 | development — live reload, sourcemaps      |
-| `npm run server`            | the **built** `dist/` output   | 4210 | checking a real build before deploying it  |
-| (automatic, `pre-e2e-test`) | the **built** `dist/` output   | 4211 | the e2e tier — started and stopped for you |
+| `npm run server`            | the **built** `dist/` output   | 4200 | checking a real build before deploying it  |
+| (automatic, `pre-e2e-test`) | the **built** `dist/` output   | 4201 | the e2e tier — started and stopped for you |
 
-Ports 4210/4211 deliberately avoid 4200 so a dev server and a build check can run side by side. Remote access to the dev server needs the port opened on the host firewall — see "Firewall" below.
+A dev server and a build check are alternatives on 4200 — stop one before starting the other; the e2e tier uses 4201 so it never collides with either. Remote access to the dev server needs the port opened on the host firewall — see "Firewall" above.
 
-`Jenkinsfile` (1.2.0, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating as the sibling repos. A feature branch is built and tested only; Publish and Deploy are blocked. The whole Jenkins build sets `SMI_PROFILES=ci`.
+`Jenkinsfile` (1.2.1, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating as the sibling repos. A feature branch is built and tested only; Publish and Deploy are blocked. The Build stage runs `npm run build` (the `live` configuration by default), verifies, tests and packages that.
 
 Any workspace-local command can still be run for one package:
-`npm run build -w angular-start-project` (uses profile `local` unless overridden).
+`npm run build -w angular-start-project` (`live` by default; `-- --configuration local` for a development build).
 
-### Three module types, one set of command names
+### Four module types, one set of command names
 
 Each package declares `config.moduleType` in its `package.json` and the shared `scripts/*`
 dispatch on it. The command names are identical everywhere — only what a command runs differs:
@@ -790,6 +692,7 @@ dispatch on it. The command names are identical everywhere — only what a comma
 | `angular-start-project-library`     | `js-library`   | load check (no transpile)      | `node --test`      |
 | `angular-start-project-style`       | `less-package` | `lessc` → dist/index[.min].css | —                  |
 | `angular-start-project-brand-style` | `less-package` | `lessc` → dist/index[.min].css | —                  |
+| `angular-start-project-brandpage`   | `brand-page`   | vendor CSS/JS + minify → src/  | —                  |
 
 `packages/angular-original` and `packages/application.old` are legacy directories, deliberately **not** npm workspaces, and no command touches them. Workspace discovery reads the root `package.json` `workspaces`
 field, never every directory under `packages/`.
@@ -801,31 +704,25 @@ field, never every directory under `packages/`.
 
 Note: the library is framework-free but _browser-targeted_ — several services touch `localStorage` at module scope, so it needs a DOM to load.
 
-### Profiles
+### Configurations
 
-The Angular CLI's own build configurations are the profile mechanism, and they are exactly the ADR-0041 canonical six (`local`, `dev`, `ci`, `test`, `prelive`, `live`), each swapping in its `src/environments/<name>.environment.ts`. **Default profile is `local`** (developer machine); override with `--profile <name>` or `SMI_PROFILES`. Jenkins sets `SMI_PROFILES=ci`. Unit tests assert the configuration names stay canonical.
+Configurations are Angular's own, with Angular's defaults — `ng serve`/`npm start` and `ng test` use `local`, `ng build`/`npm run build` uses `live` — each swapping in its `src/environments/<name>.environment.ts`. Unit tests assert that these two are the only ones and that no spec hardcodes an environment value.
 
 ### CI
 
-`Jenkinsfile` (1.2.0, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating as the sibling repos: `master`, `devel*`, `release*`, `hotfix*`, and feature branches running everything up to Package but never Publish/Deploy/Tag.
+`Jenkinsfile` (1.2.1, from the org's `jenkinsfile-starter`) runs this sequence with the same stages and branch gating as the sibling repos: `master`, `devel*`, `release*`, `hotfix*`, and feature branches running everything up to Package but never Publish/Deploy/Tag. Snapshot (`devel*`) publishes the `-SNAPSHOT` version and Release (`master`) the release version, each to its own registry (`scripts/release.js`).
 
 ### Day-to-day commands (run from the repo root)
 
-```shell
-npm start -w angular-start-project             # dev server, "local" environment, http://localhost:4200/
-npm test -w angular-start-project              # Vitest unit tests
-npm run build -w angular-start-project         # production-shaped build, "local" environment
-npm run watch -w angular-start-project         # incremental rebuild on change, "local" environment
-npm run build:brand-example -w angular-start-project-brand-style   # brand page artifact (see "Brand example")
-```
+- `npm start -w angular-start-project` — dev server, `local`, http://localhost:4200/
+- `npm test -w angular-start-project` — Vitest unit tests
+- `npm run build -w angular-start-project` — `live` build, the deliverable; `-- --configuration local` for a development build
+- `npm run watch -w angular-start-project` — incremental rebuild on change
+- `npm run build:brand-example -w angular-start-project-brand-style` — brand page artifact (see "Brand example")
 
 ### Updating/upgrading a shared package
 
-```shell
-npm update setmy-info-less setmy-info-less-extended --workspaces
-```
-
-Plain `npm install` respects the existing lockfile resolution and will **not** always pick up a newer version that a loose range (like `"setmy-info-less": "*"` in `setmy-info-less-extended`'s own
+`npm update setmy-info-less setmy-info-less-extended --workspaces` bumps a shared dependency in every workspace at once. Plain `npm install` respects the existing lockfile resolution and will **not** always pick up a newer version that a loose range (like `"setmy-info-less": "*"` in `setmy-info-less-extended`'s own
 `package.json`) would technically allow — `npm update <pkg> --workspaces` forces re-resolution across every workspace at once and is the reliable way to bump a shared dependency. After updating, run `npm ls setmy-info-less setmy-info-less-extended` to confirm every workspace resolved to the same version — a stale nested copy under one workspace's own `node_modules` is the usual symptom of a version conflict and will silently break LESS variable resolution.
 
 ## Testing
@@ -834,9 +731,7 @@ Plain `npm install` respects the existing lockfile resolution and will **not** a
 
 Both the app and the library use [Vitest](https://vitest.dev/); spec/test files live next to the source files they test.
 
-```shell
-npm test -w angular-start-project              # Angular app: @angular/build:unit-test + Vitest
-```
+`npm test -w angular-start-project` runs the Angular app suite (@angular/build:unit-test + Vitest); `npm test` at the root runs every unit tier.
 
 - `angular-start-project` — `*.spec.ts` next to each component/service, e.g.
   `src/app/services/language.service.spec.ts` next to `language.service.ts`. The suite is kept GREEN (85 tests, all passing as of 2026-07-12 — the specs were rewritten to match the current templates after a period of drift). The navigation-critical components are covered content-deep: the header panel asserts one nav link per `menuModel` header item and one language button per supported language (current one disabled), the side navigation panel asserts one item per menu entry plus the language `<select>` below the `hr` separator, and closing behavior on item click / overlay click is unit-tested against `ModalService`.
@@ -860,23 +755,8 @@ The six suites: `application` (shell + strict computed metrics + footer + terms 
 `hoverAndSelection` (hover colors by emulated mouse move; active/selected element colors incl. the sunken language button).
 
 **Prerequisites:** a Selenium Grid on `localhost:4444/wd/hub` (override via `SELENIUM_HUB_URL`). The browser runs **headless** by default, so no display is needed and no window steals focus; set `SELENIUM_HEADLESS=false` to watch a run while debugging a spec. The lifecycle e2e tier (`npm run pre-e2e-test` / `npm run e2e-test`) serves the **built** app on
-`http://127.0.0.1:4211`. For a live-reload loop, `npm start` on `localhost:4200` plus
-`APP_BASE_URL` also works.
-
-```shell
-# Terminal 1 – start the app (dev loop) or use the built-app server (port 4210)
-npm start -w angular-start-project
-
-# Terminal 2 – start the Selenium Grid (setmy-info-scripts tooling)
-smi-selenium-hub
-smi-selenium-node
-
-# Terminal 3 – run E2E tests against the running app
-APP_BASE_URL=http://localhost:4200 npm run e2e:one -w angular-start-project -- "side navigation"
-
-# Full e2e tier from the repo root (starts/stops the built-app server for you):
-npm run pre-e2e-test && npm run e2e-test && npm run post-e2e-test
-```
+`http://127.0.0.1:4201`. For a live-reload loop, `npm start` on `localhost:4200` plus
+`APP_BASE_URL` also works: start the grid with `smi-selenium-hub` and `smi-selenium-node`, then run one spec with `APP_BASE_URL=http://localhost:4200 npm run e2e:one -w angular-start-project -- "side navigation"`. The full tier from the repo root — `npm run pre-e2e-test`, `npm run e2e-test`, `npm run post-e2e-test` — starts and stops the built-app server for you.
 
 ## Licensing — MIT template + proprietary SMI/HASS parts
 

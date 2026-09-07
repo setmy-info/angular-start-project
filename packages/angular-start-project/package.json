@@ -60,7 +60,7 @@
     "config": {
         "moduleType": "angular-app",
         "server": {
-            "port": 4210,
+            "port": 4200,
             "directory": "dist/application/browser",
             "spa": true
         }

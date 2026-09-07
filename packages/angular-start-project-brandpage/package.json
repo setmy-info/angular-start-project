@@ -1,6 +1,7 @@
 {
     "name": "angular-start-project-brandpage",
     "version": "1.0.0-SNAPSHOT",
+    "private": true,
     "description": "Brand page starter - plain old-school HTML, CSS and JS served straight out of src/, no bundler and no build output",
     "license": "MIT",
     "type": "module",

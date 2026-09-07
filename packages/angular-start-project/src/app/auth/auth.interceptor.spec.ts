@@ -7,9 +7,12 @@ import { AuthService } from './auth.service';
 import { authInterceptor } from './auth.interceptor';
 import { keycloakConfig, keycloakEndpoints } from './auth.config';
 import { base64UrlEncode } from './pkce';
+import { environment } from '../../environments/environment';
 
-const PROTECTED_URL = 'http://localhost:4200/rest/profile';
-const PUBLIC_URL = 'http://localhost:4200/json/content/en.json';
+// Derived from the compiled environment, never hardcoded: the spec must hold under any
+// configuration. `/json` is outside `/rest` in every environment file, so it is unprotected.
+const PROTECTED_URL = `${keycloakConfig.protectedResourceUrls[0]}/profile`;
+const PUBLIC_URL = `${environment.apiBaseUrl}/json/content/en.json`;
 
 function makeJwt(claims: object): string {
     const segment = (value: object) =>
@@ -73,14 +76,17 @@ beforeEach(() => {
     // jsdom refuses real navigation, so the one call that would leave the page is replaced.
     // The original descriptor is put back in afterEach — other suites read window.location too.
     originalLocation = Object.getOwnPropertyDescriptor(window, 'location');
+    // The browser's location, derived from the compiled environment so the spec is not
+    // tied to one host.
+    const appOrigin = new URL(environment.apiBaseUrl);
     Object.defineProperty(window, 'location', {
         configurable: true,
         value: {
-            href: 'http://localhost:4200/profile',
-            origin: 'http://localhost:4200',
-            protocol: 'http:',
-            host: 'localhost:4200',
-            hostname: 'localhost',
+            href: `${appOrigin.origin}/profile`,
+            origin: appOrigin.origin,
+            protocol: appOrigin.protocol,
+            host: appOrigin.host,
+            hostname: appOrigin.hostname,
             pathname: '/profile',
             search: '',
             hash: '',

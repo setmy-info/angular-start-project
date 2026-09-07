@@ -10,6 +10,11 @@ def runCommand(String command) {
 pipeline {
 
     /*
+    version 1.2.1 - two Angular configurations (local, live), no SMI profile layer. `ng build`
+                    defaults to live (production) and `ng serve` to local, the Angular way, so
+                    the Build stage's `npm run build` IS the deliverable; verify, test, package. Snapshot (devel.*) publishes the -SNAPSHOT version and Release
+                    (master) the release version, each to its own registry (scripts/release.js).
+                    The app serves on 4200 (dev server and built dist alike; test server 4201).
     version 1.2.0 - release* no longer deploys to DEV: the RELEASE_TO_DEV flag and the release
                     branch of the 'dev' deploy stage are gone. release* deploys to TEST and
                     PRELIVE only. develop -> DEV is unchanged. Stages kept identical to
@@ -129,8 +134,6 @@ pipeline {
     }
 
     environment {
-        SMI_PROFILES = 'ci'
-
         MASTER_TO_LIVE = 'DEPLOY'
 
         RELEASE_TO_PRELIVE = 'DEPLOY'
@@ -201,7 +204,7 @@ pipeline {
                 runCommand 'npm run clean'
 
                 echo 'Put here resource copy commands'
-                runCommand 'npm run resources -- --profile ci'
+                echo 'Nothing to copy'
 
                 echo 'Put here compilation commands. Can be omitted.'
                 //runCommand 'npm run format:check'
@@ -290,10 +293,12 @@ pipeline {
                     }
                     steps {
                         echo 'Put here software snapshot publishing steps'
-                        // The npm registry has no snapshot channel and a version publishes
-                        // exactly once, so develop keeps its tarballs as archived artifacts
-                        // (post { always } below); publishing happens from master.
-                        echo 'No npm snapshot publishing - the Build stage tarballs in dist/ are archived as the snapshot'
+                        // scripts/release.js publishes the -SNAPSHOT version to
+                        // NPM_SNAPSHOT_REGISTRY from devel.* (and the release version to
+                        // NPM_RELEASE_REGISTRY from master). Without the registry it dry-runs.
+                        withEnv(['NPM_CONFIG_USERCONFIG=.npmrc.publish']) {
+                            runCommand 'npm run release'
+                        }
                     }
                 }
                 stage('Release reports') {
@@ -407,7 +412,7 @@ pipeline {
                 runCommand 'node scripts/lifecycle.js post-integration-test post-e2e-test'
             }
             junit allowEmptyResults: true, testResults: 'reports/junit/*.xml'
-            archiveArtifacts artifacts: 'dist/*.tgz, dist/*.tar.gz, dist/*.sha256, reports/**, build/servers/*.json', allowEmptyArchive: true, fingerprint: true
+            archiveArtifacts artifacts: 'dist/*.tgz, dist/*.tar.gz, dist/*.sha256, reports/**, build/*.tar.gz, build/*.sha256, build/servers/*.json', allowEmptyArchive: true, fingerprint: true
         }
 
         success {

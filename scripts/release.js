@@ -1,10 +1,19 @@
 #!/usr/bin/env node
-// Publish every non-private workspace to the npm registry. Dist-tag follows
-// the branch (master → latest); Jenkins only runs this from master, with
-// NPM_TOKEN through .npmrc.publish. A version that is already on the registry
-// is reported and is not a build failure - bump the version to release a new
-// one. The private Angular app is skipped.
+// Publish every non-private workspace, the Maven way: two deployables, decided
+// by the branch.
+//
+//     devel.*  -> the -SNAPSHOT version, dist-tag "snapshot", to NPM_SNAPSHOT_REGISTRY
+//     master   -> the release version (no -SNAPSHOT), dist-tag "latest", to NPM_RELEASE_REGISTRY
+//
+// A version that does not match its branch is refused: master never publishes a
+// SNAPSHOT, develop never publishes a release. A registry that is not configured
+// turns the run into a dry run, so a machine without the registries can never
+// publish by accident. NPM_TOKEN goes through .npmrc.publish. A version that is
+// already on the registry is reported and is not a build failure - bump the
+// version to release a new one. Private workspaces (the app, the brand page) are
+// skipped: their deployable is the packaged archive, not an npm package.
 import { execSync, spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,9 +24,23 @@ import {
     sortWorkspacesTopologically,
 } from './workspace-utils.js';
 
-export function resolveDistTag(branchName) {
+export function resolvePublishTarget(branchName, version) {
+    const snapshot = /-SNAPSHOT$/.test(version);
     if (branchName === 'master') {
-        return 'latest';
+        if (snapshot) {
+            throw new Error(
+                `master publishes releases - remove -SNAPSHOT from the version (${version})`,
+            );
+        }
+        return { tag: 'latest', registryEnv: 'NPM_RELEASE_REGISTRY' };
+    }
+    if (/^devel/.test(branchName)) {
+        if (!snapshot) {
+            throw new Error(
+                `${branchName} publishes snapshots - the version must end in -SNAPSHOT (${version})`,
+            );
+        }
+        return { tag: 'snapshot', registryEnv: 'NPM_SNAPSHOT_REGISTRY' };
     }
     return null;
 }
@@ -39,17 +62,20 @@ export function resolveBranch() {
     }
 }
 
-function publishWorkspace(workspace, tag, execute) {
+function publishWorkspace(workspace, target, registry, execute) {
     if (workspace.packageJson.private) {
         console.log(`Skipping ${workspace.packageName}: private`);
         return;
     }
-    const args = ['publish', '--tag', tag, '--ignore-scripts'];
+    const args = ['publish', '--tag', target.tag, '--ignore-scripts'];
+    if (registry) {
+        args.push('--registry', registry);
+    }
     if (!execute) {
         args.push('--dry-run');
     }
     console.log(
-        `${execute ? 'Publishing' : 'Dry-run publishing'} ${workspace.packageName}@${workspace.packageJson.version} to dist-tag "${tag}"`,
+        `${execute ? 'Publishing' : 'Dry-run publishing'} ${workspace.packageName}@${workspace.packageJson.version} to dist-tag "${target.tag}"${registry ? ` at ${registry}` : ''}`,
     );
     const result = spawnSync(npmCommand, args, {
         cwd: workspace.workspace,
@@ -73,14 +99,29 @@ function publishWorkspace(workspace, tag, execute) {
 
 function main() {
     const branch = resolveBranch();
-    const tag = resolveDistTag(branch);
-    if (!tag) {
-        console.log(`Skipping publish: branch "${branch}" is not a publish branch (master).`);
+    const version = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8')).version;
+    let target;
+    try {
+        target = resolvePublishTarget(branch, version);
+    } catch (error) {
+        console.error(error.message);
+        process.exit(1);
+    }
+    if (!target) {
+        console.log(
+            `Skipping publish: branch "${branch}" is not a publish branch (devel.* or master).`,
+        );
         return;
     }
-    const execute = process.env.PUBLISH_EXECUTE === 'true' || Boolean(process.env.NPM_TOKEN);
+    const registry = process.env[target.registryEnv];
+    if (!registry) {
+        console.log(`${target.registryEnv} is not set - dry run against the default registry.`);
+    }
+    const execute =
+        Boolean(registry) &&
+        (process.env.PUBLISH_EXECUTE === 'true' || Boolean(process.env.NPM_TOKEN));
     for (const workspace of sortWorkspacesTopologically(getWorkspaces())) {
-        publishWorkspace(workspace, tag, execute);
+        publishWorkspace(workspace, target, registry, execute);
     }
 }
 

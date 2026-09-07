@@ -4,11 +4,12 @@ import path from 'node:path';
 
 import { collectFiles, getWorkspaces } from './workspace-utils.js';
 import { readRuleCount, resolveExpectation } from './css-utils.js';
+import { loadDependencyList } from './dependencies.js';
 
 let failed = false;
 
 for (const workspace of getWorkspaces()) {
-    if (!verifyWorkspace(workspace)) {
+    if (!(await verifyWorkspace(workspace))) {
         failed = true;
     }
 }
@@ -17,7 +18,7 @@ if (failed) {
     process.exit(1);
 }
 
-function verifyWorkspace(workspace) {
+async function verifyWorkspace(workspace) {
     const errors = [];
 
     switch (workspace.moduleType) {
@@ -26,6 +27,9 @@ function verifyWorkspace(workspace) {
             break;
         case 'less-package':
             verifyLessPackage(workspace, errors);
+            break;
+        case 'brand-page':
+            await verifyBrandPage(workspace, errors);
             break;
         default:
             verifyJsLibrary(workspace, errors);
@@ -93,6 +97,31 @@ function verifyLessPackage(workspace, errors) {
                 `Verified ${workspace.packageName} (${rules} rule(s), expectation: ${expectation})`,
             );
         }
+    }
+}
+
+// A brand page has no build output: src/ is what is served and packaged. Verify the served
+// files exist and that every file its build copies or minifies (dependencies.js) is present.
+async function verifyBrandPage(workspace, errors) {
+    const srcDir = path.join(workspace.workspace, 'src');
+
+    for (const name of ['index.html', 'robots.txt', 'sitemap.xml']) {
+        if (!fs.existsSync(path.join(srcDir, name))) {
+            errors.push(`Missing served file: ${path.join(srcDir, name)}`);
+        }
+    }
+
+    const list = await loadDependencyList(workspace);
+    for (const entry of [...(list?.copy ?? []), ...(list?.minify ?? [])]) {
+        if (!fs.existsSync(path.join(srcDir, entry.to))) {
+            errors.push(
+                `src/${entry.to} is listed in dependencies.js but missing - run \`npm run build\``,
+            );
+        }
+    }
+
+    if (errors.length === 0) {
+        console.log(`Verified ${workspace.packageName} (brand page, src/ served as-is)`);
     }
 }
 

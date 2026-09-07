@@ -5,7 +5,6 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 import { ensureDirectory, getWorkspaceInfo, resolveLocalBin, rootDir } from './workspace-utils.js';
-import { resolveProfileArg } from './profile-utils.js';
 
 const workspace = getWorkspaceInfo();
 
@@ -25,13 +24,13 @@ switch (workspace.moduleType) {
         buildJsLibrary();
 }
 
-// `ng build --configuration <profile>` IS this app's profile mechanism: the
-// Angular CLI's own configurations are named with exactly the ADR-0041
-// canonical six and each swaps in its environment file (fileReplacements).
+// `ng build`, with whatever was passed through (any ng flag). Angular's own configurations
+// are the mechanism, with Angular's defaults: `ng build` is the production build (`live`),
+// `ng serve` the development one (`local`); `-- --configuration local` for a local build.
 function buildAngularApp() {
-    const profile = resolveProfileArg(process.argv.slice(2));
+    const args = process.argv.slice(2);
 
-    execFileSync(resolveLocalBin('ng'), ['build', '--configuration', profile], {
+    execFileSync(resolveLocalBin('ng'), ['build', ...args], {
         cwd: workspace.workspace,
         stdio: 'inherit',
     });
@@ -44,7 +43,6 @@ function buildAngularApp() {
             {
                 packageName: workspace.packageName,
                 version: workspace.packageJson.version,
-                profile,
                 builtAt: new Date().toISOString(),
             },
             null,
@@ -52,9 +50,7 @@ function buildAngularApp() {
         )}\n`,
     );
 
-    console.log(
-        `Built ${workspace.packageName} with configuration "${profile}" (${buildInfoPath})`,
-    );
+    console.log(`Built ${workspace.packageName} (${buildInfoPath})`);
 }
 
 function buildLessPackage() {

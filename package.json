@@ -20,12 +20,11 @@
         "format": "node scripts/format.js",
         "format:check": "node scripts/format.js --check",
         "lint": "eslint . && stylelint \"packages/angular-start-project-style/**/*.less\" \"packages/angular-start-project-brand-style/**/*.less\" \"packages/angular-start-project-brandpage/src/css/*.css\" \"packages/angular-start-project/src/**/*.less\"",
-        "typecheck": "npm run typecheck --workspaces --if-present",
+        "typecheck": "npm run typecheck --workspaces --if-present --",
         "generate-sources": "node scripts/generate-sources.js",
-        "resources": "node scripts/resources.js",
         "copy-dependencies": "node scripts/dependencies.js",
         "minify": "node scripts/minify.js",
-        "build": "npm run build --workspaces --if-present",
+        "build": "npm run build --workspaces --if-present --",
         "verify": "node scripts/verify.js",
         "pre-integration-test": "node scripts/lifecycle.js pre-integration-test",
         "post-integration-test": "node scripts/lifecycle.js post-integration-test",
@@ -41,9 +40,7 @@
         "package": "node scripts/package.js",
         "bundle": "node scripts/bundle.js",
         "deploy": "node scripts/deploy.js",
-        "release": "node scripts/release.js",
-        "server": "node scripts/http-server.js",
-        "stop-server": "node scripts/http-server.js stop"
+        "release": "node scripts/release.js"
     },
     "config": {
         "bundle": {
