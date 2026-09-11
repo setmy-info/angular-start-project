@@ -101,3 +101,123 @@
     border-left: solid 10px white;
     border-right: solid 10px white;
 }
+
+// ============================================================
+// LISTS IN ARTICLE PROSE
+// ============================================================
+// setmy-info-less resets `ul { padding: 0; margin: 0 }` (html/html.less), which also throws away
+// the browser's default ~40px indent. Markers are `list-style-position: outside`, so with no
+// indent they are painted to the LEFT of the text column — hard against the article padding, and
+// clipped where the column starts. Every bulleted list in the app then reads as un-indented.
+//
+// The old site hit the same reset and restored the indent with `margin-left: 17px` on lists
+// inside the article section (style/src/less/components/article.less). The same value is used
+// here so the two sites line up, and because the rule matches descendants, each nested level
+// indents again.
+//
+// The detail-level slider's own list is excluded — it is a control strip, not prose, and sets
+// its own `margin-left: 0`. The old homePage.less carried the identical exception.
+.applicationContentMain article > div.articleSectionPanel > section ul:not(.detailsLevelList),
+.applicationContentMain article > div.articleSectionPanel > section ol {
+    margin-left: 17px;
+}
+
+// ============================================================
+// ARTICLE OVERVIEW BOXES
+// ============================================================
+// The article overview tiles fixed-size cards: a picture window above a caption, the whole card
+// a link. Ported from the old site's style/src/less/components/overviewContextBox.less, which
+// the template never carried — without it the picture is whatever size the source image happens
+// to be, adrift in a full-width card, instead of filling the card as it does on the live site.
+//
+// The fixed height is load-bearing. setmy-info-less sets `a { height: 50px }` (html/html.less)
+// and only a class rule outranks it, so a card without a height here collapses to 50px and the
+// picture is clipped away.
+//
+// One deliberate departure from the old rules: an explicit `background-size: cover`, because the
+// old rule left `background-repeat` at its default and tiled a sliver of the image down the side
+// whenever the file was narrower than the card. The geometry is otherwise exactly as it was.
+@articleOverviewBoxWidth: 255px;
+@articleOverviewBoxHeight: 200px;
+@articleOverviewBoxPictureHeight: 130px;
+
+.articleOverviewContentBox {
+    // Content-box on purpose: the old rules size the card by its CONTENT (255px) and add the
+    // 5px padding outside that, giving a 265px card whose picture window is the full 255px and
+    // whose caption column is 235px. Switching this to border-box shrinks all three — card 255,
+    // picture 245, caption 225 — and the caption then stops short of the card edges.
+    width: @articleOverviewBoxWidth;
+    height: @articleOverviewBoxHeight;
+    margin: 8px;
+    padding: 5px;
+    overflow: hidden;
+    font-weight: normal;
+
+    // Hover deepens the shadow; the picture zoom below does the rest of the feedback. The old
+    // rule also set `background-color: #dfe7f2` here, but that colour never reached the screen:
+    // the card is an <a>, and the old article styles carry
+    // `.applicationContentMain article a:link:hover { background-color: white }`, which outranks
+    // it (0,3,2 against 0,2,0). Carrying the blue across without the rule that masked it is what
+    // turned these cards blue on hover.
+    &:hover {
+        box-shadow: 0 0 10px rgb(0 0 0 / 90%);
+    }
+}
+
+.articleOverviewContentBoxWindow {
+    width: 100%;
+    height: @articleOverviewBoxPictureHeight;
+    overflow: hidden;
+}
+
+.articleOverviewContentBoxPicture {
+    width: 100%;
+    height: @articleOverviewBoxPictureHeight;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    &:hover {
+        transform: scale(1.1);
+        transition-duration: 0.25s;
+    }
+}
+
+.articleOverviewContentBoxShadow {
+    box-shadow: 0 0 8px rgb(0 0 0 / 90%);
+}
+
+.articleOverviewContentBoxText {
+    padding: 10px;
+}
+
+// The overview grid holds the floated cards and clears them. It needs a rule of its own because
+// the contact-row layout above claims EVERY div that is a direct child of a section
+// (`… > section > div { width: 100%; height: 40px; display: table }`), which would squash the
+// grid to 40px and clip the cards away. Same selector depth, so this wins on source order.
+.applicationContentMain article > div.articleSectionPanel > section > div.articleOverviewGrid {
+    display: block;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+}
+
+// ============================================================
+// FOOTER COPYRIGHT ICON
+// ============================================================
+// The © in the footer is painted about 13px above the text beside it. `footer > div > ul > li >
+// i` intends the icon to be a 50px table-cell, but the icon also carries
+// `.material-symbols-outlined`, whose `display: inline-block` outranks that rule (0,1,0 beats
+// 0,0,5). It therefore stays an inline-block that is 50px tall — the height DOES apply, nothing
+// overrides it — with a 24px line box sitting at the TOP of those 50px, so the glyph rides high
+// while its sibling <a>, a real table-cell with `vertical-align: middle`, is centred.
+//
+// Giving the line box the full height centres the glyph within it. The selector carries the
+// class so it outranks `.material-symbols-outlined { line-height: 1 }`, which the plain element
+// selector would lose to.
+//
+// The proper home for this is setmy-info-less-angular-start-project, alongside the rule it
+// corrects; it lives here until that module is released with the fix.
+footer > div > ul > li > i.material-symbols-outlined {
+    line-height: 50px;
+}
