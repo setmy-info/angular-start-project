@@ -10,7 +10,6 @@ export interface ContactsContent {
     facebook?: string;
     github?: string;
     x?: string;
-    slack?: string;
     bank?: string;
     swift?: string;
     bankAccount?: string;

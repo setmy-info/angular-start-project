@@ -2,6 +2,7 @@
 
 import fs from 'node:fs';
 import http from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -95,6 +96,7 @@ function getWorkspaceServerConfig() {
 
     return {
         port: serverConfig.port,
+        host: serverConfig.host,
         spa: serverConfig.spa === true,
         directory: serverConfig.directory
             ? path.resolve(process.cwd(), serverConfig.directory)
@@ -122,6 +124,64 @@ function resolvePort(rawPort, serverConfig) {
     }
 
     return getPort(port);
+}
+
+// A developer starting the server by hand wants the same thing `ng serve`
+// prints: which host and port to open, and whether anyone else on the network
+// can reach it. Default stays loopback-only - exposing a dev server to the LAN
+// is opt-in (--host 0.0.0.0), exactly as Angular has it.
+function resolveHost(rawHost, serverConfig) {
+    return rawHost ?? serverConfig?.host ?? 'localhost';
+}
+
+function getBindAddress(host) {
+    return host === 'localhost' ? '127.0.0.1' : host;
+}
+
+function isWildcardHost(host) {
+    return host === '0.0.0.0' || host === '::' || host === '::0';
+}
+
+function formatUrl(host, port) {
+    // Bare IPv6 addresses need brackets in a URL (http://[::1]:8110/).
+    const hostname = host.includes(':') ? `[${host}]` : host;
+
+    return `http://${hostname}:${port}/`;
+}
+
+function getNetworkUrls(port) {
+    return Object.values(os.networkInterfaces())
+        .flat()
+        .filter((details) => details && details.family === 'IPv4' && !details.internal)
+        .map((details) => formatUrl(details.address, port));
+}
+
+function describeDirectory(directory) {
+    const relative = path.relative(rootDir, directory);
+
+    return relative && !relative.startsWith('..') ? relative : directory;
+}
+
+function printServerBanner(host, port, directory) {
+    const lines = [`  ➜  Local:   ${formatUrl(isWildcardHost(host) ? 'localhost' : host, port)}`];
+
+    if (isWildcardHost(host)) {
+        const networkUrls = getNetworkUrls(port);
+
+        if (networkUrls.length === 0) {
+            lines.push('  ➜  Network: no external network interface found');
+        }
+
+        for (const url of networkUrls) {
+            lines.push(`  ➜  Network: ${url}`);
+        }
+    } else {
+        lines.push('  ➜  Network: use --host 0.0.0.0 to expose');
+    }
+
+    lines.push(`  ➜  Serving: ${describeDirectory(directory)}`);
+
+    console.log(`\n${lines.join('\n')}\n\n  Press Ctrl+C to stop the server.\n`);
 }
 
 function getDirectory(rawDirectory) {
@@ -152,6 +212,7 @@ function getStateFile(port) {
 async function startServer(parsedArgs) {
     const serverConfig = getWorkspaceServerConfig();
     const port = resolvePort(parsedArgs.port, serverConfig);
+    const host = resolveHost(parsedArgs.host, serverConfig);
     const directory = resolveDirectory(parsedArgs.directory, serverConfig);
     const stateFile = getStateFile(port);
 
@@ -181,6 +242,8 @@ async function startServer(parsedArgs) {
             'serve',
             '--port',
             String(port),
+            '--host',
+            host,
             '--directory',
             directory,
             '--spa',
@@ -196,9 +259,11 @@ async function startServer(parsedArgs) {
 
     child.unref();
 
-    fs.writeFileSync(stateFile, JSON.stringify({ pid: child.pid, port, directory }, null, 2));
+    fs.writeFileSync(stateFile, JSON.stringify({ pid: child.pid, host, port, directory }, null, 2));
 
-    console.log(`Started HTTP server on port ${port} serving ${directory}`);
+    console.log(
+        `Started HTTP server (pid ${child.pid}) on ${formatUrl(isWildcardHost(host) ? 'localhost' : host, port)} serving ${describeDirectory(directory)}`,
+    );
 }
 
 export function isProcessAlive(pid) {
@@ -252,6 +317,7 @@ function stopServer(parsedArgs) {
 async function serve(parsedArgs) {
     const serverConfig = getWorkspaceServerConfig();
     const port = resolvePort(parsedArgs.port, serverConfig);
+    const host = resolveHost(parsedArgs.host, serverConfig);
     const directory = resolveDirectory(parsedArgs.directory, serverConfig);
     const spaFallback = parsedArgs.spa === 'true' || serverConfig?.spa === true;
 
@@ -323,12 +389,14 @@ async function serve(parsedArgs) {
         }
     });
 
-    server.listen(port, '127.0.0.1');
+    server.listen(port, getBindAddress(host));
 
     await new Promise((resolve, reject) => {
         server.once('listening', resolve);
         server.once('error', reject);
     });
+
+    printServerBanner(host, port, directory);
 }
 
 function renderDirectoryListing(requestPath, directoryPath) {
@@ -425,7 +493,7 @@ function getContentType(filePath) {
 
 function printUsageAndExit(code = 1) {
     console.error(
-        'Usage: node ./scripts/http-server.js [start|stop|stop-all] [--port <port>] [--directory <directory>]',
+        'Usage: node ./scripts/http-server.js [start|stop|serve|stop-all] [--port <port>] [--host <host>] [--directory <directory>]',
     );
     process.exit(code);
 }

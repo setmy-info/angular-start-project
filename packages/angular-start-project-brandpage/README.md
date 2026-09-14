@@ -4,7 +4,10 @@ A brand page starter: plain old-school HTML, CSS and JavaScript. No bundler, no 
 build output. `src/` **is** the served folder and everything in it is committed, so pointing any
 static server at it serves the finished site.
 
-    npm start --workspace=angular-start-project-brandpage      # http://127.0.0.1:8110
+    npm start --workspace=angular-start-project-brandpage      # http://localhost:8110/
+
+It prints the host and port it listens on, the way `ng serve` does. Loopback only by
+default; add `-- --host 0.0.0.0` to expose it on the LAN and it lists the network URLs too.
 
 It is deliberately NOT the webapp. Brand pages are public-facing, fancy, campaign-driven, and
 exist largely to promote an application; `packages/angular-start-project` is enterprise UI. They
